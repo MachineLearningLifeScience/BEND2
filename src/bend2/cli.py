@@ -174,8 +174,10 @@ def main(argv=None):
     )
     destination.add_argument(
         "--github",
+        nargs="?",
+        const=True,
         metavar="OWNER/REPO",
-        help="Publish evidence in your public repo and open a leaderboard PR using gh",
+        help="Publish evidence in your BEND fork (or OWNER/REPO) and open a PR using gh",
     )
     submit.add_argument("--output", type=Path, help="Destination submissions/<model-id>.json")
     submit.add_argument("--model-url", help="Model/checkpoint page, if not declared in source=")
@@ -246,7 +248,7 @@ def main(argv=None):
                 )
             return 0
         if args.command == "submit":
-            if args.github:
+            if args.github is not None:
                 if args.output:
                     raise ValueError(
                         "--output is for a local record with --evidence-url; GitHub submission saves its record beside the run"
@@ -255,7 +257,7 @@ def main(argv=None):
 
                 posted = publish_submission(
                     Run(args.directory),
-                    args.github,
+                    None if args.github is True else args.github,
                     model_url=args.model_url,
                     adapter_url=args.adapter_url,
                     family=args.family,

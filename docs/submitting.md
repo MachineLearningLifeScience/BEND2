@@ -1,8 +1,8 @@
 # Add your model to the leaderboard
 
 Evaluate any supported subset of the eight tasks, then submit it with one
-command. BEND publishes the evidence in a repository you choose and opens a pull
-request containing **one generated JSON file**. You do not need to clone BEND,
+command. BEND publishes the evidence and opens a pull request containing
+**one generated JSON file**. You do not need to clone BEND,
 add model code to its repository, upload weights, or run every task.
 
 A pull request is the submission and its review history. Merging it adds the
@@ -12,26 +12,35 @@ there is no account, separate submission service, or spreadsheet to maintain.
 ## The shortest path
 
 Install [GitHub CLI](https://cli.github.com/) and authenticate once with
-`gh auth login`. Choose an existing **public repository you can write to** for
-the evidence, normally your model's repository or a separate results repository.
+`gh auth login`. After BEND's public release, the standard path is:
 
 ```bash
 bend2 run my_model.py --tasks atlas_profile --output results/my-model
+bend2 submit results/my-model --github \
+  --model-url https://huggingface.co/your-lab/your-model
+```
+
+`--github` creates or reuses your BEND fork, hosts the evidence there as a
+release asset, and opens the one-file PR against `benchmark`. You do not need
+to choose another repository or manage a fork manually. It prints the PR URL.
+The release is marked as a prerelease and does not replace the latest release.
+
+**During private development**, the default fork cannot provide public evidence.
+Use an existing public repository you can write to instead:
+
+```bash
 bend2 submit results/my-model --github your-lab/your-model \
   --model-url https://huggingface.co/your-lab/your-model
 ```
 
-The second command is an explicit publishing action. It validates your run,
-exports its evidence, uploads it as a GitHub release asset in `your-lab/your-model`,
-then creates a fork, contribution branch and pull request against BEND's
-`benchmark` branch. It prints the PR URL. The release is marked as a prerelease
-and does not replace your repository's latest release. Repository visibility
-and default branches are never changed.
+The explicit repository is also an option after public release, for contributors
+who prefer their model or results repository. The BEND repository owner must
+use this form because GitHub cannot create a personal fork of their own repository.
 
-No additional BEND account or access token is needed; GitHub CLI manages its
-own authentication. The command creates only a release in the repository you
-name and a JSON contribution in your fork. Repository owners submitting their
-own results use a new contribution branch in BEND instead of a fork.
+Both forms are explicit publishing actions: they upload evidence, create a
+contribution branch and open a PR. GitHub CLI manages authentication; no BEND
+account or separate token is needed. Repository visibility and default branches
+are never changed. Local evaluation and export do not publish anything.
 
 If an upload or network request is interrupted, rerun the same command. Release
 names include the complete evidence SHA256; existing assets are verified and
@@ -47,7 +56,7 @@ from bend2.github import publish_submission
 
 submission = publish_submission(
     result,
-    "your-lab/your-model",
+    evidence_repository="your-lab/your-model",  # Omit to use your fork after public release.
     model_url="https://huggingface.co/your-lab/your-model",
     adapter_url="https://github.com/your-lab/your-model/tree/COMMIT/benchmark",
 )

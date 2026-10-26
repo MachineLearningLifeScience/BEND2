@@ -18,24 +18,56 @@ private GitHub repository. `pip install bend2` will become the public
 installation command after a PyPI release is published.
 The core package does not install PyTorch, JAX, or model weights.
 
-## Run the included baseline
+## Connect and evaluate your model
+
+Create an editable adapter:
 
 ```bash
-bend2 plan composition --tasks atlas_profile
-bend2 run composition --tasks atlas_profile --output results/first-run
-bend2 show results/first-run
+bend2 init my_model.py
 ```
 
-The command prints a score table. The baseline represents a sequence using
-its four base fractions. BEND fits the source-only Atlas
-readout and evaluates its selected candidates against the measured outcomes.
-This is an actual benchmark score, not a synthetic installation check.
+Replace its `embed` function with your encoder. Return one finite, fixed-width
+NumPy vector per input sequence, in the same order. Update the `model = Model(...)`
+declaration with your model's name, checkpoint revision, training data,
+representation, pooling and public source URL. See [model interfaces](models.md)
+for the contract and examples.
 
-Scores and provenance are saved in `results/first-run/result.json`;
-`submission.json` also records coverage across all eight tasks. The command
-explains any requested tasks it could not run. There is no combined score.
-`show` reads the saved result whenever you return to it; it does not load a
-model, download data or repeat evaluation.
+Run Atlas:
+
+```bash
+bend2 run my_model.py --tasks atlas_profile --output results/my-model
+```
+
+Atlas uses 7,657 short sequences and sixteen multi-cell design requests, with
+its data included. The command prints a score table and saves your results for
+submission. To try the benchmark before connecting your encoder, the optional
+`bend2 run composition --tasks atlas_profile` runs a base-composition baseline
+on CPU.
+
+Your Python file must expose a variable named `model`. The command imports it
+in your environment, so your model libraries must be installed there. Load
+weights once, outside the per-batch function or lazily on its first call.
+Use evaluation mode and disable gradients.
+
+## Submit a result
+
+Any completed subset of tasks can be submitted. With GitHub CLI installed and
+authenticated, submit your saved result:
+
+```bash
+bend2 submit results/my-model --github your-lab/your-model
+```
+
+While BEND's repository is private, choose an existing public repository you
+can write to. The command publishes your evidence there and opens a one-file
+leaderboard PR for maintainer review. It uses the model declarations saved in
+your result; `--model-url` can supply a missing checkpoint/model link.
+
+After BEND becomes public, `bend2 submit results/my-model --github` can use your
+BEND fork to host the evidence. An explicit `OWNER/REPO` remains available when
+you prefer another public repository. See the [submission guide](submitting.md)
+for authentication, evidence contents, updating results and the manual route
+without GitHub CLI.
 
 ## Use Python directly
 
@@ -72,45 +104,11 @@ encoder receives batches of DNA strings and returns one NumPy vector per
 sequence. You can close over an already-loaded model; no file or import hook
 is required.
 
-The result object exposes:
+In a notebook, `result.to_dataframe()` displays the scores. In a script,
+`result.scores` returns a dictionary of headline values. Submission uses the
+same saved directory as the command-line workflow.
 
-| Attribute or method | Contents |
-|---|---|
-| `result.scores` | Mapping from evaluated task IDs to headline scores |
-| `result.submission` | Path to the machine-readable submission |
-| `result.to_dataframe()` | A Pandas table of task metrics |
-| `result.bundle()` | Create the review ZIP and return its path |
-| `result.prepare_submission(evidence_url=...)` | Generate the JSON for a leaderboard PR |
-
-In a notebook, use `result.to_dataframe()` to display and work with the
-scores. In a script, use `result.scores` for a dictionary of headline values.
-
-## Use the command line
-
-```bash
-bend2 init my_model.py
-```
-
-Edit the generated `embed` function and `model = Model(...)` declaration.
-Then inspect the requirements, run it and inspect the saved result:
-
-```bash
-bend2 plan my_model.py --tasks atlas_profile
-bend2 run my_model.py --tasks atlas_profile \
-  --batch-size 32 --output results/my-model
-bend2 show results/my-model
-```
-
-The module must expose a variable named `model`. The command imports that
-module in your environment, so your model libraries must be installed there.
-Keep expensive model loading outside the per-batch function, or initialize
-it lazily once.
-
-`plan` lists complete input lengths, declared task limitations, missing optional
-dependencies and estimated additional benchmark-data downloads. It does not
-call your model or fetch benchmark data. Since the CLI imports your adapter
-module, keep weight loading lazy if you want planning to avoid that work too.
-Use `from bend2 import plan` for the same information as a Python dictionary.
+## Start from a released DNA model
 
 Ready-to-run model adapters are also included in the installed package; you do
 not need to clone the repository to obtain them:
@@ -118,9 +116,7 @@ not need to clone the repository to obtain them:
 ```bash
 python -m pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
 bend2 init dnabert2.py --template dnabert2
-bend2 plan dnabert2.py --tasks atlas_profile
 bend2 run dnabert2.py --tasks atlas_profile --batch-size 16 --output results/dnabert2
-bend2 show results/dnabert2
 ```
 
 `bend2 init --help` lists all choices: `custom`, `huggingface`, `dnabert2`, and
@@ -133,42 +129,60 @@ access, numeric precision and the distinction between NTv3 readouts.
 
 ## Add more tasks
 
+The next step after Atlas is `siraj`, which selects `context`, `background`,
+`repair_percentile` and `cell_selective`. These four tasks share one 93 MB
+download and 169,912 unique DNA inputs. Continue in the same directory to keep
+all your scores together:
+
 ```bash
-bend2 tasks
-bend2 plan my_model.py --tasks siraj
-bend2 run my_model.py --tasks siraj --output results/my-model-siraj
+bend2 run my_model.py --tasks siraj --output results/my-model
 ```
 
-`siraj` selects `context`, `background`, `repair_percentile` and `cell_selective`.
-These four tasks share one download and reuse representations and readouts.
 You can also list individual task IDs separated by commas. OpenSplice is a
 separate, larger assay. A probability callback enables the sequence-prior task;
 see [model interfaces](models.md).
 
-Tissue identification uses long reference-genome windows and needs the
-optional genome reader:
+Before larger runs, inspect the requirements with the optional planning command:
+
+```bash
+bend2 tasks
+bend2 plan my_model.py --tasks all
+```
+
+`plan` lists complete input lengths, declared task limitations, missing optional
+dependencies and additional benchmark-data downloads. It does not call your
+model or fetch benchmark data. Since the CLI imports your adapter module,
+keep weight loading lazy if you want planning to avoid that work too.
+Use `from bend2 import plan` for the same information as a Python dictionary.
+
+Tissue identification uses 131,072-base reference-genome windows. It needs the
+`genome` extra and an approximately 835 MB assembly download:
 
 ```bash
 python -m pip install "bend2[genome] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-bend2 plan my_model.py --tasks tissue_identification
-bend2 run my_model.py --tasks tissue_identification --output results/my-model-gtex
+bend2 run my_model.py --tasks tissue_identification --output results/my-model
 ```
 
-Confirm that your encoder accepts the prescribed 131,072-base sequences
-before this run. The first run downloads the approximately 835 MB human
-reference assembly. It does not silently shorten sequences to fit a model.
+Confirm that your encoder accepts those complete inputs before running it.
+BEND does not silently shorten sequences to fit a model.
 
-Once you have chosen the right environment and resource budget:
+`bend2 run my_model.py --tasks all --output results/my-model` evaluates tasks
+compatible with your model's declared interfaces and limitations. An
+embedding-only model does not receive a prior score. Read [task details](tasks.md)
+to choose the environment and resources for the larger assays.
+
+## Inspect saved scores
+
+Return to your results without importing the model, downloading data or
+repeating evaluation:
 
 ```bash
-bend2 plan my_model.py --tasks all
-bend2 run my_model.py --tasks all --output results/my-model-all
+bend2 show results/my-model
 ```
 
-`all` runs tasks compatible with the model's declared interfaces and records
-why other tasks are missing. For example, an embedding-only model does not
-receive a prior score. [Task details](tasks.md) describe cohorts, downloads,
-and what each metric means.
+Scores and provenance are saved in `results/my-model/result.json`;
+`submission.json` also records coverage across all eight tasks. Unrun tasks
+remain missing. There is no combined score.
 
 ## Continue a run
 
@@ -191,27 +205,6 @@ Data are shared through `~/.cache/bend2`, configurable with `--cache-dir` or
 `BEND2_CACHE`. Keep inference caches to continue a run; they do not belong in
 the submission. See [data and caching](data.md) for offline use.
 
-## Submit a result
-
-Any completed subset of tasks can be submitted. With GitHub CLI installed and
-authenticated, choose an existing public repository you can write to:
-
-```bash
-bend2 show results/my-model
-bend2 submit results/my-model --github your-lab/your-model
-```
-
-The submission command publishes your evidence as a release asset in that
-repository and opens a one-file leaderboard PR for maintainer review. It uses
-the model declarations saved in the result; `--model-url` can supply a missing
-checkpoint/model link. See the [submission guide](submitting.md) for setup,
-evidence contents and updating a submission.
-
-For another evidence host or a manual PR, start with
-`bend2 export results/my-model`. This creates a local ZIP without publishing;
-follow the [manual submission instructions](submitting.md#manual-submission-or-other-evidence-hosting)
-to host it and generate the contribution JSON with `--evidence-url`.
-
 ## Combine tasks evaluated separately
 
 You can evaluate different tasks in separate jobs or on different machines.
@@ -221,7 +214,6 @@ running model inference or fitted readouts again:
 ```bash
 bend2 combine results/my-model results/my-model-siraj results/my-model-gtex \
   --output results/my-model-complete
-bend2 show results/my-model-complete
 bend2 submit results/my-model-complete --github your-lab/your-model
 ```
 

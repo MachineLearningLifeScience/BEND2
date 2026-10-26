@@ -1,7 +1,7 @@
 """Optional, restartable GitHub handoff using the contributor's installed ``gh``.
 
 Only :func:`publish_submission` changes remote state. It hosts evidence in the
-repository the caller names and proposes one data file against ``benchmark``.
+contributor's fork or a named repository and proposes one data file against ``benchmark``.
 Credentials stay with GitHub CLI; model code is never imported here.
 """
 
@@ -171,27 +171,68 @@ def _host_evidence(github, repository, metadata, tag, archive, checksum):
     _verify_asset(github, repository, assets[0], checksum, archive.stat().st_size)
 
 
-def _contributor_repository(github, login):
+def _contributor_repository_candidate(github, login):
+    """Resolve the fork destination using read-only requests."""
     if login.lower() == UPSTREAM.split("/")[0].lower():
-        return UPSTREAM
+        return UPSTREAM, None
+    available = None
     for name in (UPSTREAM.split("/")[1], "bend2-submissions"):
         repository = f"{login}/{name}"
         existing = github.api(f"repos/{repository}", optional=True)
         if existing is None:
-            fork = github.api(
-                f"repos/{UPSTREAM}/forks",
-                method="POST",
-                payload={
-                    "name": name,
-                    "default_branch_only": False,
-                },
-            )
-            return fork["full_name"]
-        if existing.get("parent", {}).get("full_name", "").lower() == UPSTREAM.lower():
-            return existing["full_name"]
+            available = available or repository
+        elif existing.get("parent", {}).get("full_name", "").lower() == UPSTREAM.lower():
+            return existing["full_name"], existing
+    if available:
+        return available, None
     raise ValueError(
         "Your genomic-bending and bend2-submissions repositories are unrelated to BEND. Use the manual one-file PR workflow"
     )
+
+
+def _create_fork(github, repository):
+    return github.api(
+        f"repos/{UPSTREAM}/forks",
+        method="POST",
+        payload={"name": repository.split("/")[1], "default_branch_only": False},
+    )["full_name"]
+
+
+def _contributor_repository(github, login):
+    repository, existing = _contributor_repository_candidate(github, login)
+    if repository == UPSTREAM or existing is not None:
+        return repository
+    return _create_fork(github, repository)
+
+
+def _validate_evidence_repository(metadata):
+    if metadata.get("private") or metadata.get("visibility", "public") != "public":
+        raise ValueError(
+            "Choose a public evidence repository; this command never changes repository visibility"
+        )
+    if metadata.get("archived") or not metadata.get("permissions", {}).get("push"):
+        raise ValueError("You need write access to an active evidence repository")
+
+
+def _wait_for_evidence_fork(github, repository):
+    """Wait briefly for a newly created fork's metadata and commit objects."""
+    for attempt in range(6):
+        try:
+            metadata = github.api(f"repos/{repository}", optional=True)
+            if metadata is not None:
+                _validate_evidence_repository(metadata)
+                commit = github.api(
+                    f"repos/{repository}/commits/{quote(metadata['default_branch'], safe='')}",
+                    optional=True,
+                )
+                if commit is not None:
+                    return metadata
+        except _GitHubError as error:
+            if error.status not in {404, 409, 422}:
+                raise
+        if attempt < 5:
+            time.sleep(2)
+    raise ValueError("Your BEND fork is still being created. Rerun the same command to continue")
 
 
 def _content(github, repository, path, ref):
@@ -210,7 +251,7 @@ def _same_content(record, payload):
 
 def publish_submission(
     run,
-    evidence_repository,
+    evidence_repository=None,
     *,
     model_url=None,
     adapter_url=None,
@@ -220,14 +261,17 @@ def publish_submission(
 ):
     """Upload evidence and propose one leaderboard JSON file through GitHub.
 
-    ``evidence_repository`` is an existing, public ``OWNER/REPO`` you can write.
+    By default, evidence lives in the same public BEND fork used for the PR.
+    ``evidence_repository`` can name an existing, public ``OWNER/REPO`` you can write.
     Calling this function explicitly authorizes its upload, fork, branch and PR.
     Repeating it reuses matching evidence and the existing PR. No clone, shell,
     token handling, force push, default-branch edit or evidence replacement occurs.
     """
-    if not isinstance(evidence_repository, str) or not _REPOSITORY.fullmatch(evidence_repository):
-        raise ValueError("Provide an existing evidence repository as OWNER/REPO")
-    if evidence_repository.lower() == UPSTREAM.lower():
+    if evidence_repository is not None and (
+        not isinstance(evidence_repository, str) or not _REPOSITORY.fullmatch(evidence_repository)
+    ):
+        raise ValueError("Provide an existing evidence repository as OWNER/REPO, or omit it")
+    if evidence_repository is not None and evidence_repository.lower() == UPSTREAM.lower():
         raise ValueError(
             "Host evidence in your model or results repository, separate from the BEND repository"
         )
@@ -253,17 +297,65 @@ def _publish(
     archive = run.bundle()
     checksum = digest(archive)
     tag = f"bend2-{checksum}"
+    record_path = None
+    # Validate publication declarations as well as the bundle before contacting
+    # GitHub. The default destination needs the authenticated login, so its
+    # temporary candidate uses a placeholder URL that never reaches run files.
+    if evidence_repository is None:
+        with tempfile.TemporaryDirectory(prefix="bend2-submission-preflight-") as directory:
+            prepare_submission(
+                run,
+                f"https://github.com/bend2-submission-placeholder/releases/download/{tag}/submission.zip",
+                output=directory,
+                model_url=model_url,
+                adapter_url=adapter_url,
+                family=family,
+                parameter_label=parameter_label,
+            )
+    else:
+        # Retain local validation before authentication for explicit hosting too.
+        record_path = prepare_submission(
+            run,
+            f"https://github.com/{evidence_repository}/releases/download/{tag}/submission.zip",
+            model_url=model_url,
+            adapter_url=adapter_url,
+            family=family,
+            parameter_label=parameter_label,
+        )
+    github = _GitHub()
+    login = github.api("user")["login"]
+    repository = None
+    if evidence_repository is None:
+        upstream = github.api(f"repos/{UPSTREAM}")
+        if upstream.get("private") is not False or upstream.get("visibility", "public") != "public":
+            raise ValueError(
+                "Default evidence hosting requires a public BEND repository. "
+                "Use --github OWNER/REPO with an existing public repository you can write"
+            )
+        if login.lower() == UPSTREAM.split("/")[0].lower():
+            raise ValueError(
+                "The BEND owner must choose a separate evidence repository. "
+                "Use --github OWNER/REPO with an existing public repository you can write"
+            )
+        repository, evidence = _contributor_repository_candidate(github, login)
+        evidence_repository = repository
+    else:
+        evidence = github.api(f"repos/{evidence_repository}")
+    if evidence is not None:
+        _validate_evidence_repository(evidence)
+    base = github.api(f"repos/{UPSTREAM}/git/ref/heads/{BASE}")["object"]["sha"]
     evidence_url = (
         f"https://github.com/{evidence_repository}/releases/download/{tag}/submission.zip"
     )
-    record_path = prepare_submission(
-        run,
-        evidence_url,
-        model_url=model_url,
-        adapter_url=adapter_url,
-        family=family,
-        parameter_label=parameter_label,
-    )
+    if record_path is None:
+        record_path = prepare_submission(
+            run,
+            evidence_url,
+            model_url=model_url,
+            adapter_url=adapter_url,
+            family=family,
+            parameter_label=parameter_label,
+        )
     payload = record_path.read_bytes()
     record = json.loads(payload)
     branch = f"bend2/submission-{hashlib.sha256(payload).hexdigest()[:24]}"
@@ -277,18 +369,6 @@ def _publish(
     }
     journal = run.directory / "github-submission.json"
     write_json(journal, state)
-    # All local metadata, scientific protocols and archive bytes have passed
-    # validation before even the first authenticated request.
-    github = _GitHub()
-    login = github.api("user")["login"]
-    evidence = github.api(f"repos/{evidence_repository}")
-    if evidence.get("private") or evidence.get("visibility", "public") != "public":
-        raise ValueError(
-            "Choose a public evidence repository; this command never changes repository visibility"
-        )
-    if evidence.get("archived") or not evidence.get("permissions", {}).get("push"):
-        raise ValueError("You need write access to an active evidence repository")
-    base = github.api(f"repos/{UPSTREAM}/git/ref/heads/{BASE}")["object"]["sha"]
     if _same_content(_content(github, UPSTREAM, path, BASE), payload):
         state.update(
             status="already_present",
@@ -298,11 +378,20 @@ def _publish(
         )
         write_json(journal, state)
         return state
+    if evidence is None:
+        notify(f"Creating the BEND contribution fork {repository}")
+        created = _create_fork(github, repository)
+        if created.lower() != repository.lower():
+            raise ValueError(
+                f"GitHub returned an existing fork at {created}. "
+                f"Rerun with --github {created} to use it for evidence"
+            )
+        evidence = _wait_for_evidence_fork(github, repository)
     notify(f"Uploading or verifying evidence in {evidence_repository}")
     _host_evidence(github, evidence_repository, evidence, tag, archive, checksum)
     state["status"] = "evidence_uploaded"
     write_json(journal, state)
-    repository = _contributor_repository(github, login)
+    repository = repository or _contributor_repository(github, login)
     state["repository"] = repository
     notify(f"Preparing the one-file contribution in {repository}")
     reference = f"repos/{repository}/git/ref/heads/{branch}"
