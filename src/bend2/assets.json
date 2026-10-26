@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "sources": {
+    "opensplice": {
+      "title": "OpenSplice experimental master table, version 5",
+      "doi": "10.6084/m9.figshare.32337414.v5",
+      "license": "CC-BY-4.0"
+    },
+    "siraj": {
+      "title": "Functional dissection of complex and molecular trait variants at single nucleotide resolution",
+      "doi": "10.5281/zenodo.15297965",
+      "license": "CC-BY-NC-4.0",
+      "selective_outcome_provenance": {
+        "encode_files": [
+          "ENCFF769XOF",
+          "ENCFF526SMM"
+        ],
+        "estimator_sha256": "508bcf73961ced6a53b948e87440cd4b49b55a7aa6c9abefafd99a257e88ca42",
+        "protocol_seal_sha256": "a0441d12727376ae07e0a372067ecb6a6b94c24d5700f15b6e96e971164b854d"
+      }
+    },
+    "atlas": {
+      "title": "Programming human cell type-specific gene expression via an atlas of AI-designed enhancers",
+      "doi": "10.5281/zenodo.17410822",
+      "license": "CC-BY-4.0",
+      "upstream_processed_table_sha256": "7472bdeb0a2233bdff2ad6c3deed6b8ddf32b2c6f5f8202ad26c8f75838ec943"
+    },
+    "prior": {
+      "title": "Frozen BEND 2.0 GRCh38 sequence-prior panel",
+      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
+      "license": "Human reference assembly; retain upstream attribution"
+    },
+    "genome": {
+      "title": "UCSC GRCh38/hg38 reference genome, 2015-04-30",
+      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt",
+      "license": "Human reference assembly; retain upstream attribution"
+    },
+    "gtex": {
+      "title": "Frozen BEND 2.0 GTEx tissue expression targets and gene split",
+      "url": "https://gtexportal.org/home/datasets",
+      "license": "GTEx public summary-data terms; see data documentation",
+      "raw_summary_url": "https://storage.googleapis.com/adult-gtex/bulk-gex/v10/rna-seq/GTEx_Analysis_v10_RNASeQCv2.4.2_gene_median_tpm.gct.gz",
+      "gene_model_url": "https://storage.googleapis.com/adult-gtex/references/v10/reference-tables/gencode.v39.GRCh38.genes.gtf"
+    }
+  },
+  "files": {
+    "prior-panel.parquet": {
+      "bytes": 944867,
+      "sha256": "d4a07c4bcb98c4f5a3f94a6d82a3dfd5e01b3b5baedfc5efa075fe75e3f871f1",
+      "source": "prior",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/prior-panel.parquet",
+      "protocol": "1,024 baseline-training and 512 evaluation windows; 1,200 bases; recovery position 600; seed 20260910; 1 Mb genomic block separation."
+    },
+    "atlas-population.parquet": {
+      "bytes": 625044,
+      "sha256": "ff047611d8952a5a1b6278ed37cf37d87a11ec99812bacdc96db6599c41e2889",
+      "source": "atlas",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/atlas-population.parquet",
+      "protocol": "Frozen published35 source/candidate gate: 5,246 eligible source constructs, 2,411 candidates, 27 excluded source families."
+    },
+    "atlas-programs.csv": {
+      "bytes": 1557,
+      "sha256": "4780172a66509d4d3245bc1379f73e2f4811150010aa69ddbced034297bd9a52",
+      "source": "atlas",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/atlas-programs.csv",
+      "protocol": "16 frozen double/triple cell-type activation requests; explicit on/off cell lists."
+    },
+    "atlas-source-activities.parquet": {
+      "bytes": 1229229,
+      "sha256": "34514f2ec11ed94bf3ded8cd12d6b05481fbd7b3b9628b772b337b4bb057301b",
+      "source": "atlas",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/atlas-source-activities.parquet",
+      "protocol": "Exact two float64 measured replicates in 12 cell types for source constructs only; no value transformation."
+    },
+    "atlas-candidate-activities.parquet": {
+      "bytes": 576395,
+      "sha256": "ea224c9fbd614535b22c75344e66769dd8174b1c61733b99583d3a9e94184622",
+      "source": "atlas",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/atlas-candidate-activities.parquet",
+      "protocol": "Exact two float64 measured replicates in 12 cell types for candidates only; read after model fitting and selection."
+    },
+    "siraj_selective.parquet": {
+      "bytes": 4390740,
+      "sha256": "fc13677f599a2ca359157af01bde84ffee3986ec91ec8ea54528aa7557dc34b5",
+      "source": "siraj",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/siraj_selective.parquet",
+      "protocol": "181,458 mutation/no-edit IDs; five-repeat pooled direct m0-subtracted log2 RNA/DNA effects in HepG2 and K562; lambda=1 selection protocol."
+    },
+    "siraj-numeric-reference.npz": {
+      "bytes": 11935804,
+      "sha256": "df72aa1663082bd10d1e9b812d156799729ec4181e38f4bace054d1f20324914",
+      "source": "siraj",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/ea617f8d6f48532c299977427b1c9f34b216a1fc/src/bend2/resources/siraj-numeric-reference.npz",
+      "protocol": "Exact ordered 340,584 record IDs and float64 y_ref,y_alt,delta_y,sigma; source parser reconstruction tolerance 2e-14 followed by exact full-cohort hash."
+    },
+    "gtex-targets.npz": {
+      "bytes": 9881424,
+      "sha256": "be027fb017d6d184759ae098bcac00fbc23ad73699203a6f0f28ad6269ed1a0b",
+      "source": "gtex",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/25b797269a9242f082227298d111de7a99a11474/reports/table-completion-20260923/gtex-extra/prepared/targets.npz",
+      "protocol": "GTEx v10 log1p median TPM, 19,282 genes x 51 tissues; train 12,146, validation 1,350, original test 5,786. Four pinned exclusions yield 5,782 common test genes."
+    },
+    "gtex-genes.tsv": {
+      "bytes": 1503523,
+      "sha256": "970b38bcba5693ff5e8d27dfb27674c87443ebff5fabd414a5a186aa59c17b26",
+      "source": "gtex",
+      "distribution": "bundled",
+      "provenance_url": "https://raw.githubusercontent.com/yhsure/genomic-bending/25b797269a9242f082227298d111de7a99a11474/reports/table-completion-20260923/gtex-extra/prepared/genes.tsv",
+      "protocol": "GENCODE v39 gene-level TSS coordinates; 131,072 bp reference-forward hg38 windows; no reverse complement. Frozen sequence/target row order."
+    },
+    "opensplice.tsv.gz": {
+      "url": "https://ndownloader.figshare.com/files/64886694",
+      "bytes": 425453242,
+      "md5": "374443aa36bc1070dfd36318d8e77c59",
+      "source": "opensplice"
+    },
+    "siraj.zip": {
+      "url": "https://zenodo.org/api/records/15297965/files/data_satmut.zip/content",
+      "bytes": 93320206,
+      "md5": "0043848d7658ac5cf402634b9685102e",
+      "source": "siraj"
+    },
+    "hg38.2bit": {
+      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit",
+      "bytes": 835393456,
+      "sha256": "1f67aaa17a77b327738fe750ab37430a85dddf73c7d9189385ad1839259acec0",
+      "source": "genome"
+    }
+  },
+  "gtex_common_test_exclusions": [
+    "ENSG00000130726.12",
+    "ENSG00000177693.5",
+    "ENSG00000182307.14",
+    "ENSG00000261456.6"
+  ]
+}

@@ -1,0 +1,43 @@
+name: Submit a model
+description: Add your model to the BEND 2.0 leaderboard.
+title: "[Model] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Run your model, then use `bend2 export results/my-model` to create a submission bundle.
+        The bundle contains scores, model declarations, protocols and predictions. Review its contents before sharing.
+        Partial task coverage is welcome. A maintainer will review your results before adding them to the leaderboard.
+  - type: input
+    id: model
+    attributes:
+      label: Model name and checkpoint
+      description: Link to the model and an immutable revision or weight hash.
+    validations:
+      required: true
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Submission bundle
+      description: Attach submission.zip or link to a persistent public download.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduce this run
+      description: Link to your adapter and environment instructions. Include the exact command used.
+    validations:
+      required: true
+  - type: textarea
+    id: training
+    attributes:
+      label: Training data and benchmark exposure
+      description: Describe training data and any possible exposure to these sequences or assay labels.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: Optional limitations, model paper, context-length handling or task-specific details.

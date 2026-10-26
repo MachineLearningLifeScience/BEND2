@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use BEND 2.0, cite the benchmark and acknowledge the datasets used by your selected tasks."
+type: software
+title: "BEND 2.0"
+authors:
+  - name: "BEND 2.0 contributors"
+repository-code: "https://github.com/yhsure/genomic-bending"
+license: MIT
+keywords:
+  - genomics
+  - DNA
+  - machine learning
+  - benchmarking
