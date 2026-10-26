@@ -12,7 +12,7 @@ weights are separate and depend on your adapter.
 | OpenSplice | Dataset manifest | OpenSplice version 5: 425.5 MB |
 | Tissue identification | 19,282 genes, 51 tissue targets, and frozen splits | hg38 reference genome: 835.4 MB |
 
-The nine bundled files total 31.1 MB before wheel compression. They contain
+The bundled dataset panels total 31.1 MB before wheel compression. They contain
 reference sequences, measured targets, and split definitions. They contain no
 model weights, research run directories, or archived model predictions.
 
@@ -113,6 +113,14 @@ The genome download is the frozen 835,393,456-byte `hg38.2bit`, SHA-256
 `1f67aaa17a77b327738fe750ab37430a85dddf73c7d9189385ad1839259acec0`.
 Reference assembly attribution and upstream terms apply; no new license is
 assigned to the human reference sequence by this package.
+
+The optional NTv3 paper-prior adapter also includes a 69,737-byte query-seed
+table, SHA-256 `7205f435abecec715f8ef23248acbff230bf66b893fb2eb6eb9a591f1f34d3d0`.
+It maps hashes of the 512 already-hidden inputs to their two frozen random seeds;
+it contains no sequences, target bases or outcomes. The table records its source
+panel and protocol hashes. All 1,024 resulting mask sets match the original
+Table 1 extraction. See [reference models](reference-models.md) for the distinction
+between this two-query readout and native single-mask prediction.
 
 **GTEx tissue identification:** Targets are `log1p(TPM)` from the public
 [GTEx v10 median expression summary](https://gtexportal.org/home/datasets), joined
