@@ -31,7 +31,7 @@ bend2 = "bend2.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-bend2 = ["assets.json", "_data/*"]
+bend2 = ["assets.json", "_data/*", "_examples/*.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["checks"]

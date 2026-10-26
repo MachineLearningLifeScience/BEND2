@@ -117,29 +117,11 @@ def main(argv=None):
     )
     parser.add_argument("--version", action="version", version=f"bend2 {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("tasks", help="List tasks, model capabilities and input sizes")
     init = commands.add_parser("init", help="Create a working one-file model adapter")
     init.add_argument("path", nargs="?", default="model.py")
     init.add_argument(
         "--template", choices=TEMPLATES, default="custom", help="Installed starter adapter"
     )
-    preflight = commands.add_parser(
-        "plan", help="Inspect tasks, context limits and downloads before running"
-    )
-    preflight.add_argument("model", help="composition, uniform, or your model.py")
-    preflight.add_argument("--tasks", default="atlas_profile", help="Task IDs, siraj, or all")
-    preflight.add_argument("--cache-dir", type=Path)
-    preflight.add_argument("--json", action="store_true", help="Print the machine-readable plan")
-    show = commands.add_parser(
-        "show", help="Read saved scores and run status without loading a model"
-    )
-    show.add_argument("directory", type=Path)
-    show.add_argument("--json", action="store_true", help="Print the saved result JSON")
-    combine = commands.add_parser(
-        "combine", help="Combine compatible task runs into one result directory"
-    )
-    combine.add_argument("directories", nargs="+", type=Path)
-    combine.add_argument("--output", required=True, type=Path)
     run = commands.add_parser("run", help="Evaluate a model, print scores and save results")
     run.add_argument(
         "model", help="composition, uniform, or a Python file defining model = Model(...)"
@@ -160,6 +142,24 @@ def main(argv=None):
         type=Path,
         help="Reusable data and embedding cache; defaults to BEND2_CACHE or ~/.cache/bend2",
     )
+    show = commands.add_parser(
+        "show", help="Read saved scores and run status without loading a model"
+    )
+    show.add_argument("directory", type=Path)
+    show.add_argument("--json", action="store_true", help="Print the saved result JSON")
+    commands.add_parser("tasks", help="List tasks, model capabilities and input sizes")
+    preflight = commands.add_parser(
+        "plan", help="Inspect tasks, context limits and downloads before running"
+    )
+    preflight.add_argument("model", help="composition, uniform, or your model.py")
+    preflight.add_argument("--tasks", default="atlas_profile", help="Task IDs, siraj, or all")
+    preflight.add_argument("--cache-dir", type=Path)
+    preflight.add_argument("--json", action="store_true", help="Print the machine-readable plan")
+    combine = commands.add_parser(
+        "combine", help="Combine compatible task runs into one result directory"
+    )
+    combine.add_argument("directories", nargs="+", type=Path)
+    combine.add_argument("--output", required=True, type=Path)
     export = commands.add_parser(
         "export", help="Check files and create a leaderboard submission.zip"
     )
@@ -186,19 +186,21 @@ def main(argv=None):
     )
     submit.add_argument("--family", default="", help="Model family name")
     submit.add_argument("--parameter-label", default="", help="Display size, for example 117M")
-    validate = commands.add_parser("validate-submission", help="Validate a contribution as data")
+    admin = commands.add_parser("admin", help="Review submissions and build the leaderboard")
+    maintenance = admin.add_subparsers(dest="admin_command", required=True)
+    validate = maintenance.add_parser("validate-submission", help="Validate a contribution as data")
     validate.add_argument("path", type=Path)
     validate.add_argument("--bundle", type=Path, help="Also check a downloaded evidence ZIP")
-    rescore = commands.add_parser(
+    rescore = maintenance.add_parser(
         "rescore-submission",
-        help="Maintainers: independently score evidence against trusted labels",
+        help="Independently score evidence against trusted labels",
     )
     rescore.add_argument("path", type=Path)
     rescore.add_argument("--bundle", required=True, type=Path)
     rescore.add_argument("--output", required=True, type=Path, help="New reviews/<model-id>.json")
     rescore.add_argument("--cache-dir", type=Path)
-    reproduce = commands.add_parser(
-        "record-reproduction", help="Maintainers: record independently rerun tasks"
+    reproduce = maintenance.add_parser(
+        "record-reproduction", help="Record independently rerun tasks"
     )
     reproduce.add_argument("path", type=Path, help="Original submission JSON")
     reproduce.add_argument("--review", required=True, type=Path, help="Review receipt to update")
@@ -219,7 +221,7 @@ def main(argv=None):
         help="Attest that you ran the model with a fresh inference cache",
     )
     reproduce.add_argument("--cache-dir", type=Path)
-    leaderboard = commands.add_parser(
+    leaderboard = maintenance.add_parser(
         "build-leaderboard", help="Combine reviewed submissions with frozen paper results"
     )
     leaderboard.add_argument(
@@ -232,12 +234,13 @@ def main(argv=None):
     )
     leaderboard.add_argument("--output", type=Path, default=Path("website/data/benchmark.json"))
     args = parser.parse_args(argv)
+    command = args.admin_command if args.command == "admin" else args.command
     try:
-        if args.command == "tasks":
+        if command == "tasks":
             for task in tasks():
                 print(f"{task['id']:24} {task['requires']:14} {task['inputs']}")
             return 0
-        if args.command == "init":
+        if command == "init":
             path = write_template(args.path, args.template)
             template = TEMPLATES[args.template]
             print(f"Created {path}: {template['description']}")
@@ -248,7 +251,7 @@ def main(argv=None):
             print(f"Plan: bend2 plan {shlex.quote(str(path))} --tasks {template['tasks']}")
             print(f"Run: bend2 run {shlex.quote(str(path))} --tasks {template['tasks']}")
             return 0
-        if args.command == "plan":
+        if command == "plan":
             from bend2 import plan
 
             proposal = plan(load_model(args.model), tasks=args.tasks, cache_dir=args.cache_dir)
@@ -257,20 +260,20 @@ def main(argv=None):
             else:
                 _show_plan(proposal)
             return 0 if proposal["ready"] else 1
-        if args.command == "show":
+        if command == "show":
             result = Run(args.directory)
             if args.json:
                 print(json.dumps(result.data, indent=2))
             else:
                 _show(result)
             return 0
-        if args.command == "combine":
+        if command == "combine":
             from bend2 import combine
 
             result = combine(args.directories, output=args.output)
             _show(result)
             return 0
-        if args.command == "export":
+        if command == "export":
             result = Run(args.directory)
             print(result.bundle())
             submission = json.loads(result.submission.read_text())
@@ -280,7 +283,7 @@ def main(argv=None):
                     file=sys.stderr,
                 )
             return 0
-        if args.command == "submit":
+        if command == "submit":
             if args.github is not None:
                 if args.output:
                     raise ValueError(
@@ -320,7 +323,7 @@ def main(argv=None):
             )
             print("Nothing has been uploaded or published by this command.")
             return 0
-        if args.command == "validate-submission":
+        if command == "validate-submission":
             from bend2.submissions import validate_submission
 
             record = validate_submission(args.path, bundle=args.bundle)
@@ -331,7 +334,7 @@ def main(argv=None):
                 else "Metadata/protocol checked; evidence bundle not checked."
             )
             return 0
-        if args.command == "rescore-submission":
+        if command == "rescore-submission":
             from bend2.reviews import rescore_submission
 
             record = rescore_submission(
@@ -346,7 +349,7 @@ def main(argv=None):
                 "Predictions and decisions checked against trusted labels; model execution is not established."
             )
             return 0
-        if args.command == "record-reproduction":
+        if command == "record-reproduction":
             from bend2.reviews import record_reproduction
 
             record_reproduction(
@@ -363,7 +366,7 @@ def main(argv=None):
             )
             print(f"Recorded independently reproduced tasks in {args.review}")
             return 0
-        if args.command == "build-leaderboard":
+        if command == "build-leaderboard":
             from bend2.submissions import build_leaderboard
 
             data = build_leaderboard(

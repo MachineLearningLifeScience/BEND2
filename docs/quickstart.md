@@ -1,55 +1,7 @@
-# From installation to your first result
+# Working with BEND 2.0
 
-Start with Atlas. It is a complete scientific task with compact included data,
-and it uses the same embedding interface as the larger assays.
-
-## Install
-
-Use Python 3.11+ and your model's existing environment, or create a new one:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install "bend2 @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-```
-
-This installs the development branch and currently requires access to the
-private GitHub repository. `pip install bend2` will become the public
-installation command after a PyPI release is published.
-The core package does not install PyTorch, JAX, or model weights.
-
-## Connect and evaluate your model
-
-Create an editable adapter:
-
-```bash
-bend2 init my_model.py
-```
-
-Replace its `embed` function with your encoder. Return one finite, fixed-width
-NumPy vector per input sequence, in the same order. Update the `model = Model(...)`
-declaration with your model's name and a stable checkpoint revision. Describe
-its representation and pooling so you can distinguish runs later. Only a name
-and callback are required for a local experiment; publication declarations can
-be completed later. See [model interfaces](models.md) for the contract and examples.
-
-Run Atlas:
-
-```bash
-bend2 run my_model.py --tasks atlas_profile --output results/my-model
-```
-
-Atlas uses 7,657 short sequences and sixteen multi-cell design requests, with
-its data included. The command prints a score table and saves predictions,
-selected designs and per-request outcomes. To try the benchmark before
-connecting your encoder, the optional
-`bend2 run composition --tasks atlas_profile` runs a base-composition baseline
-on CPU.
-
-Your Python file must expose a variable named `model`. The command imports it
-in your environment, so your model libraries must be installed there. Load
-weights once, outside the per-batch function or lazily on its first call.
-Use evaluation mode and disable gradients.
+The [README](../README.md) covers installation and a first Atlas evaluation.
+This guide continues from a saved run in `results/my-model`.
 
 ## Use Python directly
 
@@ -90,25 +42,6 @@ In a notebook, `result.to_dataframe()` displays the scores with units, direction
 and available confidence intervals. `result.scores` returns a dictionary of
 headline values. The returned `Run` also gives access to the saved prediction
 and analysis tables, as shown below.
-
-## Start from a released DNA model
-
-Ready-to-run model adapters are also included in the installed package; you do
-not need to clone the repository to obtain them:
-
-```bash
-python -m pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-bend2 init dnabert2.py --template dnabert2
-bend2 run dnabert2.py --tasks atlas_profile --batch-size 16 --output results/dnabert2
-```
-
-`bend2 init --help` lists all choices: `custom`, `huggingface`, `dnabert2`, and
-`ntv3-prior`. Generation writes an editable Python file and never downloads
-weights or replaces an existing file. The reference adapters default to CPU;
-edit their device and precision settings to use your GPU. The generic
-Hugging Face starter uses the small pinned HyenaDNA encoder and needs the
-`huggingface` extra. See [reference adapters](reference-models.md) for checkpoint
-access, numeric precision and the distinction between NTv3 readouts.
 
 ## Add more tasks
 
@@ -284,27 +217,8 @@ resumed as a new evaluation job.
 
 ## Share a result on the leaderboard
 
-This is optional: evaluation and analysis work entirely locally. Any completed
-subset of tasks can be proposed for review using the same saved results. Add
-checkpoint, training-data and interface declarations to your adapter before
-an evaluation you intend to share. You can correct descriptive fields such as
-`training_data` and `source` by repeating the run command without repeating
-inference. A different checkpoint or representation requires a new run.
-
-With GitHub CLI installed and authenticated:
-
-```bash
-bend2 submit results/my-model --github your-lab/your-model
-```
-
-While BEND's repository is private, choose an existing public repository you
-can write to. The command publishes your evidence there and opens a one-file
-leaderboard PR for maintainer review. It uses the model declarations saved in
-your result; `--model-url` can supply a missing checkpoint/model link.
-
-After BEND becomes public, `bend2 submit results/my-model --github` can use your
-BEND fork to host the evidence. An explicit `OWNER/REPO` remains available when
-you prefer another public repository. Maintainers rescore the predictions
-against trusted benchmark data before acceptance; an independent model rerun
-is recorded separately. See the [submission guide](submitting.md) for required
-declarations, evidence contents, review, updates and the route without GitHub CLI.
+Any completed subset of tasks can be proposed using the same saved results.
+This is optional; local evaluation and analysis need no account or submission.
+See the [submission guide](submitting.md) for the generated evidence bundle,
+required declarations and review. The [reference-model guide](reference-models.md)
+covers ready-to-run adapters, checkpoint access and GPU settings.

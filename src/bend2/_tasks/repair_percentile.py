@@ -25,6 +25,13 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     candidates = scored.loc[scored.is_candidate, columns].merge(
         targets, on=key, validate="many_to_one"
     )
+    return score(candidates)
+
+
+def score(candidates):
+    """Choose predicted repairs, then rank their measured residuals within each request."""
+    candidates = candidates.copy()
+    key = ["unit_id", "state", "context_id"]
     candidates["predicted_residual"] = (candidates.y_pred - candidates.target_prediction).abs()
     candidates["observed_residual"] = (candidates.delta_y - candidates.target_y).abs()
     candidates = candidates.sort_values(key + ["predicted_residual", "record_id"])

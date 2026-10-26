@@ -2,7 +2,7 @@
 
 Each published community submission needs a matching `<model-id>.json` here.
 The file records trusted rescoring of every submitted task and any independent
-model reruns, with evidence hashes. Generate it with `bend2 rescore-submission`;
+model reruns, with evidence hashes. Generate it with `bend2 admin rescore-submission`;
 see [the maintainer guide](../docs/reviewing.md).
 
 Contributors only submit their generated file in `submissions/`. A maintainer

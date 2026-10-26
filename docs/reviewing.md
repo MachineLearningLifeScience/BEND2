@@ -7,6 +7,8 @@ only tasks actually rerun can carry **Reproduced by BEND**.
 
 Regular package use requires none of this. Local evaluation, notebooks, saved
 tables and model comparisons work without GitHub or publication declarations.
+Reviewer and site-build commands are grouped under `bend2 admin`; use
+`bend2 admin --help` to list them.
 
 ## Rescore the evidence
 
@@ -15,7 +17,7 @@ install the contributor's PR as the reviewer tool. Download the linked evidence
 ZIP and the contribution JSON, then run:
 
 ```bash
-bend2 rescore-submission submissions/community-IDENTITY.json \
+bend2 admin rescore-submission submissions/community-IDENTITY.json \
   --bundle /path/to/downloaded/submission.zip \
   --output reviews/community-IDENTITY.json \
   --cache-dir /path/to/benchmark-cache
@@ -52,7 +54,7 @@ Changing a model declaration, score, coverage or evidence URL/hash makes it stal
 Use a new output path when rescoring a correction, review the replacement, then
 replace the old receipt. This prevents accidentally erasing reproduction history.
 
-`bend2 validate-submission --bundle ...` remains a faster integrity check. It does
+`bend2 admin validate-submission --bundle ...` remains a faster integrity check. It does
 not perform trusted rescoring. A passing receipt also cannot establish which
 weights ran, how embeddings/readouts were fitted, or absence of label leakage.
 Validation-loss grids are checked for internal consistency, not independently
@@ -112,7 +114,7 @@ Export the independent run with `bend2 export`, host its ZIP, then record exactl
 the tasks you reran:
 
 ```bash
-bend2 record-reproduction submissions/community-IDENTITY.json \
+bend2 admin record-reproduction submissions/community-IDENTITY.json \
   --review reviews/community-IDENTITY.json \
   --run results/independent-rerun --tasks atlas_profile \
   --evidence-url https://example.org/independent-rerun.zip \

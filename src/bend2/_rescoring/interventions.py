@@ -12,10 +12,8 @@ import pandas as pd
 from sklearn.model_selection import GroupKFold
 
 from bend2 import datasets
-from bend2._tasks._siraj import BACKGROUND_POSITION, EXCLUDED_UNIT, paired_backgrounds
-from bend2._tasks._siraj import repair_candidates
-from bend2._tasks.cell_selective import nominate
-from bend2.readouts import PROTOCOL, macro_spearman, mean_interval
+from bend2._tasks import background, cell_selective, context, opensplice, repair_percentile
+from bend2._tasks._siraj import EXCLUDED_UNIT, paired_backgrounds, repair_candidates
 
 
 # Frozen measurements and identifiers must match exactly. The tolerance applies
@@ -129,39 +127,19 @@ def _intervention_predictions(frame, actual, group, *, context=False):
     expected["y_true"] = frame.delta_y.to_numpy(float)
     expected["y_pred"] = predictions
     expected["fold"] = _folds(frame, group)
-    _compare(actual, expected, ["record_id"], "predictions", exact=["delta_y", "y_true"])
     return expected
 
 
 def _correlation(task, data, tables):
-    context = task == "context"
-    group = "unit_id" if context else "gene_id"
-    frame = data["context"] if context else data["records"]
-    predictions = _intervention_predictions(frame, tables["predictions"], group, context=context)
-    replicates, seed = (10000, 20260825) if context else (2000, 20260822)
-    metric, groups = macro_spearman(predictions, group, replicates=replicates, seed=seed)
-    details = {
-        **PROTOCOL,
-        "group": group,
-        **({"target": "HepG2 minus K562", "prediction_dtype": "float32"} if context else {}),
-        "n_records": len(predictions),
-        "n_groups": len(groups),
-        "n_defined_groups": int(groups.spearman.notna().sum()),
-        "bootstrap": {
-            "unit": "regulatory element" if context else "gene",
-            "replicates": replicates,
-            "seed": seed,
-        },
+    is_context = task == "context"
+    group = "unit_id" if is_context else "gene_id"
+    frame = data["context"] if is_context else data["records"]
+    predictions = _intervention_predictions(frame, tables["predictions"], group, context=is_context)
+    result = (context if is_context else opensplice).score(predictions)
+    return result, {
+        "predictions": (["record_id"], ["delta_y", "y_true"]),
+        "groups": ([group], []),
     }
-    return (
-        metric,
-        details,
-        {"predictions": predictions, "groups": groups},
-        {
-            "predictions": (["record_id"], ["delta_y", "y_true"]),
-            "groups": ([group], []),
-        },
-    )
 
 
 def _background(data, tables):
@@ -188,28 +166,11 @@ def _background(data, tables):
     _finite(actual, ["prediction_A", "prediction_R"], "predictions")
     for state in ("A", "R"):
         predictions[f"prediction_{state}"] = actual[f"prediction_{state}"].to_numpy()
-    predictions["y_true"] = predictions.truth_A - predictions.truth_R
-    predictions["y_pred"] = predictions.prediction_A - predictions.prediction_R
-    predictions["distance_bp"] = (predictions.mutation_position - BACKGROUND_POSITION).abs()
     predictions["fold"] = predictions.unit_id.map(_group_folds(data["records"]))
-    metric, groups = macro_spearman(predictions, "unit_id", replicates=10000, seed=20260826)
-    return (
-        metric,
-        {
-            **PROTOCOL,
-            "group": "unit_id",
-            "target": "A-minus-R difference in mean two-cell effect",
-            "n_pairs": len(predictions),
-            "n_groups": len(groups),
-            "n_defined_groups": int(groups.spearman.notna().sum()),
-            "bootstrap": {"unit": "regulatory element", "replicates": 10000, "seed": 20260826},
-        },
-        {"predictions": predictions, "groups": groups},
-        {
-            "predictions": (key, ["truth_A", "truth_R", "y_true"]),
-            "groups": (["unit_id"], []),
-        },
-    )
+    return background.score(predictions), {
+        "predictions": (key, ["truth_A", "truth_R", "y_true"]),
+        "groups": (["unit_id"], []),
+    }
 
 
 def _repair(data, tables):
@@ -229,49 +190,12 @@ def _repair(data, tables):
     if not candidates.groupby(key).target_prediction.nunique().eq(1).all():
         raise ValueError("Repair target predictions differ within the same frozen request")
     candidates["fold"] = candidates.unit_id.map(_group_folds(data["records"]))
-    candidates["predicted_residual"] = (candidates.y_pred - candidates.target_prediction).abs()
-    candidates["observed_residual"] = (candidates.delta_y - candidates.target_y).abs()
-    candidates = candidates.sort_values(key + ["predicted_residual", "record_id"])
-    counts = candidates.groupby(key).record_id.transform("size")
-    if candidates.empty or (counts < 2).any():
-        raise ValueError("Frozen repair requests require at least two candidate edits")
-    ranks = candidates.groupby(key).observed_residual.rank(method="average")
-    candidates["observed_percentile"] = (ranks - 1) / (counts - 1)
-    choices = candidates.groupby(key, sort=False).head(1).copy()
-    groups = choices.groupby("unit_id", as_index=False).agg(
-        candidate_percentile=("observed_percentile", "mean"), n_requests=("record_id", "size")
-    )
-    interval = mean_interval(groups.candidate_percentile, replicates=10000, seed=20260827)
-    metric = {
-        "name": "measured_rank_percentile",
-        "value": float(100 * groups.candidate_percentile.mean()),
-        "unit": "%",
-        "direction": "lower",
-        "ci95": [100 * value for value in interval] if interval else None,
-    }
     exact = ["delta_y", "sigma", "target_y", "target_sigma"]
-    return (
-        metric,
-        {
-            **PROTOCOL,
-            "group": "unit_id",
-            "n_requests": len(choices),
-            "n_groups": len(groups),
-            "request_filter": "absolute direct-swap effect >= 2 standard errors",
-            "selector": "minimum absolute predicted residual to the direct-swap target",
-            "candidate_pool": "frozen common pool; excludes all edits at background position 99",
-            "tie_break": "ascending record_id",
-            "percentile_rank": "average ties, (rank-1)/(n-1)",
-            "aggregation": "mean requests within element, then mean elements",
-            "bootstrap": {"unit": "regulatory element", "replicates": 10000, "seed": 20260827},
-        },
-        {"predictions": candidates, "choices": choices, "groups": groups},
-        {
-            "predictions": (["record_id"], exact),
-            "choices": (key, exact),
-            "groups": (["unit_id"], []),
-        },
-    )
+    return repair_percentile.score(candidates), {
+        "predictions": (["record_id"], exact),
+        "choices": (key, exact),
+        "groups": (["unit_id"], []),
+    }
 
 
 def _selective(data, tables):
@@ -282,60 +206,11 @@ def _selective(data, tables):
     for cell in ("hepg2", "k562"):
         predictions[f"pred_{cell}"] = actual[f"pred_{cell}"].to_numpy()
     predictions["fold"] = predictions.unit_id.map(_group_folds(data["records"]))
-    choices = nominate(predictions)
-    measured = data["selective_outcomes"].set_index("ID")
-    for cell in ("hepg2", "k562"):
-        predictions[f"truth_{cell}"] = predictions.ID.map(measured[f"truth_{cell}"])
-    if not np.isfinite(predictions[["truth_hepg2", "truth_k562"]].to_numpy()).all():
-        raise ValueError("Trusted selective measurements are missing frozen candidate outcomes")
-    evaluated = choices.copy()
-    target, other = np.zeros(len(choices)), np.zeros(len(choices))
-    for cell, off in (("hepg2", "k562"), ("k562", "hepg2")):
-        use = choices.target_cell.eq(cell) & choices.ID.notna()
-        if not use.any():
-            continue
-        target[use] = choices.loc[use, "ID"].map(measured[f"truth_{cell}"])
-        other[use] = choices.loc[use, "ID"].map(measured[f"truth_{off}"]).abs()
-    evaluated["target"], evaluated["other"] = evaluated.weight * target, evaluated.weight * other
-    backgrounds = evaluated.groupby(["unit_id", "background_id", "target_cell"], as_index=False)[
-        ["target", "other"]
-    ].sum()
-    cells = backgrounds.groupby(["unit_id", "target_cell"], as_index=False)[
-        ["target", "other"]
-    ].mean()
-    groups = cells.groupby("unit_id", as_index=False)[["target", "other"]].mean()
-    groups["utility"] = groups.target - groups.other
-    metric = {
-        "name": "log2_reporter_utility",
-        "value": float(groups.utility.mean()),
-        "unit": "log₂ reporter",
-        "direction": "higher",
-        "ci95": mean_interval(groups.utility, replicates=50000, seed=20260921, multinomial=True),
+    return cell_selective.score(predictions, data["selective_outcomes"]), {
+        "predictions": (["ID"], ["truth_hepg2", "truth_k562"]),
+        "choices": (["background_id", "target_cell", "ID"], []),
+        "groups": (["unit_id"], []),
     }
-    return (
-        metric,
-        {
-            **PROTOCOL,
-            "group": "unit_id",
-            "n_candidates": len(predictions),
-            "n_groups": len(groups),
-            "n_backgrounds": int(predictions.background_id.nunique()),
-            "lambda": 1.0,
-            "selector": "predicted target effect minus absolute other-cell effect",
-            "readout_combination": "per-cell prediction mean plus/minus half the direct contrast",
-            "no_edit": "zero utility; chosen when no candidate exceeds 1e-10",
-            "ties": "uniform over candidates within absolute 1e-10 of the maximum",
-            "decision_outcomes": "pooled direct-m0 raw-count effects",
-            "aggregation": "backgrounds within target cell, target cells within locus, then loci",
-            "bootstrap": {"unit": "complete locus", "replicates": 50000, "seed": 20260921},
-        },
-        {"predictions": predictions, "choices": choices, "groups": groups},
-        {
-            "predictions": (["ID"], ["truth_hepg2", "truth_k562"]),
-            "choices": (["background_id", "target_cell", "ID"], []),
-            "groups": (["unit_id"], []),
-        },
-    )
 
 
 def rescore(task: str, tables: dict[str, pd.DataFrame], protocol: dict, *, cache_dir=None) -> dict:
@@ -353,18 +228,18 @@ def rescore(task: str, tables: dict[str, pd.DataFrame], protocol: dict, *, cache
         raise ValueError(f"{task}: expected evidence tables {sorted(names)}")
     data = datasets.load(task, cache_dir)
     if task in {"opensplice", "context"}:
-        metric, expected_protocol, expected, identities = _correlation(task, data, tables)
+        result, identities = _correlation(task, data, tables)
     else:
         function = {
             "background": _background,
             "repair_percentile": _repair,
             "cell_selective": _selective,
         }[task]
-        metric, expected_protocol, expected, identities = function(data, tables)
-    for name, frame in expected.items():
+        result, identities = function(data, tables)
+    for name, frame in result.tables.items():
         keys, exact = identities[name]
         _compare(tables[name], frame, keys, f"{task}/{name}", exact=exact)
-    _protocol(protocol, expected_protocol)
+    _protocol(protocol, result.details)
     checked = [
         "Complete frozen cohort identifiers and biological group membership",
         "Frozen experimental measurements from checksum-verified benchmark data",
@@ -383,4 +258,4 @@ def rescore(task: str, tables: dict[str, pd.DataFrame], protocol: dict, *, cache
         checked.append(
             "Complete candidate pools, uniform tied choices, no-edit decisions and measured utility reconstructed"
         )
-    return {"metric": metric, "checked": checked}
+    return {"metric": result.metric, "checked": checked}

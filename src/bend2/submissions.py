@@ -577,7 +577,7 @@ def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=F
         review = validate_review(review_path, data) if review_path.is_file() else None
         if review is None and not preview:
             raise ValueError(
-                f"Missing trusted rescoring review for {path.name}; run bend2 rescore-submission "
+                f"Missing trusted rescoring review for {path.name}; run bend2 admin rescore-submission "
                 "before publication, or use --preview for an unreviewed local preview"
             )
         if preview:

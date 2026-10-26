@@ -1,7 +1,5 @@
 """Predict how an intervention's effect changes between genetic backgrounds."""
 
-import pandas as pd
-
 from bend2._tasks import TaskResult
 from bend2._tasks._siraj import BACKGROUND_POSITION, paired_backgrounds
 from bend2.readouts import PROTOCOL, macro_spearman, siraj_predictions
@@ -30,10 +28,18 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     predictions = states.pivot(index=key, columns="state", values=["truth", "prediction"]).dropna()
     predictions.columns = [f"{metric}_{state}" for metric, state in predictions.columns]
     predictions = predictions.reset_index()
+    predictions["fold"] = predictions.unit_id.map(per_cell.groupby("unit_id").fold.first())
+    return score(predictions)
+
+
+def score(predictions):
+    """Score complete paired states as A-minus-R effect contrasts."""
+    predictions = predictions.copy()
+    folds = predictions.pop("fold")
     predictions["y_true"] = predictions.truth_A - predictions.truth_R
     predictions["y_pred"] = predictions.prediction_A - predictions.prediction_R
     predictions["distance_bp"] = (predictions.mutation_position - BACKGROUND_POSITION).abs()
-    predictions["fold"] = predictions.unit_id.map(per_cell.groupby("unit_id").fold.first())
+    predictions["fold"] = folds
     metric, groups = macro_spearman(predictions, "unit_id", replicates=10000, seed=20260826)
     return TaskResult(
         "background",
@@ -44,7 +50,7 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
             "target": "A-minus-R difference in mean two-cell effect",
             "n_pairs": len(predictions),
             "n_groups": len(groups),
-            "n_defined_groups": int(pd.notna(groups.spearman).sum()),
+            "n_defined_groups": int(groups.spearman.notna().sum()),
             "bootstrap": {"unit": "regulatory element", "replicates": 10000, "seed": 20260826},
         },
         {"predictions": predictions, "groups": groups},

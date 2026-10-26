@@ -87,9 +87,24 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     prediction = ridge_grid(x_source, labels[source], x_candidate, [PENALTIES[best]])[0]
     predictions = pd.DataFrame(prediction, columns=CELLS)
     predictions.insert(0, "id", population.loc[candidate, "id"].to_numpy())
+    return score(data, predictions, losses)
+
+
+def score(data, predictions, losses):
+    """Select from predicted profiles, then score against held-out activities.
+
+    Evaluation and evidence review use this same frozen decision and scoring
+    procedure. Only the readout fit supplies the validation losses.
+    """
+    population = data["population"].query('split != "excluded_source_family"')
+    train = population.split.eq("train")
+    validation = population.split.eq("validation")
+    source = train | validation
+    candidate = population.population.eq("candidate")
+    best = int(np.argmin(losses))
     candidates = population.loc[candidate].sort_values("id")
     ids = candidates.id.tolist()
-    prediction = predictions.set_index("id").loc[ids, CELLS].to_numpy()
+    prediction = predictions.set_index("id").loc[ids, CELLS].to_numpy(dtype=float)
 
     # Store every selection before consulting the held-out candidate activities.
     selections, requests = [], []

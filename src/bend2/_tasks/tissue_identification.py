@@ -101,18 +101,37 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     eigenvalues = np.maximum(eigenvalues, 0)
     projected = vectors.T @ (x_train.T @ y_train if primal else y_train)
     validation_basis = x_validation if primal else x_validation @ x_train.T
-    losses, selected, best_coef = [], None, None
+    losses = []
     for penalty in PENALTIES:
         coef = vectors @ (projected / (eigenvalues[:, None] + penalty))
-        loss = float(np.mean((validation_basis @ coef - y_validation) ** 2))
-        losses.append(loss)
-        if selected is None or loss < losses[selected] - 1e-12:
-            selected, best_coef = len(losses) - 1, coef
+        losses.append(float(np.mean((validation_basis @ coef - y_validation) ** 2)))
+    selected = select_penalty(losses)
+    best_coef = vectors @ (projected / (eigenvalues[:, None] + PENALTIES[selected]))
     if not primal:
         best_coef = x_train.T @ best_coef
     prediction = target_scaler.inverse_transform(
         feature_scaler.transform(values[row[test]]) @ best_coef
     )
+    return summarize(targets, test, prediction, losses)
+
+
+def select_penalty(losses):
+    """Choose the first (stronger) penalty when losses differ by at most 1e-12."""
+    selected = 0
+    for index in range(1, len(losses)):
+        if losses[index] < losses[selected] - 1e-12:
+            selected = index
+    return selected
+
+
+def summarize(targets, test, prediction, losses):
+    """Build the complete endpoint from predictions and trusted target arrays.
+
+    This shared evaluation/review path needs neither sequences nor a genome.
+    """
+    train, validation = targets["train"], targets["validation"]
+    truth = np.asarray(targets["truth"], dtype=float)
+    selected = select_penalty(losses)
     point, interval, invalid, correlations, credit, draws = score(prediction, truth[test])
     tissues = list(targets["tissues"])
     genes = np.asarray(targets["gene_ids"])[test]

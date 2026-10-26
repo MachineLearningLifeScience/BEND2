@@ -24,7 +24,9 @@ python -m pip install -e .
 Keep the public interface small. Model-specific frameworks belong in optional
 adapters or examples. The default installation should not require a deep
 learning framework, model weights, cluster tooling, or private storage.
-Examples must run from an installed package and avoid developer-machine paths.
+Examples live in `src/bend2/_examples/`. `bend2 init` copies those exact files
+from the installed package; keep each example in that one place. They must
+avoid developer-machine paths and load model weights only on first inference.
 
 Keep automated checks few and focused on core evaluation and evidence integrity. For a
 behavior change, exercise the affected path with a compact example; do not
@@ -40,6 +42,10 @@ silently change any of them. A proposed scientific change needs a clear
 protocol description and an explicit decision about comparability with
 existing results.
 
+Define each task's scoring in its task module, shared by evaluation and evidence
+review. Review code independently validates the cohort, labels and submitted
+evidence before accepting the shared scorer's result.
+
 Keep labels out of model adapters. Keep candidate measurements separate from
 selection. Record checkpoint and training-data declarations, and retain the
 source attribution for included data. Report missing tasks as missing.
@@ -51,7 +57,7 @@ review branch.
 ## Keep the repository usable
 
 - `src/bend2/`: the installable package and task implementations.
-- `examples/`: small, complete examples people can adapt.
+- `src/bend2/_examples/`: the editable adapters used by `bend2 init`.
 - `docs/`: model, task, and submission guidance.
 - `submissions/`: contributor result records.
 - `reviews/`: maintainer-reviewed rescoring and per-task reproduction records.

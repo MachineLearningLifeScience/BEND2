@@ -29,7 +29,9 @@ result = evaluate(model, tasks="atlas_profile", output="results/my-model")
 
 For command-line use, save the function and this `model` variable in a Python
 file, then run `bend2 run my_model.py --tasks atlas_profile`. `bend2 init
-my_model.py` creates a complete starting file.
+my_model.py` copies the [complete custom example](../src/bend2/_examples/custom.py)
+from the installed package. Edit that file; it is ordinary Python, not a plugin
+that must be registered.
 
 Return one fixed-width, finite vector per sequence in the original order.
 Convert framework tensors to CPU NumPy arrays before returning. Load your
@@ -123,31 +125,17 @@ Install the optional runtime in the same environment:
 python -m pip install "bend2[huggingface] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
 ```
 
-This complete example runs a pinned small DNA model on Atlas:
-
-```python
-from bend2 import evaluate
-from bend2.huggingface import model as huggingface_model
-
-model = huggingface_model(
-    "LongSafari/hyenadna-tiny-1k-seqlen-hf",
-    revision="e8c1effa8673814e257e627d2e1eda9ea5a373f6",
-    training_data=(
-        "Human reference genome hg38; next-nucleotide pretraining; "
-        "no additional fine-tuning"
-    ),
-    device="cpu",
-    trust_remote_code=True,
-)
-result = evaluate(model, tasks="atlas_profile", output="results/hyenadna")
-```
-
-Generate the same editable example directly from the installed package:
+Generate the [pinned HyenaDNA example](../src/bend2/_examples/huggingface.py)
+and run it on Atlas:
 
 ```bash
 bend2 init hyenadna.py --template huggingface
 bend2 run hyenadna.py --tasks atlas_profile --output results/hyenadna
 ```
+
+The generated file calls `bend2.huggingface.model(...)`. You can use that factory
+directly in a notebook, or edit the checkpoint, revision and declarations to
+connect another compatible encoder.
 
 Weights download on first use. HyenaDNA requires custom Python from the pinned
 checkpoint, which the explicit `trust_remote_code=True` enables. Use

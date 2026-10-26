@@ -6,6 +6,11 @@ from bend2.readouts import PROTOCOL, macro_spearman, siraj_predictions
 
 def run(data, embeddings=None, probabilities=None, *, shared=None):
     predictions = siraj_predictions(data, embeddings, shared, "context")
+    return score(predictions)
+
+
+def score(predictions):
+    """Aggregate held-out contrasts using the fixed element-level protocol."""
     metric, groups = macro_spearman(predictions, "unit_id", replicates=10000, seed=20260825)
     return TaskResult(
         "context",

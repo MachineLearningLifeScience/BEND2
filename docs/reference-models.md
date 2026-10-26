@@ -12,8 +12,10 @@ bend2 init ntv3.py --template ntv3-prior
 bend2 run ntv3.py --tasks prior --batch-size 8 --output results/ntv3-paper-prior
 ```
 
-Both starter adapters ship with the installed package. Creating them does not
-download weights and never overwrites an existing file. Edit the generated file
+The [DNABERT-2](../src/bend2/_examples/dnabert2.py) and
+[NTv3](../src/bend2/_examples/ntv3_prior.py) examples are the exact files shipped
+with the package and copied by `init`. Creating them does not download weights
+and never overwrites an existing file. Edit the generated file
 to select a GPU or another supported precision before running it. NTv3 may
 require acceptance of its checkpoint terms, as described below.
 

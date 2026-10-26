@@ -147,11 +147,10 @@ def _atlas(tables, protocol, cache_dir):
     data = datasets.load("atlas_profile", cache_dir)
     population = data["population"].query('split != "excluded_source_family"')
     candidates = population.loc[population.population.eq("candidate")].sort_values("id")
-    ids = candidates.id.tolist()
     submitted = tables["predictions"]
     _columns(submitted, ["id", *atlas_profile.CELLS], "atlas_profile.predictions")
     submitted = _align(submitted, candidates, ["id"], "atlas_profile.predictions")
-    prediction = _numbers(submitted, atlas_profile.CELLS, "atlas_profile.predictions")
+    _numbers(submitted, atlas_profile.CELLS, "atlas_profile.predictions")
 
     validation = tables["validation"]
     _columns(validation, ["lambda", "mse"], "atlas_profile.validation")
@@ -164,94 +163,22 @@ def _atlas(tables, protocol, cache_dir):
     losses = _numbers(validation, ["mse"], "atlas_profile.validation")[:, 0]
     if (losses < 0).any():
         raise ValueError("Atlas validation MSE must be nonnegative")
-    selected = int(losses.argmin())
-
-    choices, requests = [], []
-    # The decision is reconstructed solely from prediction values and the
-    # trusted requests. Candidate outcomes are consulted afterwards.
-    for request in data["programs"].itertuples():
-        on = [atlas_profile.CELLS.index(cell) for cell in request.on_cells.split("|")]
-        off = [atlas_profile.CELLS.index(cell) for cell in request.off_cells.split("|")]
-        utility = atlas_profile.utility(prediction, on, off)
-        chosen = np.lexsort((np.asarray(ids), -utility))[:10]
-        intended = (
-            candidates.program_annotations.fillna("")
-            .map(lambda annotation: request.program in annotation.split(";;"))
-            .to_numpy()
-        )
-        if intended.sum() < 10:
-            raise ValueError("The trusted Atlas comparison cohort has fewer than ten candidates")
-        for rank, index in enumerate(chosen, 1):
-            choices.append(
-                {
-                    "program": request.program,
-                    "rank": rank,
-                    "id": ids[index],
-                    "selection_score": float(utility[index]),
-                }
-            )
-        requests.append((request.program, on, off, chosen, intended))
+    scored = atlas_profile.score(data, submitted, losses)
     _table(
         tables["choices"],
-        pd.DataFrame(choices),
+        scored.tables["choices"],
         "atlas_profile.choices",
         keys=["program", "rank"],
     )
-    measured = [atlas_profile.activities(data["candidate_activities"], ids, rep) for rep in (1, 2)]
-    scores = []
-    for name, on, off, chosen, intended in requests:
-        for replicate, values in enumerate(measured, 1):
-            utility = atlas_profile.utility(values, on, off)
-            selected_mean, random_mean = (
-                float(utility[chosen].mean()),
-                float(utility[intended].mean()),
-            )
-            scores.append(
-                {
-                    "program": name,
-                    "replicate": replicate,
-                    "selected_utility": selected_mean,
-                    "intended_random_utility": random_mean,
-                    "gain": selected_mean - random_mean,
-                }
-            )
-    scores = pd.DataFrame(scores)
-    _table(tables["requests"], scores, "atlas_profile.requests", keys=["program", "replicate"])
-    repeats = scores.groupby("replicate").gain.mean()
-    _details(
-        protocol,
-        {
-            "cells": atlas_profile.CELLS,
-            "n_source_train": int(population.split.eq("train").sum()),
-            "n_source_validation": int(population.split.eq("validation").sum()),
-            "n_source_refit": int(population.split.isin(["train", "validation"]).sum()),
-            "n_candidates": len(candidates),
-            "n_requests": len(requests),
-            "n_selected_per_request": 10,
-            "ridge_lambda": float(atlas_profile.PENALTIES[selected]),
-            "source_validation_mse": float(losses[selected]),
-            "penalty_grid": atlas_profile.PENALTIES.tolist(),
-            "penalty_criterion": "unweighted 12-cell validation MSE",
-            "feature_scaling": "source z-score, remove std<=1e-7, divide by sqrt retained dimension",
-            "refit": "source train+validation only; recompute source scaling",
-            "target": "published35-normalized log2 RNA/DNA; mean of source replicates",
-            "selector": "minimum ON activity minus max(0, maximum OFF activity)",
-            "tie_break": "ascending candidate ID",
-            "comparison": "intent-matched author design cohort",
-            "aggregation": "mean requests per replicate, then mean of two replicates",
-            "replicate_values": repeats.tolist(),
-            "uncertainty": "descriptive replicates; no bootstrap CI",
-            "candidate_labels_used_for_fitting": False,
-        },
-        "atlas_profile.protocol",
+    _table(
+        tables["requests"],
+        scored.tables["requests"],
+        "atlas_profile.requests",
+        keys=["program", "replicate"],
     )
+    _details(protocol, scored.details, "atlas_profile.protocol")
     return {
-        "metric": {
-            "name": "held_u_minus_intended_random",
-            "value": float(repeats.mean()),
-            "unit": "log₂ activity",
-            "direction": "higher",
-        },
+        "metric": scored.metric,
         "checked": [
             "All 2,411 frozen candidate IDs and finite 12-cell predictions",
             "All 16 requests, ten selections per request and ascending-ID ties",
@@ -300,68 +227,23 @@ def _tissue(tables, protocol, cache_dir):
     losses = _numbers(validation, ["standardized_mse"], "tissue_identification.validation")[:, 0]
     if (losses < 0).any():
         raise ValueError("GTEx validation MSE must be nonnegative")
-    selected = 0
-    for index in range(1, len(losses)):
-        if losses[index] < losses[selected] - 1e-12:
-            selected = index
-    # Check inexpensive declarations before the exact 10,000-resample scorer.
-    _details(
-        protocol,
-        {
-            "n_training_genes": len(targets["train"]),
-            "n_validation_genes": len(targets["validation"]),
-            "n_test_genes": len(test),
-            "n_tissues": len(tissues),
-            "input": "131072 bp reference-forward TSS-centered sequence",
-            "target": "log1p TPM",
-            "readout": "51 ridge heads with a shared penalty",
-            "ridge_alpha": tissue_identification.PENALTIES[selected],
-            "penalty_grid": tissue_identification.PENALTIES,
-            "penalty_criterion": "validation standardized MSE",
-            "penalty_ties": "within 1e-12, choose stronger penalty",
-            "scaling": "feature and target StandardScaler fitted on training genes only",
-            "refit": "none; retain training-only membership",
-            "retrieval": "Spearman between predicted and measured profiles across common test genes",
-            "ties": "fractional credit within absolute 1e-12",
-            "chance_percent": 100 / len(tissues),
-            "bootstrap": {
-                "unit": "whole gene",
-                "replicates": 10000,
-                "seed": 20260917,
-                "ranks": "recomputed exactly for each sample, including multiplicity ties",
-                "invalid_handling": "omit constant-profile draws and report their count",
-            },
-        },
-        "tissue_identification.protocol",
-    )
-    point, interval, invalid, correlations, credit, draws = tissue_identification.score(
-        prediction, truth
-    )
-    queries = pd.DataFrame(correlations, columns=tissues)
-    queries.insert(0, "predicted_tissue", tissues)
-    queries["top1_credit"] = credit
+    scored = tissue_identification.summarize(targets, test, prediction, losses)
     _table(
         tables["tissues"],
-        queries,
+        scored.tables["tissues"],
         "tissue_identification.tissues",
         keys=["predicted_tissue"],
         allow_nan=True,
     )
     _table(
         tables["bootstrap"],
-        pd.DataFrame({"retrieval_top1_percent": 100 * draws}),
+        scored.tables["bootstrap"],
         "tissue_identification.bootstrap",
         allow_nan=True,
     )
-    _details(protocol, {"invalid_bootstrap_replicates": invalid}, "tissue_identification.protocol")
+    _details(protocol, scored.details, "tissue_identification.protocol")
     return {
-        "metric": {
-            "name": "retrieval_top1",
-            "value": float(100 * point) if np.isfinite(point) else None,
-            "unit": "%",
-            "direction": "higher",
-            "ci95": [100 * value for value in interval] if interval else None,
-        },
+        "metric": scored.metric,
         "checked": [
             "All 5,782 common test genes, 51 tissues and checksum-verified expression targets",
             "Full tissue-retrieval matrix and fractional top-one tie credit",

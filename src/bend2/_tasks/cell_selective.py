@@ -53,9 +53,15 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     predictions["pred_hepg2"] = predictions.ID.map(mean) + predictions.ID.map(contrast) / 2
     predictions["pred_k562"] = predictions.ID.map(mean) - predictions.ID.map(contrast) / 2
     predictions["fold"] = predictions.unit_id.map(per_cell.groupby("unit_id").fold.first())
+    return score(predictions, data["selective_outcomes"])
+
+
+def score(predictions, outcomes):
+    """Freeze predicted choices, then measure their utility across complete loci."""
+    predictions = predictions.copy()
     # No decision outcomes are referenced until every nomination is fixed.
     choices = nominate(predictions)
-    measured = data["selective_outcomes"].set_index("ID")
+    measured = outcomes.set_index("ID")
     for cell in ("hepg2", "k562"):
         predictions[f"truth_{cell}"] = predictions.ID.map(measured[f"truth_{cell}"])
     if not np.isfinite(predictions[["truth_hepg2", "truth_k562"]].to_numpy()).all():
@@ -94,7 +100,7 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
             "group": "unit_id",
             "n_candidates": len(predictions),
             "n_groups": len(groups),
-            "n_backgrounds": predictions.background_id.nunique(),
+            "n_backgrounds": int(predictions.background_id.nunique()),
             "lambda": 1.0,
             "selector": "predicted target effect minus absolute other-cell effect",
             "readout_combination": "per-cell prediction mean plus/minus half the direct contrast",
