@@ -1,193 +1,154 @@
 # Connect your model
 
-Provide a function that accepts DNA strings and returns NumPy arrays. The
-function can call a model in PyTorch, JAX, TensorFlow, or an inference service.
+An adapter supplies embeddings, nucleotide probabilities, or both. It can use
+any model framework or inference service that returns NumPy arrays.
 
-## Frozen embeddings
+## Embeddings
+
+In a notebook or script:
 
 ```python
 import numpy as np
-
-def embed(sequences: list[str]) -> np.ndarray:
-    return your_encoder(sequences)  # shape: [len(sequences), feature_dimension]
-```
-
-Connect it directly:
-
-```python
 from bend2 import Model, evaluate
 
-model = Model(
-    "My encoder",
-    embed=embed,
-    revision="checkpoint-v1",
-)
+def embed(sequences: list[str]) -> np.ndarray:
+    return your_encoder(sequences)  # shape: [batch, features]
+
+model = Model("My encoder", embed=embed, revision="checkpoint-v1")
 result = evaluate(model, tasks="atlas_profile", output="results/my-model")
 ```
 
-For command-line use, save the function and this `model` variable in a Python
-file, then run `bend2 run my_model.py --tasks atlas_profile`. `bend2 init
-my_model.py` copies the [custom example](../src/bend2/_examples/custom.py)
-from the installed package.
+For CLI use, save the function and `model` variable in `my_model.py`, then run
+`bend2 run my_model.py --tasks atlas_profile`. `bend2 init my_model.py` creates
+an editable [example](../src/bend2/_examples/custom.py).
 
-Return one fixed-width, finite vector per sequence in the original order.
-Convert framework tensors to CPU NumPy arrays before returning. Load your
-checkpoint once, either when creating the adapter or on the first call. Use
-evaluation mode and disable gradients.
+Return one finite, fixed-width CPU NumPy vector per sequence, in input order.
+Load weights once, disable gradients and use evaluation mode. Outputs must be
+independent of batch size and ordering. Use `bend2 --debug run ...` for a full
+traceback if an adapter fails.
 
-If an adapter fails, BEND reports the task and batch. Invalid outputs include
-the returned type, shape or dtype and the expected format. Use
-`bend2 --debug run my_model.py --tasks atlas_profile` for the full Python traceback.
+Use the complete supplied sequence without truncation or extra genomic flanks.
+Keep labels out of the adapter. BEND fits the task readout on training labels
+and evaluates held-out examples. For mutation tasks it computes
+mutant-minus-reference features from the individual sequence embeddings.
 
-BEND fits the task's readout on training labels and evaluates held-out examples.
-The embedding model remains frozen. For paired mutation tasks, return a
-representation of each sequence; BEND computes mutant-minus-reference features.
+Record the output layer, pooling, padding treatment, strand handling and any
+projection. Exclude padding and special tokens from mean pooling. Declare
+reverse-complement ensembling if used. BEND records feature width, which affects
+fitted readout capacity.
 
-### Preserve the input
+## Model details
 
-Use the complete sequence provided. Do not truncate it, add genomic
-flanks, or look up labels by sequence identity. If your model cannot represent
-an assay's inputs, choose another task or report that limitation.
-
-Pooling is part of the model definition. Record the layer, token pooling,
-padding treatment, strand handling, projections, precision, and other
-preprocessing. Exclude padding and special tokens when averaging sequence
-representations. If you use reverse-complement ensembling, declare it and
-apply it consistently.
-
-BEND uses and records the returned feature dimension. Readout capacity therefore
-varies with embedding width.
-
-### Describe the model once
-
-Keep these declarations with your adapter:
+Keep the following fields with the `Model`:
 
 | Field | What to record |
 |---|---|
-| `name` | A useful display name, including the model size or variant |
-| `revision` | An immutable checkpoint revision, release identifier, or weight hash |
+| `revision` | Immutable checkpoint revision, release identifier or weight hash |
 | `training_data` | Pretraining and subsequent training data, including possible benchmark exposure |
 | `representation` | Output layer and any projection or feature transformation |
-| `pooling` | How sequence or token outputs become one vector |
-| `source` | Model, checkpoint, or implementation URL (needed for submission) |
-| `inference_config` | JSON object of numerical/preprocessing options such as precision, device and windowing |
-| `unsupported_tasks` | Optional mapping of task IDs to reasons, for example a known context-length limit |
+| `pooling` | How token or sequence outputs become one vector |
+| `source` | Model, checkpoint or implementation URL |
+| `inference_config` | JSON object of options affecting outputs, such as precision, device and preprocessing |
 
-Local evaluation requires a name and one callable. Set `revision` to enable
-resume and cache reuse. Submissions require training-data declarations and,
-for embedding tasks, the representation and pooling.
+Local evaluation needs a name and a callable. Set `revision` to enable resume
+and cache reuse; a moving branch such as `main` is not a checkpoint identity.
+Update the revision when weights or external helper code change. Record
+closure parameters and other output-affecting settings in `inference_config`.
+Submissions also require training-data declarations, a source URL and a description
+of the representation and pooling, or the probability interface.
 
-Examples: `revision="e8c1effa8673814e257e627d2e1eda9ea5a373f6"`
-for a pinned repository checkpoint, or `revision="sha256:..."` for your own
-weights. A moving branch such as `main` is not a checkpoint identity.
+Declare context limits with, for example,
+`unsupported_tasks={"tissue_identification": "Maximum context is 1,024 bases"}`.
+`--tasks all` skips these tasks; requesting one by name fails before inference.
 
-Changing weights, preprocessing, or a remote model endpoint requires a new
-revision and a new run.
+## Nucleotide probabilities
 
-Declare known task limits before a long run, for example
-`unsupported_tasks={"tissue_identification": "This encoder cannot accept 131,072 bases"}`.
-`--tasks all` records and skips these tasks. Requesting one by name fails before
-downloads or inference.
-
-### Inference configuration and reuse
-
-For example, set `inference_config={"precision": "float32", "device": "cuda:0"}`
-when these affect your implementation. Include closure parameters and helper
-configuration that can alter outputs. Cache reuse requires the same checkpoint,
-representation, pooling, callback/class source, local callable helpers, numerical
-runtime and declared settings. Change the revision when external helper code or
-weights change. BEND cannot infer changes to arbitrary mutable Python state.
-
-Representations must be independent of batch size and input ordering. Disable
-training-time randomness, padding-dependent pooling and stateful batch statistics.
-Changing batch size, display name, source link or training-data description can
-reuse completed inference; changing an inference setting cannot.
-
-## Reference model adapters
-
-The [reference adapters](reference-models.md) provide DNABERT-2 embeddings and
-NTv3 prior probabilities with specified checkpoints, readouts and precision.
-
-## Hugging Face models
-
-Install the optional runtime in the same environment:
-
-```bash
-python -m pip install "bend2[huggingface] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-```
-
-Generate the [pinned HyenaDNA example](../src/bend2/_examples/huggingface.py)
-and run it on Atlas:
-
-```bash
-bend2 init hyenadna.py --template huggingface
-bend2 run hyenadna.py --tasks atlas_profile --output results/hyenadna
-```
-
-The generated file calls `bend2.huggingface.model(...)`. You can use that factory
-directly in a notebook, or edit the checkpoint, revision and declarations to
-connect another compatible encoder.
-
-Weights download on first use. HyenaDNA requires custom Python from the pinned
-checkpoint, enabled by `trust_remote_code=True`. Use
-`device="cuda:0"` for an NVIDIA GPU.
-
-This integration uses `AutoModel.last_hidden_state` and averages non-special
-tokens in float32. It groups equal token lengths so no padding is needed, and
-rejects inputs beyond the model's context limit. Supply `max_tokens` when a
-checkpoint does not declare its limit.
-The small example fits Atlas inputs; it cannot process the full GTEx windows.
-Review the declared pooling for your own checkpoint before using it.
-
-## Native nucleotide probabilities
-
-The sequence-prior task uses a different interface:
+The `prior` task needs probabilities at a supplied zero-based position:
 
 ```python
-import numpy as np
-
-def predict_base_probabilities(
-    sequences: list[str], positions: list[int]
-) -> np.ndarray:
+def probabilities(sequences: list[str], positions: list[int]) -> np.ndarray:
     return your_conditional_probabilities(sequences, positions)
-    # shape: [len(sequences), 4], columns A, C, G, T
+    # shape: [batch, 4], columns A, C, G, T
+
+model = Model(
+    "My prior", probabilities=probabilities, revision="checkpoint-v1",
+    probability_interface="Describe the conditional readout",
+)
 ```
 
-Pass it as `Model(..., probabilities=predict_base_probabilities,
-probability_interface="Describe the conditional readout")`, with the same
-checkpoint and training-data declarations. You may provide both `embed` and
-`probabilities` in one `Model`, or just the interface your model supports.
+The target base is replaced by `N` before the callback. Return finite,
+nonnegative probabilities summing to one; convert logits in the adapter.
+BEND does not renormalize or clip them. A `Model` can provide both callbacks.
 
-The target position is replaced by `N` before the function is called. Return
-finite, nonnegative probabilities that sum to one. Convert logits in your
-adapter. BEND uses the returned probabilities without renormalizing or clipping.
+For repeated queries, return `[batch, queries, 4]` to average individual query
+losses within each window before the genomic-block bootstrap. To ensemble
+probabilities instead, average them in the adapter and return `[batch, 4]`.
+These estimators differ; record which you use in `probability_interface`.
 
-For repeated queries, you may return `[batch, queries, 4]`. BEND then averages
-the individual query losses within each window before the genomic-block
-bootstrap, matching the paper's two-query NTv3 interface. If your intended
-method ensembles probabilities instead, average them in your adapter and
-return `[batch, 4]`. These are different estimators; declare which you use.
-The saved results record query count, aggregation and accuracy tie handling.
+Use the task's sequence context. A left-context-only distribution differs from
+one conditioned on both flanks. Declare additional masking, calibration or
+denoising. Native functional heads, such as expression or splice predictors,
+need task-specific readouts; the package does not yet provide adapters for them.
 
-The probability readout must use the task's sequence context. A left-context-only
-distribution is not equivalent to one conditioned on both flanks. Record the
-probability interface and any calibration, denoising, or additional masking.
+## Included adapters
 
-## Native functional heads
+Install the optional runtime and copy an adapter:
 
-The embedding workflow uses fitted readouts. Native splice, expression and
-other functional heads require task-specific inputs and readouts; the package
-does not yet provide adapters for them.
+```bash
+pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+bend2 init dnabert2.py --template dnabert2
+bend2 run dnabert2.py --tasks atlas_profile --output results/dnabert2
+```
 
-## Resource use and reproducibility
+| Template | Python factory | Interface |
+|---|---|---|
+| [`dnabert2`](../src/bend2/_examples/dnabert2.py) | `bend2.reference_models.dnabert2()` | Embeddings |
+| [`ntv3-prior`](../src/bend2/_examples/ntv3_prior.py) | `bend2.reference_models.ntv3_prior()` | Probabilities |
+| [`huggingface`](../src/bend2/_examples/huggingface.py) | `bend2.huggingface.model(...)` | Embeddings |
 
-Start with `atlas_profile` before a large assay. Choose a batch size your
-encoder can handle. Keep model dependencies in your environment; the core
-package has no mandatory deep learning framework.
+Weights load on the first batch. Edit the generated file to choose a device;
+`device="cuda:0"` selects a compatible GPU. Reference adapters also support
+`precision="bfloat16"` on compatible GPUs; the default is float32 on CPU.
+Checkpoint and code revisions are pinned in the adapters and recorded in results.
 
-Repeated sequences share cached embeddings, including across the four Siraj
-tasks. Keep the caches, model revision and preprocessing when continuing a run.
+### DNABERT-2
 
-Adapter code runs in your Python process, including any remote code loaded by
-the checkpoint. Results record your model declarations; training-data exposure
-and remote model identity still depend on those declarations.
+DNABERT-2 returns 768 features from the mean final-layer state over DNA tokens,
+excluding padding and special tokens. It accepts at most 512 tokens, so it
+cannot run tissue identification. This adapter provides embeddings only: BPE
+token probabilities do not directly give probabilities for one hidden base.
+It uses the released PyTorch attention path and pools in float32. The paper's
+GPU extraction pooled in the hidden-state dtype; matching archived scores
+requires matching that reduction precision too.
+
+### NTv3 prior
+
+Run `bend2 init ntv3.py --template ntv3-prior`, then
+`bend2 run ntv3.py --tasks prior --output results/ntv3`. Accept the checkpoint's
+terms on Hugging Face and authenticate with `hf auth login` if required.
+Use `size="650m"` for the larger checkpoint; the default is `"100m"`.
+
+The default `readout="paper"` uses two fixed queries for each of the 512 benchmark
+windows. Each query masks the target plus 144 of the remaining 1,199 bases.
+The complete window is padded to a multiple of 128; target logits are normalized
+over A/C/G/T in float64. The adapter returns `[batch, 2, 4]` and BEND averages
+query losses. Queries match Table 1 and are independent of batch size and order.
+
+`readout="native"` masks only the target and returns `[batch, 4]`. It uses
+different input conditions from the paper's two-query procedure. Neither readout
+fits a head or calibrates against benchmark labels. See the
+[implementation](../src/bend2/reference_models.py) for pinned checkpoints,
+masking and precision settings.
+
+### Hugging Face / HyenaDNA
+
+The `huggingface` template provides a pinned HyenaDNA example. It averages
+non-special `AutoModel.last_hidden_state` tokens in float32, groups equal token
+lengths to avoid padding and rejects inputs beyond the context limit. Set
+`max_tokens` if the checkpoint does not declare a limit. The example fits Atlas
+but not GTEx's 131,072-base windows.
+
+To use another compatible checkpoint, edit its name, immutable revision and
+training-data declaration. `trust_remote_code=True` loads Python code from the
+pinned checkpoint. For this adapter alone, the smaller `[huggingface]` extra
+can replace `[reference]` in the install command.

@@ -3,23 +3,12 @@
 BEND 2.0 includes the smaller datasets and downloads larger source files when
 needed. Your adapter loads or downloads model weights.
 
-| Tasks | Included data | First additional download |
-|---|---|---|
-| Sequence priors | 1,536 reference windows: 1,024 baseline-training and 512 evaluation | None |
-| Atlas profile control | Frozen source/candidate split and two measured replicates across 12 cell types | None |
-| Regulatory context, background sensitivity, repair, cell-selective design | Exact numeric reference and pooled-count design outcomes | Siraj release: 93.3 MB |
-| OpenSplice | Dataset manifest | OpenSplice version 5: 425.5 MB |
-| Tissue identification | 19,282 genes, 51 tissue targets, and frozen splits | hg38 reference genome: 835.4 MB |
-
-The bundled datasets total 31.1 MB before wheel compression: reference
-sequences, measured targets and split definitions.
-
 ## Cache and offline use
 
-The default cache is `~/.cache/bend2`. Pass `cache_dir="/scratch/bend2"` in Python
-or set `BEND2_CACHE` to choose another location. Large sources are stored under
-their content digest; canonical tables use a digest of their scientific columns.
-Repeated runs reuse these files. A checksum mismatch stops the run.
+The default cache is `~/.cache/bend2`. Use `--cache-dir /scratch/bend2`,
+`cache_dir="/scratch/bend2"` in Python, or `BEND2_CACHE` to choose another location.
+Keep inference caches to resume interrupted runs; scores and prediction tables
+are saved separately in the result directory.
 
 For a machine without internet access, predownload the following files into one
 directory and set `BEND2_ASSET_DIR` to that directory:
@@ -30,28 +19,14 @@ directory and set `BEND2_ASSET_DIR` to that directory:
 | `siraj.zip` | [Siraj saturation-mutagenesis archive](https://zenodo.org/api/records/15297965/files/data_satmut.zip/content) |
 | `hg38.2bit` | [UCSC hg38 reference genome](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit) |
 
-Only the files needed by your chosen tasks are required. Offline inputs undergo
-the same size and checksum verification as downloads. You can also populate a
-cache on one machine and copy it to another. Install `bend2[genome]` to read the
-GTEx reference windows. These windows are read on demand from the 2bit genome.
+Only the files needed by your tasks are required. Offline files are verified
+like downloads. You can also populate a cache on one machine and copy it to another.
 
-### Inference and readout storage
-
-Embedding and prior caches are separate from datasets. Each successful inference
-batch is committed, so reducing batch size after an interruption retains the work.
-Cache reuse requires the same weights, adapter code and numerical configuration.
-Display metadata and command-line changes do not affect it. Prior values preserve
-float64 probabilities and individual-query shapes. Both caches check stored byte hashes.
-
-Wide intervention readouts write alternate-minus-reference features once to
-`<cache>/readouts/` and access bounded windows while fitting. Temporary files are
-removed when the run ends or raises an exception; a forced process kill may leave a
-`bend2-*` scratch directory that can be deleted once no evaluation is using it.
-Budget roughly `4 × number_of_records × embedding_width` bytes for this scratch
-matrix, in addition to the reusable embedding database. For OpenSplice at 4,096
-features that is about 9.7 GB. Use fast local scratch on a cluster when available.
-The small-feature path retains the original scikit-learn fit; both paths use the
-same groups, features, regularization and solver tolerance.
+For wide embeddings, readout fitting needs temporary disk space under
+`<cache>/readouts/`: roughly `4 × number_of_records × embedding_width` bytes,
+about 9.7 GB for OpenSplice at 4,096 features, in addition to the embedding cache.
+Use fast local scratch when available. After a forced process kill, unused
+`bend2-*` directories in that folder can be deleted.
 
 ## Sources and terms
 
@@ -60,25 +35,13 @@ The [asset manifest](../src/bend2/assets.json) records sizes, checksums, source
 identifiers and the origin of each derived dataset.
 
 **OpenSplice:** [Figshare version 5](https://doi.org/10.6084/m9.figshare.32337414.v5),
-CC BY 4.0. The pinned 425,453,242-byte master table has MD5
-`374443aa36bc1070dfd36318d8e77c59`. Preparation retains 590,104 interventions in
-466 genes. Rebuilding from the source in two pandas/Arrow environments produced
-the same scientific-column hash. Parquet encoding may differ from the research
-cache.
+CC BY 4.0. Preparation retains 590,104 interventions in 466 genes.
 
 **Siraj saturation mutagenesis:** Siraj et al., *Functional dissection of complex
 and molecular trait variants at single nucleotide resolution*,
 [Zenodo 15297965](https://doi.org/10.5281/zenodo.15297965), CC BY-NC 4.0.
-The 93,320,206-byte source ZIP has MD5 `0043848d7658ac5cf402634b9685102e`.
 Preparation preserves 340,584 mutation/cell records across 128 elements; pairing
 HepG2 minus K562 produces 170,292 context records.
-
-The bundled Siraj numeric reference contains original float64 measurements and
-ordered record IDs. CSV parsers can differ by a few ulps. After verifying the
-raw ZIP, preparation requires exact record IDs and reconstructed numeric values
-within `2e-14`, restores the original values, then verifies every scientific
-column including sequences. The tolerance applies only to reconstruction from
-the pinned source.
 
 Cell-selective design uses the separate pooled-count outcomes, not the release's
 posterior mutation effects. The compact table preserves 181,458 identifiers and
@@ -86,9 +49,8 @@ two measured effects. Counts originate from ENCODE
 [ENCFF769XOF](https://www.encodeproject.org/files/ENCFF769XOF/) and
 [ENCFF526SMM](https://www.encodeproject.org/files/ENCFF526SMM/).
 Each effect averages `log2((RNA + 0.5)/(DNA + 0.5))` across five repeats and
-subtracts the parental no-edit construct. Bundling this result avoids
-an 8.95 GB download. Retain Siraj attribution and noncommercial terms for this
-combined derived table, and acknowledge the ENCODE Consortium, producers, and
+subtracts the parental no-edit construct. Retain Siraj attribution and
+noncommercial terms for this combined derived table, and acknowledge the ENCODE Consortium, producers, and
 accessions according to its [data-use policy](https://www.encodeproject.org/help/citing-encode/).
 
 **Atlas of AI-designed enhancers:** Castillo-Hair et al., *Programming human
@@ -105,17 +67,12 @@ separately so readout fitting does not consume candidate outcomes.
 1,200-base windows from [UCSC GRCh38/hg38](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt).
 Its 512 evaluation windows occupy genomic blocks excluded from earlier prior
 panels; this does not imply those sequences were unseen in model pretraining.
-The genome download is the 835,393,456-byte `hg38.2bit`, SHA-256
-`1f67aaa17a77b327738fe750ab37430a85dddf73c7d9189385ad1839259acec0`.
 Reference assembly attribution and upstream terms apply.
 
-The optional NTv3 paper-prior adapter also includes a 69,737-byte query-seed
-table, SHA-256 `7205f435abecec715f8ef23248acbff230bf66b893fb2eb6eb9a591f1f34d3d0`.
-It maps hashes of the 512 masked inputs to their two random seeds. Sequences,
-target bases and outcomes are excluded. The table records its source
-panel and protocol hashes. All 1,024 resulting mask sets match the original
-Table 1 extraction. See [reference models](reference-models.md) for the distinction
-between this two-query readout and native single-mask prediction.
+The NTv3 paper-prior adapter includes query seeds for the 512 masked inputs,
+matching the two-query procedure in Table 1. See the
+[adapter description](models.md#ntv3-prior) for how this differs from single-mask
+prediction. The seed table excludes sequences, target bases and outcomes.
 
 **GTEx tissue identification:** Targets are `log1p(TPM)` from the public
 [GTEx v10 median expression summary](https://gtexportal.org/home/datasets), joined
@@ -126,12 +83,3 @@ current public-data usage guidance. The frozen cohort contains 12,146 training,
 native/reference predictions in the paper remain excluded, leaving the same
 5,782-gene evaluation cohort. Each sequence is a 131,072-base window centered on
 the 1-based TSS, read in reference-forward orientation without strand reversal.
-
-## What is frozen
-
-BEND verifies file checksums and hashes of the prepared data's scientific
-columns. Column hashes cover row order, strings and float64 values, independent
-of Parquet compression, extra columns and dataframe indices. Results record
-these hashes alongside the model identity.
-
-Data preparation and readout definitions follow the paper's review snapshot.

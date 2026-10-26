@@ -4,8 +4,6 @@ Maintainers review the model setup and rescore every submitted task before
 accepting a result. Accepted results are labelled **Contributor evaluated**.
 Tasks independently rerun by a maintainer are labelled **Reproduced by BEND**.
 
-Use `bend2 admin --help` to list the review and website-build commands.
-
 ## Rescore the evidence
 
 Use BEND installed from the publication branch, independently of the contributor's
@@ -18,42 +16,23 @@ bend2 admin rescore-submission submissions/community-IDENTITY.json \
   --cache-dir /path/to/benchmark-cache
 ```
 
-The command reads the ZIP without executing its code. It checks archive hashes
-and protocols, then recomputes scores using the installed benchmark's labels
-and cohorts:
+The command reads the ZIP without executing its code. It checks hashes, protocols,
+cohorts and selection decisions, then recomputes scores and intervals using the
+installed benchmark's labels.
 
-| Task | Independently checked from prediction evidence |
-| --- | --- |
-| Sequence prior | All 512 windows, hidden bases, query probabilities, within-window loss, accuracy and block bootstrap |
-| OpenSplice and context | Complete record IDs, trusted targets, group/fold membership, group correlations and macro bootstrap |
-| Background | Both trusted state means, paired contrasts, fold membership, group correlations and bootstrap |
-| Repair | Frozen requests and candidate menus, direct-swap targets, nominated edits, measured percentile ranks and element bootstrap |
-| Cell-selective design | Full candidate menus, no-edit and tied decisions, trusted measured outcomes, nested aggregation and locus bootstrap |
-| Atlas | All candidate IDs, 16 requests, 10 choices per request, intended comparison cohorts and both measured replicate gains |
-| Tissue identification | Common test genes, trusted expression profiles, tissue retrieval and all 10,000 whole-gene bootstrap draws |
+A receipt is written after all tasks pass. Recomputed metrics must agree
+within an absolute tolerance of `1e-10` in the task's units; selection and
+ranking rules are unchanged.
 
-A receipt is written after all tasks pass. Missing records, duplicates,
-altered labels, incorrect selections or mismatched scores fail the review.
-Undefined groups follow each task's scoring rules. Recomputed metrics must
-agree within an absolute tolerance of `1e-10` in the task's units; selection
-and ranking rules are unchanged.
+Rescoring runs on a CPU and may download source datasets on first use. GTEx
+uses bundled labels and gene IDs; its bootstrap can take several minutes.
 
-Rescoring runs on a CPU. The first intervention review may download the source
-datasets; later reviews use the cache. GTEx uses bundled labels and gene IDs,
-so it needs neither the genome download nor `py2bit`. Its bootstrap can take
-several minutes.
+A change to the contribution or archive requires a new receipt. Rescore to a
+new output path, review the correction, then replace the old receipt while
+preserving any reproduction history.
 
-The receipt records hashes of the contribution, evidence and scorer source,
-along with the tasks checked, recomputed metrics and time. A change to the
-contribution or archive requires a new receipt. Rescore corrections to a new
-output path, review them, then replace the old receipt while preserving any
-reproduction history.
-
-`bend2 admin validate-submission --bundle ...` checks metadata and file integrity
-without rescoring. Rescoring verifies results from the supplied predictions;
-it cannot establish which weights ran, how the readout was fitted, or whether
-labels leaked into training. Validation-loss grids are checked for consistency;
-refitting requires a model rerun.
+Rescoring cannot establish which weights ran, how the readout was fitted, or
+whether labels leaked into training. Checking model execution requires a rerun.
 
 ## Review and accept
 
@@ -72,25 +51,15 @@ on the publication branch. Configure approvals to be dismissed after changes.
 settings. Deploy from the publication branch after merge. Run contributed
 adapters in isolated jobs, outside privileged CI and cluster login nodes.
 
-The website build reads saved receipts and requires one for every community
-record. To preview a PR before review:
-
-```bash
-BEND2_PREVIEW_SUBMISSIONS=1 npm --prefix website run build
-```
-
-PR CI uses this flag. Preview builds label every community row and task
-**Awaiting review**, including entries with a proposed receipt. Push builds
-require matching receipts. Stale or malformed receipts fail either build.
-Paper results and reference-score anchors stay fixed.
+The [website build](../website/README.md) requires a matching receipt for every
+published community record. PR previews label candidates **Awaiting review**.
 
 ## Independently reproduce selected tasks
 
-Rerun reference examples, leading or surprising results, entries with unresolved
-setup questions, and a random sample of other contributions. Select tasks based
-on the question and available compute. Other entries can be accepted after
-rescoring and setup review. Withhold or withdraw entries with unresolved
-material discrepancies, keeping the correction history in their PRs.
+Rerun reference examples, leading or surprising results, entries with setup
+questions, and a random sample of other contributions. Other entries can be
+accepted after rescoring and setup review. Withhold or withdraw entries with
+unresolved material discrepancies, keeping the correction history in their PRs.
 
 After inspecting the adapter and dependencies, run it in an isolated job on
 Lumi or another suitable machine. Use a new result directory and a **fresh
@@ -120,6 +89,3 @@ links the rerun estimate and evidence in the task's details.
 Review the job provenance before attesting to an independent run: files with
 edited metadata can pass the software checks. Training-data contamination remains
 possible even when a rerun agrees.
-
-For scripts, use `bend2.reviews.rescore_submission`, `validate_review` and
-`record_reproduction`. These functions operate on local files.

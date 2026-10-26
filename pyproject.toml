@@ -21,7 +21,7 @@ dev = ["build>=1.2", "twine>=6", "pytest>=8", "ruff>=0.9"]
 
 [project.urls]
 Repository = "https://github.com/yhsure/genomic-bending/tree/benchmark"
-Documentation = "https://github.com/yhsure/genomic-bending/blob/benchmark/docs/quickstart.md"
+Documentation = "https://github.com/yhsure/genomic-bending/blob/benchmark/README.md"
 Issues = "https://github.com/yhsure/genomic-bending/issues"
 
 [project.scripts]

@@ -40,8 +40,7 @@ bend2 run my_model.py --tasks atlas_profile --output results/my-model
 
 Atlas uses 7,657 short sequences and sixteen multi-cell design requests; its
 data are included. To try the composition baseline, run
-`bend2 run composition --tasks atlas_profile` on CPU. Repeat a run command to
-resume it; completed inference batches remain cached.
+`bend2 run composition --tasks atlas_profile` on CPU.
 
 In Python:
 
@@ -54,7 +53,7 @@ result.to_dataframe()  # Scores, units, directions and confidence intervals
 ```
 
 An encoder already in memory can be passed to `Model("My encoder", embed=encoder)`.
-See the [model interface](docs/models.md) and [Python example](docs/quickstart.md#use-python-directly).
+See the [model guide](docs/models.md) for the callback contract and declarations.
 
 ## Inspect your results
 
@@ -71,24 +70,42 @@ predictions = result.table("atlas_profile")
 requests = result.table("atlas_profile", "requests")
 ```
 
-Results are saved as JSON and Parquet files. The [quickstart](docs/quickstart.md)
-covers adding tasks, resuming, comparing models and combining cluster jobs.
-Use `bend2 tasks` to list the tasks and `bend2 plan my_model.py --tasks all`
-to check requirements before a larger run. See [tasks and compute](docs/tasks.md)
-for input sizes and the separate probability interface used by the prior task.
+Results are saved as JSON and Parquet files. `result.tables` lists the available
+tables; `result.table(task, columns=[...])` reads selected columns into a DataFrame.
+Keep separate output directories for different models or inference settings.
 
-## Examples
+## Add tasks and continue a run
 
-Choose an adapter with `bend2 init --template NAME`:
+`siraj` runs four related regulatory tasks together. Check their requirements,
+then add them to the same result directory:
 
-| Template | Adapter |
-|---|---|
-| `custom` | [Custom encoder (composition example)](src/bend2/_examples/custom.py) |
-| `huggingface` | [HyenaDNA embeddings](src/bend2/_examples/huggingface.py) |
-| `dnabert2` | [DNABERT-2 embeddings](src/bend2/_examples/dnabert2.py) |
-| `ntv3-prior` | [NTv3 paper prior](src/bend2/_examples/ntv3_prior.py) |
+```bash
+bend2 plan my_model.py --tasks siraj
+bend2 run my_model.py --tasks siraj --output results/my-model
+```
 
-[Reference models](docs/reference-models.md) explains optional runtimes and GPU
-settings. To add a result to the leaderboard, see the [submission guide](docs/submitting.md).
+Use a comma-separated list of task IDs or `all` for all compatible tasks.
+See [tasks and compute](docs/tasks.md) for input lengths, downloads and scores.
+
+Repeat a command to resume. If inference runs out of memory, lower `--batch-size`;
+completed batches remain cached. A changed checkpoint, preprocessing, task
+protocol or numeric runtime requires a new output directory. Compatible updates
+to BEND and changes to descriptive metadata preserve completed work.
+
+To combine tasks evaluated in separate jobs:
+
+```bash
+bend2 combine results/my-model results/my-model-siraj --output results/combined
+```
+
+Use the same adapter, model revision, declarations and inference settings in
+each job. Duplicate tasks must agree. A combined run can be read or submitted;
+continue evaluations in the source runs and combine them again into a new directory.
+The Python equivalent is `combine(["results/my-model", "results/my-model-siraj"],
+output="results/combined")`, imported from `bend2`.
+
+For DNABERT-2, NTv3 and HyenaDNA examples, see
+[included adapters](docs/models.md#included-adapters). To add a result to the
+leaderboard, see the [submission guide](docs/submitting.md).
 
 [Data and licenses](docs/data.md) · [Contributing](CONTRIBUTING.md) · [Citation](CITATION.cff)

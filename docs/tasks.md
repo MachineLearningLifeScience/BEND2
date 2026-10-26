@@ -32,25 +32,10 @@ a comma-separated list, or `all`. The default is `atlas_profile`. `all` records
 incompatible tasks as skipped; requesting one by name stops the run before
 data downloads.
 
-The same plan is available in Python:
-
-```python
-from bend2 import plan
-
-preview = plan(model, tasks="all", cache_dir="/scratch/bend2")
-print(preview["selected_tasks"])
-print(preview["skipped"])
-print(preview["additional_download_bytes"])
-```
-
-Planning lists complete input lengths, declared model limitations, missing
-optional dependencies and additional benchmark-data downloads. The four Siraj
-tasks count their shared download once. Existing prepared datasets, downloaded
-assets and `BEND2_ASSET_DIR` mirrors reduce that estimate. Files are checked only
-for location and size at this stage; evaluation verifies their contents. The
-plan does not run inference, download files or inspect existing inference caches.
-Custom adapter files are imported by the CLI, so load weights lazily if you want
-planning to avoid model initialization too.
+Planning lists input lengths, model limitations, missing dependencies and
+downloads. It imports your adapter but does not call it or download data.
+Load weights on first inference. In Python, `bend2.plan(model, tasks="all")`
+returns the plan as a dictionary.
 
 The core package and statistical readouts run on CPU. Your encoder determines
 whether inference needs a GPU. Runtime depends on model size, feature dimension,
@@ -75,6 +60,12 @@ Request the four Siraj tasks together to share that work.
 Allow additional disk space for preparation and embeddings. A float32 matrix
 alone costs `number_of_sequences × feature_dimension × 4` bytes; preparation
 files and cache metadata require additional space.
+
+Tissue identification requires the full 131,072-base input and the `genome` extra:
+
+```bash
+python -m pip install "bend2[genome] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+```
 
 ## What stays fixed
 
@@ -110,8 +101,6 @@ validation genes. It matches tissue profiles across genes among 51 represented
 tissues; it is not a test of transfer to unseen tissues. Inputs are forward
 reference-genome windows centered on the prescribed transcription start site.
 
-## Read scores in context
-
 Compare scores within each task, using its units and direction. The package
 reports separate task scores. Experimental references measure reproducibility
 or transfer for particular assays and should not be interpreted as universal ceilings.
@@ -120,17 +109,4 @@ Training exposure, allowed sequence context, pooling, and native versus fitted
 interfaces matter when comparing models. Keep those declarations with the
 results, as described in [the model guide](models.md).
 
-## Data sources
-
-| Data | Primary source | Terms |
-|---|---|---|
-| OpenSplice | [Figshare version 5](https://doi.org/10.6084/m9.figshare.32337414.v5) | CC BY 4.0 |
-| Siraj saturation mutagenesis | [Zenodo record 15297965](https://doi.org/10.5281/zenodo.15297965) | CC BY-NC 4.0 |
-| Atlas of AI-designed enhancers | [Zenodo version 0.2](https://doi.org/10.5281/zenodo.17410822) | CC BY 4.0 |
-| Human reference prior panel | [UCSC GRCh38/hg38 assembly](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/README.txt) | Upstream reference attribution applies |
-| Tissue expression | [GTEx Portal](https://gtexportal.org/home/downloads/adult-gtex/bulk_tissue_expression) | GTEx source terms apply |
-
-The software license does not replace dataset terms. In particular, the Siraj
-data carry a noncommercial condition. Data downloads are pinned and verified;
-packaged derived data retain their attribution and provenance.
-See [data and caching](data.md) for complete notices and acquisition details.
+See [data and licenses](data.md) for source attribution, terms and offline use.

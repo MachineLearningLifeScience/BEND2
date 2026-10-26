@@ -459,7 +459,7 @@ function submissionDialog() {
     "Leaderboard contribution",
     `<p class="dialog-lede">Submit results for any subset of tasks.</p>
     <h3>1. Evaluate your model</h3>
-    <p>Follow the <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/quickstart.md" target="_blank" rel="noopener noreferrer">quickstart</a> to install BEND and create your adapter. Atlas uses short sequences and includes the data in the package.</p>
+    <p>Follow the <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/README.md" target="_blank" rel="noopener noreferrer">README</a> to install BEND and create your adapter. Atlas uses short sequences and includes the data in the package.</p>
     <pre><code>bend2 run my_model.py --tasks atlas_profile --output results/my-model</code></pre>
     <h3>2. Submit for review</h3>
     <p>After the public release, install GitHub CLI, sign in, and run:</p>
