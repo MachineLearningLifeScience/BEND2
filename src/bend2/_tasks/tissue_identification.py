@@ -79,8 +79,11 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     truth = np.asarray(targets["truth"], dtype=float)
     required = data["required_indices"]
     values = matrix(
-        (data["sequences"][int(i)] for i in required), embeddings, n=len(required)
-    ).astype(float)
+        (data["sequences"][int(i)] for i in required),
+        embeddings,
+        n=len(required),
+        dtype="float64",
+    )
     row = np.full(len(truth), -1, dtype=int)
     row[required] = np.arange(len(required))
     feature_scaler = StandardScaler().fit(values[row[train]])
@@ -89,16 +92,24 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     x_validation = feature_scaler.transform(values[row[validation]])
     y_train = target_scaler.transform(truth[train])
     y_validation = target_scaler.transform(truth[validation])
-    eigenvalues, vectors = np.linalg.eigh(x_train.T @ x_train)
+    # Use the smaller Gram matrix. Wide representations must not allocate a
+    # feature-by-feature matrix when there are fewer training genes than features.
+    primal = x_train.shape[1] <= len(x_train)
+    gram = x_train.T @ x_train if primal else x_train @ x_train.T
+    eigenvalues, vectors = np.linalg.eigh(gram)
+    del gram
     eigenvalues = np.maximum(eigenvalues, 0)
-    projected = vectors.T @ (x_train.T @ y_train)
+    projected = vectors.T @ (x_train.T @ y_train if primal else y_train)
+    validation_basis = x_validation if primal else x_validation @ x_train.T
     losses, selected, best_coef = [], None, None
     for penalty in PENALTIES:
         coef = vectors @ (projected / (eigenvalues[:, None] + penalty))
-        loss = float(np.mean((x_validation @ coef - y_validation) ** 2))
+        loss = float(np.mean((validation_basis @ coef - y_validation) ** 2))
         losses.append(loss)
         if selected is None or loss < losses[selected] - 1e-12:
             selected, best_coef = len(losses) - 1, coef
+    if not primal:
+        best_coef = x_train.T @ best_coef
     prediction = target_scaler.inverse_transform(
         feature_scaler.transform(values[row[test]]) @ best_coef
     )

@@ -68,7 +68,7 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     population = (
         data["population"].query('split != "excluded_source_family"').reset_index(drop=True)
     )
-    values = matrix(population.sequence, embeddings).astype(float)
+    values = matrix(population.sequence, embeddings, dtype="float64")
     train = population.split.eq("train").to_numpy()
     validation = population.split.eq("validation").to_numpy()
     source = train | validation

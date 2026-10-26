@@ -5,7 +5,14 @@ from bend2.readouts import PROTOCOL, intervention_predictions, macro_spearman
 
 
 def run(data, embeddings=None, probabilities=None, *, shared=None):
-    predictions = intervention_predictions(data["records"], embeddings, "gene_id")
+    shared = {} if shared is None else shared
+    predictions = intervention_predictions(
+        data["records"],
+        embeddings,
+        "gene_id",
+        scratch_dir=shared.get("scratch_dir"),
+        progress=shared.get("progress"),
+    )
     metric, groups = macro_spearman(predictions, "gene_id", replicates=2000, seed=20260822)
     return TaskResult(
         "opensplice",
