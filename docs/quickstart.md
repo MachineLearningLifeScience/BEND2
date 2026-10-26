@@ -24,13 +24,14 @@ The core package does not install PyTorch, JAX, or model weights.
 bend2 run composition --tasks atlas_profile --output results/first-run
 ```
 
-Open `results/first-run/report.html` in a browser. The baseline represents a
-sequence using its four base fractions. BEND fits the source-only Atlas
+The command prints a score table. The baseline represents a sequence using
+its four base fractions. BEND fits the source-only Atlas
 readout and evaluates its selected candidates against the measured outcomes.
 This is an actual benchmark score, not a synthetic installation check.
 
-The report shows each task's score, units, direction, and coverage. A task you
-did not request is marked missing. There is no combined score.
+Scores and provenance are saved in `results/first-run/result.json`;
+`submission.json` also records coverage across all eight tasks. The command
+explains any requested tasks it could not run. There is no combined score.
 
 ## Use Python directly
 
@@ -59,9 +60,7 @@ model = Model(
 )
 
 result = evaluate(model, tasks="atlas_profile", output="results/python-example")
-print(result.scores)
-print(result.report)
-print(result.bundle())
+print(result.to_dataframe())
 ```
 
 Replace `embed` with your encoder and update the model declaration. Your
@@ -74,10 +73,12 @@ The result object exposes:
 | Attribute or method | Contents |
 |---|---|
 | `result.scores` | Mapping from evaluated task IDs to headline scores |
-| `result.report` | Path to the HTML report |
 | `result.submission` | Path to the machine-readable submission |
 | `result.to_dataframe()` | A Pandas table of task metrics |
 | `result.bundle()` | Create the review ZIP and return its path |
+
+In a notebook, use `result.to_dataframe()` to display and work with the
+scores. In a script, use `result.scores` for a dictionary of headline values.
 
 ## Use the command line
 

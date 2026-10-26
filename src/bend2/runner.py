@@ -1,4 +1,4 @@
-"""The public evaluate() workflow: data → inference → fixed readout → report."""
+"""The public evaluate() workflow: data → inference → fixed readout → results."""
 
 from __future__ import annotations
 
@@ -246,7 +246,7 @@ def evaluate(
                     "files": artifacts,
                 }
                 write_json(output / "result.json", result)
-                run.refresh()
+                run.write_submission()
                 notify(f"{task}: {scored.metric['value']} {scored.metric['unit']}")
                 if family not in {"cell_selective"}:
                     closed = data_cache.pop(family)
@@ -258,7 +258,7 @@ def evaluate(
             result["status"] = "interrupted"
             result["error"] = f"{type(error).__name__}: {error}"
             write_json(output / "result.json", result)
-            run.refresh()
+            run.write_submission()
             raise
         finally:
             if store is not None:
@@ -267,4 +267,4 @@ def evaluate(
                 if hasattr(data.get("sequences"), "close"):
                     data["sequences"].close()
         write_json(output / "result.json", result)
-        return run.refresh()
+        return run.write_submission()

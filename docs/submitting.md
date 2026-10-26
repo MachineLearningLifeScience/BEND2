@@ -17,7 +17,7 @@ Or from Python:
 bundle = result.bundle()
 ```
 
-Open the report and check the model name, checkpoint revision, training-data
+Check `submission.json` for the model name, checkpoint revision, training-data
 declaration, representation, and pooling. Local exploratory runs can omit
 metadata, but an incomplete model declaration is not ready for leaderboard
 review. Correct the declaration in the model source and produce the result
@@ -78,6 +78,5 @@ the prediction-level artifacts. Do not execute an unfamiliar adapter merely
 to preview its submission.
 
 `submission.json` is the machine-readable handoff. A website integration
-should consume the submitted raw endpoints and coverage, rather than scrape
-the HTML report or infer missing values from the paper. Acceptance remains
-a separate editorial action.
+should consume its raw endpoints and coverage, preserving missing values.
+Acceptance remains a separate editorial action.

@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import importlib.util
+import json
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -72,7 +74,7 @@ def main(argv=None):
     commands.add_parser("tasks", help="List tasks, model capabilities and input sizes")
     init = commands.add_parser("init", help="Create a working one-file model adapter")
     init.add_argument("path", nargs="?", default="model.py")
-    run = commands.add_parser("run", help="Evaluate a model and write a report")
+    run = commands.add_parser("run", help="Evaluate a model, print scores and save results")
     run.add_argument(
         "model", help="composition, uniform, or a Python file defining model = Model(...)"
     )
@@ -112,8 +114,6 @@ def main(argv=None):
         if args.command == "export":
             result = Run(args.directory)
             print(result.bundle())
-            import json
-
             submission = json.loads(result.submission.read_text())
             if not submission["ready_for_review"]:
                 print(
@@ -139,9 +139,27 @@ def main(argv=None):
             cache_dir=args.cache_dir,
             progress=progress,
         )
-        print(f"Report: {result.report}")
+        data = result.data
+        rows = [("Task", "Score", "Unit", "Better", "95% CI")]
+        for task, row in data["tasks"].items():
+            metric = row["metric"]
+            value = "undefined" if metric["value"] is None else f"{metric['value']:.6g}"
+            interval = metric.get("ci95")
+            ci = "—" if not interval else f"[{interval[0]:.6g}, {interval[1]:.6g}]"
+            rows.append((task, value, metric["unit"], metric["direction"], ci))
+        widths = [max(len(row[index]) for row in rows) for index in range(len(rows[0]))]
+        print(f"\n{data['model']['name']}")
+        for row in rows:
+            print("  ".join(value.ljust(width) for value, width in zip(row, widths)).rstrip())
+        for task in data["requested_tasks"]:
+            if task not in data["tasks"]:
+                print(f"{task}: {data['skipped'].get(task, 'not completed')}")
+        submission = json.loads(result.submission.read_text())
+        if submission["missing_metadata"]:
+            print(f"Before submitting, declare: {', '.join(submission['missing_metadata'])}")
+        print(f"\nResults: {result.directory / 'result.json'}")
         print(f"Submission: {result.submission}")
-        print(f"Bundle: bend2 export {result.directory}")
+        print(f"Bundle: bend2 export {shlex.quote(str(result.directory))}")
         return 0
     except KeyboardInterrupt:
         print(

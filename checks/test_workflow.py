@@ -11,7 +11,7 @@ import bend2
 from bend2.model import composition
 
 
-def test_offline_atlas_report_and_submission(tmp_path, monkeypatch):
+def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
     def offline(*args, **kwargs):
         raise AssertionError("The starter benchmark must not need network access")
 
@@ -22,10 +22,11 @@ def test_offline_atlas_report_and_submission(tmp_path, monkeypatch):
     with zipfile.ZipFile(result.bundle()) as archive:
         assert {
             "result.json",
-            "report.html",
             "submission.json",
             "atlas_profile/choices.parquet",
         } <= set(archive.namelist())
+        assert not any(name.endswith(".html") for name in archive.namelist())
+    assert not list(result.directory.rglob("*.html"))
     submission = json.loads(result.submission.read_text())
     assert submission["ready_for_review"] and len(submission["coverage"]) == 8
     changed = result.data

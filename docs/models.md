@@ -155,7 +155,7 @@ the individual query losses within each window before the genomic-block
 bootstrap, matching the paper's two-query NTv3 interface. If your intended
 method ensembles probabilities instead, average them in your adapter and
 return `[batch, 4]`. These are different estimators; declare which you use.
-The report records query count, aggregation and accuracy tie handling.
+The saved results record query count, aggregation and accuracy tie handling.
 
 This task requires a conditional distribution given the prescribed sequence
 context. A left-context-only next-token distribution is not interchangeable

@@ -4,7 +4,7 @@
 
 BEND 2.0 evaluates genomic models across sequence priors, mutation effects,
 biological context, genetic interactions, and sequence design. It prepares
-the data, runs your model, fits the prescribed readouts, and produces a report
+the data, runs your model, fits the prescribed readouts, and returns scores
 you can submit to the leaderboard.
 
 One Python function connects your model. No fork, model-registry patch, or
@@ -19,9 +19,9 @@ python -m pip install "bend2 @ git+https://github.com/yhsure/genomic-bending.git
 bend2 run composition --tasks atlas_profile --output results/first-run
 ```
 
-Open `results/first-run/report.html`. This evaluates a CPU base-composition
-baseline on the actual Atlas task: 7,657 short sequences and sixteen design
-requests. The data are included; no model weights are needed.
+The command prints a score table and saves the results as JSON. It evaluates
+a CPU base-composition baseline on the actual Atlas task: 7,657 short sequences
+and sixteen design requests. The data are included; no model weights are needed.
 
 This development repository currently requires GitHub access. **A PyPI
 release has not been published yet.** The intended public release install
@@ -56,8 +56,7 @@ from bend2 import evaluate
 from my_model import model
 
 result = evaluate(model, tasks="atlas_profile", output="results/my-model")
-print(result.scores)
-print(result.report)
+result.to_dataframe()
 ```
 
 Already have an encoder in memory? Pass it directly to

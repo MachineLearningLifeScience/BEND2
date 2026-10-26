@@ -17,7 +17,7 @@ same model interface as the larger fitted-readout tasks.
 
 All eight endpoints have runners. Seven use frozen embeddings; `prior` needs
 nucleotide probabilities. A model can contribute a subset. Missing tasks stay
-visible in reports and are never treated as failed models or zeros.
+visible in the saved results and are never treated as failed models or zeros.
 
 ## Plan a run
 
@@ -81,8 +81,8 @@ reference-genome windows centered on the prescribed transcription start site.
 
 ## Read scores in context
 
-Scores keep their own units and direction. A report does not combine them
-into an overall score. Missing tasks and undefined metrics remain visible.
+Scores keep their own units and direction. BEND does not combine them into
+an overall score. Missing tasks and undefined metrics remain visible.
 Experimental references describe reproducibility or transfer under a specific
 measurement construction; they are not universal ceilings.
 
