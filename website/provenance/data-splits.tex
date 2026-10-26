@@ -1,0 +1,259 @@
+
+Table~\ref{tab:data-partitions} summarizes the data partitions,
+their use across experiments, and the corresponding appendix methods.
+
+\begingroup
+\fontfamily{phv}\selectfont
+\fontsize{7.5}{8.5}\selectfont
+\hypersetup{hidelinks}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+
+% Table 1 palette.
+\definecolor{splitInk}{HTML}{26323D}
+\definecolor{splitPrior}{HTML}{A18338}
+\definecolor{splitFunctional}{HTML}{477FA5}
+\definecolor{splitContext}{HTML}{438879}
+\definecolor{splitInteraction}{HTML}{8266A2}
+\definecolor{splitDesign}{HTML}{B56E58}
+\color{splitInk}
+
+% Uniform category shading; body text remains dark.
+\newcommand{\splituse}[2]{%
+  \cellcolor{split#1!8}\color{splitInk}#2}
+
+% Link to individual rows using:
+% \hyperlink{split:prior}{prior benchmark partition}
+\newcommand{\splitname}[2]{%
+  \hypertarget{split:#1}{\textbf{#2}}}
+
+\begin{longtable}{@{}
+  >{\raggedright\arraybackslash}
+    p{\dimexpr.18\textwidth-6pt\relax}
+  >{\raggedright\arraybackslash}
+    p{\dimexpr.30\textwidth-6pt\relax}
+  >{\raggedright\arraybackslash}
+    p{\dimexpr.19\textwidth-6pt\relax}
+  >{\raggedright\arraybackslash}
+    p{\dimexpr.22\textwidth-6pt\relax}
+  >{\raggedright\arraybackslash}p{.11\textwidth}
+@{}}
+
+\caption{\textbf{Data partitions and experiment locations.}
+Counts denote sequence windows unless otherwise stated.
+Background colors identify the experiment categories in
+Table~\ref{tab:bend2-reference}; shading has no numerical meaning.
+Appendix references distinguish experiment uses from
+partition-construction methods.
+Study-specific holdouts do not establish exclusion from
+foundation-model pretraining.}
+\label{tab:data-partitions}\\
+
+\toprule
+Partition / panel
+& Fitting, selection and evaluation
+& Main-paper uses
+& Appendix uses
+& Ref. \\
+\midrule
+\endfirsthead
+
+\multicolumn{5}{l}{\tablename~\thetable\ (continued)}\\
+\toprule
+Partition / panel
+& Fitting, selection and evaluation
+& Main-paper uses
+& Appendix uses
+& Ref. \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+\splitname{prior}{Prior benchmark}
+& 1,024 fitting; 512 evaluation.
+Markov tuning: 768/256 within fitting,
+then refit on all 1,024.
+& \splituse{Prior}{Prediction and calibration,
+Fig.~\ref{fig:prior}}
+& \splituse{Prior}{Calibration
+(\ref{app:prior-repair});
+mask placement and state exchange
+(\ref{app:prior-routing}).
+Donor analysis forms 256 pairs from the same 512 windows.}
+& p.~\pageref{app:sampling_control}. \\
+
+\addlinespace[3pt]
+\splitname{shift}{Activation shift}
+& 768 estimation; 128 selection;
+1,536 confirmation windows from 48 blocks.
+& \splituse{Prior}{Activation shift,
+Section~\ref{sec:sequence-priors}}
+& \splituse{Prior}{Shift, calibration,
+direction controls and ensemble comparison
+(\hyperref[app:prior-mode-decision]{\ref*{app:prior-routing}})}
+& p.~\pageref{app:prior-mode-decision}. \\
+
+\addlinespace[3pt]
+\splitname{haplotypes}{Natural haplotypes}
+& Evaluation only:
+512 SNP sites, two carrier sequences per site.
+Calibration uses the prior benchmark fitting set.
+& \splituse{Prior}{Haplotype prediction,
+Section~\ref{sec:sequence-priors}}
+& \splituse{Prior}{Carried alleles and background sensitivity
+(\ref{app:prior-memory});
+calibration evaluation (\ref{app:prior-repair})}
+& p.~\pageref{app:prior-memory}. \\
+
+\addlinespace[3pt]
+\splitname{opensplice}{OpenSplice folds}
+& Five gene-held-out folds.
+Label-efficiency analyses use nested training budgets.
+& \splituse{Functional}{Mutation effects,
+Fig.~\ref{fig:simulate}A}
+& \splituse{Functional}{Model comparisons,
+label efficiency and error checks
+(\ref{app:simulate})}
+& p.~\pageref{app:model-comparisons}. \\
+
+\addlinespace[3pt]
+\splitname{transfer}{Strict assay transfer}
+& OpenSplice source fitting;
+COMPASS evaluation on 88 genes.
+Shared genes and overlapping sequences excluded.
+& \splituse{Functional}{Cross-assay transfer,
+Fig.~\ref{fig:simulate}B}
+& \splituse{Functional}{Transfer evaluation
+(\hyperref[app:model-comparisons]{\ref*{app:simulate}})}
+& p.~\pageref{app:model-comparisons}. \\
+
+\addlinespace[3pt]
+\splitname{editing}{Editing-context folds}
+& Five outer chromosome-group folds.
+Tuning sensitivity uses three inner chromosome folds.
+& \splituse{Functional}{Editing efficiency,
+Section~\ref{sec:functional-prediction}}
+& \splituse{Functional}{Editing-efficiency prediction
+and tuning sensitivity
+(\ref{app:editing-context})}
+& p.~\pageref{app:editing-readouts}. \\
+
+\addlinespace[3pt]
+% Verify analysis-specific fold reuse before treating this
+% group as a single shared assignment across all Siraj analyses.
+\splitname{siraj}{Siraj readout folds}
+& Element-grouped fitting and evaluation;
+related allelic backgrounds kept together.
+& \splituse{Context}{Cell contrasts,
+Fig.~\ref{fig:context}}
+& \splituse{Context}{Context effects
+(\ref{app:context})}
+& p.~\pageref{app:context},
+p.~\pageref{app:interaction-ablation}. \\*
+&
+& \splituse{Interaction}{Background interactions,
+Fig.~\ref{fig:compose}}
+& \splituse{Interaction}{Interaction analysis and ablation
+(\ref{app:interaction-ablation})}
+& \\
+
+\addlinespace[3pt]
+\splitname{gtex}{GTEx genes}
+& 12,146 training; 1,350 validation;
+5,782 test genes.
+Both analyses use the same test genes.
+& \splituse{Context}{Tissue contrasts and identification,
+Section~\ref{sec:biological-context}}
+& \splituse{Context}{Both tissue analyses
+(\ref{app:gtex-tissue-contrast})}
+& p.~\pageref{app:gtex-tissue-contrast}. \\
+
+\addlinespace[3pt]
+\splitname{personal}{Personal-sequence folds}
+& Two settings:
+person-held-out;
+person- and local-locus-held-out.
+& Appendix only
+& \splituse{Context}{Prediction at familiar and unseen loci
+(\ref{app:personal-native})}
+& p.~\pageref{app:personal-native}. \\
+
+\addlinespace[3pt]
+\splitname{compass-interaction}{COMPASS interactions}
+& OpenSplice-trained readouts;
+COMPASS interaction evaluation cohort.
+Ablation reuses fixed predictions.
+& \splituse{Interaction}{Interaction prediction,
+Fig.~\ref{fig:compose}}
+& \splituse{Interaction}{Prediction
+(\ref{app:compass-predictions});
+ablation (\ref{app:interaction-ablation})}
+& p.~\pageref{app:compass-predictions}. \\
+
+\addlinespace[3pt]
+\splitname{adaptation}{Siraj adaptation}
+& Locus-grouped training, validation and test;
+68 training and 23 test loci.
+& Appendix only
+& \splituse{Interaction}{Conditional-response training
+(\hyperref[app:conditional-development]{\ref*{app:interaction-ablation}})}
+& p.~\pageref{app:conditional-development}. \\
+
+\addlinespace[3pt]
+\splitname{motifs}{Motif constructs}
+& Train on singles/pairs;
+evaluate triplets from held-out motif multisets.
+& \splituse{Interaction}{Motif arrangements,
+Section~\ref{sec:genetic-interactions}}
+& \splituse{Interaction}{Triplet prediction
+(\ref{app:triplets})}
+& p.~\pageref{app:triplets}. \\
+
+\addlinespace[3pt]
+\splitname{response}{Siraj response matching}
+& Response-matching evaluation cohort;
+fitted readouts hold out complete elements.
+& \splituse{Design}{Target matching,
+Fig.~\ref{fig:control}}
+& \splituse{Design}{Response-matching evaluation
+(\ref{app:response-matching})}
+& p.~\pageref{app:response-matching}. \\
+
+\addlinespace[3pt]
+\splitname{allele}{Siraj allele selectivity}
+& Strength-control calibration excludes evaluation loci.
+Repeat subsets provide measurement checks.
+& \splituse{Design}{Allele-selective edits,
+Section~\ref{sec:genomic-design}}
+& \splituse{Design}{Selective mutation choice and controls
+(\ref{app:final-siraj})}
+& Cohort:
+p.~\pageref{app:selective-candidates};
+calibration:
+p.~\pageref{app:selective-control}. \\
+
+\addlinespace[3pt]
+\splitname{cell}{Siraj cell selectivity}
+& Five locus folds for native calibration;
+fitted readouts supply held-out predictions.
+& \splituse{Design}{Cell-selective edits,
+Fig.~\ref{fig:control}C}
+& \splituse{Design}{Cell-selective evaluation and controls
+(\ref{app:cell-selective})}
+& p.~\pageref{app:cell-selective-fitting}. \\
+
+\addlinespace[3pt]
+\splitname{atlas}{Atlas families}
+& 4,223 training / 1,023 validation sequences;
+refit on all 5,246.
+Candidate families excluded from fitting.
+& \splituse{Design}{Multi-cell selection,
+Section~\ref{sec:genomic-design}}
+& \splituse{Design}{Expression-program selection
+(\ref{app:multicell-programming})}
+& p.~\pageref{app:multicell-split}. \\
+
+\end{longtable}
+\endgroup

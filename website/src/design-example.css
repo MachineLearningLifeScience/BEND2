@@ -1,0 +1,57 @@
+/* A typographic edit leads into a measured experiment; scrolling remains native. */
+.edit-lab { --reference:#a5bfda; --candidate:#dfaa89; --match:#bdd2a7; height:100%; display:flex; flex-direction:column; font-family:var(--sans); }
+.motion-stage { flex:1; min-height:0; position:relative; }
+.motion-scene { position:absolute; inset:0 0 20px; width:100%; height:calc(100% - 20px); overflow:visible; }
+.motion-scene text { text-anchor:middle; fill:var(--muted); font-family:var(--sans); }
+.sequence-locus :is(.slot-before,.slot-after) { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; fill:var(--ink); }
+.reference-locus .slot-after { fill:var(--reference); }
+.slot-wash { fill:#a5bfda08; }
+.slot-brackets { fill:none; stroke:#a5bfda88; stroke-width:1; }
+.sequence-locus .slot-position { fill:var(--reference); font:10px ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.12em; }
+.candidate-locus .slot-wash { fill:#dfaa890b; }
+.candidate-locus .slot-brackets { stroke:#dfaa89c9; }
+.candidate-locus :is(.slot-after,.slot-position) { fill:var(--candidate); }
+.candidate-locus path.slot-after { fill:none; stroke:var(--candidate); stroke-linecap:round; stroke-linejoin:round; }
+.candidate-locus.is-measured-match path.slot-after { stroke:var(--match); }
+.assay-origin { stroke:#e9e4d52b; stroke-width:1; }
+.assay-bar { stroke:#b7b7ac80; }
+.assay-row circle { fill:#b7b7ac; }
+.reference-assay :is(.assay-label,.assay-value,.assay-title,.assay-edit-name) { text-anchor:start; font-size:13px; }
+.reference-assay :is(.assay-label,.assay-edit-name) { text-anchor:end; }
+.reference-assay .assay-value { font-size:17px; font-variant-numeric:tabular-nums; }
+.reference-assay .assay-title { font-size:12px; fill:var(--ink); }
+.reference-assay .assay-edit-name { font:11px ui-monospace,SFMono-Regular,Menlo,monospace; }
+.reference-assay .assay-target-ring { fill:none; stroke:var(--reference); stroke-width:1; }
+.assay-edited .assay-bar { stroke:var(--reference); }
+.assay-edited circle { fill:var(--reference); }
+.reference-assay .assay-edited text { fill:var(--reference); }
+/* Safe before the first frame; per-frame inline styles reveal these groups. */
+.experiment-trace,.response-field { opacity:0; visibility:hidden; }
+.target-band { fill:#a5bfda13; stroke:#a5bfda30; stroke-width:1; }
+.target-rule { stroke:var(--reference); stroke-width:1; stroke-dasharray:2 4; }
+.response-axis path,.response-axis line { fill:none; stroke:#ffffff30; stroke-width:1; }
+.response-axis text { font-size:11px; }
+.measured-edit circle { fill:var(--candidate); }
+.motion-scene .edit-label { text-anchor:end; fill:#c9c5b8; font:20px ui-monospace,SFMono-Regular,Menlo,monospace; }
+.edit-label .edit-label-base { fill:var(--candidate); }
+.is-match .edit-label tspan { fill:var(--match); }
+.motion-scene .measured-value { text-anchor:start; font-size:17px; fill:var(--candidate); font-variant-numeric:tabular-nums; }
+.is-match .measured-edit .result-disc { fill:var(--match); }
+.measured-edit .result-ring { fill:none; stroke:var(--match); stroke-width:1; }
+.motion-scene .is-match .measured-value { fill:var(--match); }
+@media(max-width:700px) {
+  .reference-assay .assay-label { font-size:11px; }
+  .reference-assay .assay-value { font-size:14px; }
+  .reference-assay .assay-title { font-size:11px; }
+  .reference-assay .assay-edit-name { font-size:10px; }
+  .candidate-locus .slot-position { font-size:9px; }
+  .motion-scene .edit-label { font-size:14px; }
+  .motion-scene .measured-value { font-size:13px; }
+}
+@media(max-width:700px) and (max-height:760px) {
+  .passage-inner { padding-block:24px 10px; }
+  .passage-heading { margin-bottom:8px; }
+}
+@media print {
+  .edit-lab { height:650px; break-inside:avoid; }
+}

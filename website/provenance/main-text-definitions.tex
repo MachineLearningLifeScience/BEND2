@@ -1,0 +1,611 @@
+\section{Introduction}
+A biologist seeking to change the activity of a regulatory sequence may have hundreds of mutations to choose from. The same mutation can have different effects in different cell types or even when introduced into a slightly different version of the same sequence. A longstanding goal of genomic modeling is to guide experimental interventions and make the search more efficient. The value of models therefore depends on their ability to prioritize the changes most likely to produce the desired response before any experiments are performed.
+
+% Useful models would help prioritize the changes most likely to produce the desired response before experiments are performed.
+
+
+Genomic models use different approaches to learn the complex and multifaceted patterns encoded in DNA, drawing on both sequence diversity and measurements of biological function. Models such as Evo2 learn from natural sequence variation \citep{brixi2026evo2}, while GPN-Star uses evolutionary relationships to predict functional constraint \citep{ye2025predicting}. Other models incorporate functional outcomes rather than relying on natural sequence variation and homology. AlphaGenome, for example, predicts expression, accessibility and splicing from functional genomic data \citep{avsec2026alphagenome}, while NTv3 combines sequence learning with such functional supervision \citep{boshar2025ntv3}. Foundation models and task-specific models have guided the design of regulatory sequences with cell-type-targeted activity \citep{gosai2024design} and, more recently, viable bacteriophage genomes \citep{king2026generative}. However, the central question remains: which features of sequence and function have these models learned well enough to guide experiments?
+
+Looking only at overall predictive accuracy leaves that question unanswered. A sequence-based score may identify a mutation at an evolutionarily constrained position without any knowledge of how it impacts actual expression in a particular cell type. Accurate predictions for individual mutations do not establish whether a model captures interactions between mutations or if it can generalize their effects on a different genetic background. Similarly, distinguishing highly active genes from weakly active genes does not indicate which edit will produce a desired change in expression. Each of these cases calls for more precise testing.
+
+Here, we introduce DRAFT \textsl{(DNA Design Readiness Across Functional Tasks)}, a benchmark organized around five key capabilities: %across datasets:
+\textcolor{capSequencePriors}{Prior},
+\textcolor{capFunctionalPrediction}{Function},
+\textcolor{capBiologicalContext}{Context},
+\textcolor{capGeneticInteractions}{Interaction}, and
+\textcolor{capGenomicDesign}{Design}.
+Together, our tasks measure what genomic models can predict and whether they can help select DNA sequences that produce a desired response. Table~\ref{tab:bend2-reference} summarizes our selected evaluations.
+
+%We distinguish native predictions from readouts fitted to frozen representations, group related examples in task-specific biological splits, and compare against simple yet strong baselines, matched random weights and specialist tools.
+
+% Functional post-training supports effect predictions that transfer across assays
+% and genes, while interactions and cell differences remain harder. Direct tests
+% of selected outcomes then connect these capabilities to genomic design.
+% We provide fixed tasks, biological splits and reference results for evaluating
+% both predictions and experimental choices. Table~\ref{tab:bend2-reference} summarizes the selected evaluations.
+
+\paragraph{Related works.}
+% Previous benchmarking efforts, such as BEND \citep{marin2024bend}, GenBench \citep{liu2024genbench}, and OmniGenBench \citep{yang2025omnigenbench}, provide systematic evaluations of genomic representations across a range of downstream tasks. Complementary benchmarks, including Design-Bench \citep{trabucco2022designbench} and NucleoBench \citep{shor2025nucleobench}, evaluate DNA sequence design algorithms for objectives such as transcription factor binding and regulatory activity. In parallel, model-guided regulatory sequence design has produced experimentally validated, cell-type-targeted activity \citep{gosai2024design,yin2025enhancer,castillohair2025atlas}. \textsl{Genomic Bending} connects these directions by testing the predictive distinctions that matter for design: whether both shared and context dependent effects are captured, whether models capture genetic interactions beyond additive effects, and whether they can rank and distinguish between competing candidates. We evaluate these capabilities separately and assess model-selected edits and sequences using held-out measurements from assayed libraries.
+%shared effects versus context dependence, additive effects versus genetic interactions, and overall accuracy versus discrimination among competing candidates. We evaluate these capabilities separately and assess model-selected edits and sequences using held-out measurements from assayed libraries.
+
+
+Benchmarking efforts such as BEND \citep{marin2024bend}, GenBench \citep{liu2024genbench}, and OmniGenBench \citep{yang2025omnigenbench} provide systematic evaluations of genomic representations across downstream tasks. In parallel, model-guided regulatory sequence design has demonstrated cell-type-targeted activity experimentally \citep{gosai2024design,yin2025enhancer,castillohair2025atlas}, and NucleoBench \citep{shor2025nucleobench} evaluates algorithms for searching sequence space using predictive models as scoring functions. DRAFT connects these directions by testing the predictive distinctions that matter for design: resolving context-specific effects, predicting interactions between mutations, and distinguishing candidates with different functional outcomes. %Our focus is on model-guided selection evaluated by experimental measurements. % test these capabilities separately, then evaluate model-selected sequences with held-out experimental measurements. 
+
+
+
+
+
+
+
+
+
+
+
+
+\input{tables/bend2-reference-main}
+\FloatBarrier
+
+
+
+
+\section{A framework for evaluating genomic models}
+\label{sec:questions}
+
+DRAFT is centered around five complementary capabilities that connect sequence and functional understanding to genomic design. %All tests are done using the human genome (GRCh38).
+%\hl{Each capability is an is a category rather than a single task: below we define how the capabilities within each of these categories is measured. %Thus, the conclusion about each capability does not rest entirely on a single dataset and new assays can be added to each category without changing its definition.
+%}
+
+\begingroup
+\setlength{\abovedisplayskip}{5pt plus 1pt minus 2pt}
+\setlength{\belowdisplayskip}{5pt plus 1pt minus 2pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{3pt plus 1pt minus 1pt}
+\paragraph{\caphighlight{SequencePriors} How probable is the DNA?}
+We measure how well a model predicts a masked base $x_i$ from surrounding DNA:
+\begin{equation}
+    p_\theta\!\left(x_i \mid \text{available DNA context}\right)
+    \label{eq:sequence-prior}
+\end{equation}
+This is computed via the negative log-probability, $-\log_2 p_\theta(x_i\mid\text{available DNA context})$, over all queried positions. We report bits per base where lower values indicate better predictions. 
+
+
+
+
+
+
+\Needspace{7\baselineskip}
+\paragraph{\caphighlight{FunctionalPrediction} Can sequence predict a functional outcome?}
+For a reference sequence $x$ and an edit $\delta$, the mutation
+effect $\Delta y$ is the change in an experimental measurement between
+$x$ and $x+\delta$. A predictor $f_\theta$ estimates this effect:
+\begin{equation}
+    (x,\;x+\delta)
+    \;\xrightarrow{\;f_\theta\;}\;
+    \widehat{\Delta y}
+    \label{eq:functional-prediction}
+\end{equation}
+We test mutation-effect predictions on held-out genes, then evaluate whether the fitted outputs transfer to another assay. %Mutation-effect tasks hold out entire genes or regulatory sequences and include transfer between assays. An additional task predicts editing efficiency for fixed programs across genomic locations.
+
+\paragraph{\caphighlight{BiologicalContext} Is context-dependent genomic function captured?} % How does genomic function depend on the context?}
+For a DNA sequence with an experimental measurement $y_c$ measured in several cells or tissues $c$, we separate its mean across the evaluated contexts $\bar y$ from the context-specific deviation $\kappa_c$:
+\begin{equation}
+    y_c
+    =
+    \underbrace{\bar y}_{\text{mean across contexts}}
+    +
+    \underbrace{\kappa_c}_{\text{context-specific deviation}}
+    \label{eq:context}
+\end{equation}
+We test mutation-effect differences between cells, expression differences between
+tissues, and whether predicted profiles across held-out genes identify
+the correct tissue.
+
+
+\paragraph{\caphighlight{GeneticInteractions} Does one mutation alter another's effect?}
+Let $\Delta y_1$ and $\Delta y_2$ denote the effects of two
+individual mutations, and $\Delta y_{1+2}$ their combined effect,
+all relative to a reference sequence in the same context.
+The interaction $\mathcal I_{1,2}$ is the non-additive part of the signal:
+\begin{equation}
+    \Delta y_{1+2}
+    =
+    \underbrace{\Delta y_1+\Delta y_2}_{\text{additive expectation}}
+    +
+    \underbrace{\mathcal I_{1,2}}_{\text{interaction}}
+    \label{eq:compose}
+\end{equation}
+We hence score interaction separately since an accurate combined effect can
+mask poor predictions of interaction. 
+
+\paragraph{\caphighlight{GenomicDesign} Which candidate achieves the desired response?}
+Given a target response $\mathbf y_{\mathrm{target}}$, the model chooses a candidate $a^\star$ 
+among permitted edits or sequences $\mathcal C$  whose predicted response $\widehat{\mathbf y}(a)$ best matches the target $\mathbf y_{\mathrm{target}}$:
+\begin{equation}
+    a^\star
+    =
+    \operatorname*{arg\,min}_{a\in\mathcal C}
+    \ell\!\left(
+        \widehat{\mathbf y}(a),\,
+        \mathbf y_{\mathrm{target}}
+    \right)
+    \label{eq:control}
+\end{equation}
+The loss $\ell$ measures mismatch with the target, using the
+responses relevant to each task: mutation effects or activity
+across cells.
+
+\endgroup
+
+% most predictions are linear effect readouts, 
+\paragraph{Predictions and generalization.}
+Most predictions use linear heads fitted to frozen model sequence embeddings. For mutation effects, the linear head weights $w$ are fitted to the difference between variant and reference embeddings ($\phi_\theta(x)$) with
+$\widehat{\Delta y} =w^\top[\phi_\theta(x+\delta)-\phi_\theta(x)]$. These predictions and native outputs are reported separately. Detailed descriptions of the output types can be found in Appendix \ref{app:predictions-readouts}. We compute correlations within each gene or regulatory sequence, then average across the $G$ groups using $\rho_{\mathrm{macro}}=G^{-1}\sum_{g=1}^{G}\rho_g$. This avoids the score being dominated by, e.g., one large gene. For downstream splits, we group related examples by gene, regulatory element, locus or sequence family. In addition to genomic foundation models, our comparisons include simple predictors, specialist models and experimental references where applicable.
+
+% \paragraph{Appendix~\ref{app:models} lists every evaluated model with its category, size, training signal and the interface used here (Table~\ref{tab:models}).}
+
+
+
+\section{\capheading{SequencePriors}{measuring what models know about DNA}} \label{sec:sequence-priors}
+
+\paragraph{The models learn useful sequence priors.} To compare causal and masked sequence models, we mask out the central base of 512 GRCh38 windows of 1,200bp. For this base reconstruction, NTv3 650M post and Evo2 have the lowest losses among models in Figure~\ref{fig:prior}A. The foundation models outperform simple base composition statistics, but do not seem to have converged on prediction accuracy. For all NTv3 models, we used a fixed
+12\% additional masking from its training objective, and the final scores averaged the central-base loss over two draws.
+
+\begin{figure}[!tb]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{SequencePriors}
+ \includegraphics[trim=0bp 2bp 0bp 4bp,clip,width=.97\linewidth]{bend2_prior.pdf}
+ \capcaption{SequencePriors}{\textbf{Sequence-prior performance depends on the evaluation interface.}
+ A: masked loss on 512 windows. NTv3 uses fixed 12\% additional masking
+ ($\dagger$), averaging losses over two draws.
+ GENERATORv2 uses temperature calibration fitted on separate data ($\ddagger$).
+ B: additional masking substantially improves post-trained NTv3 sequence loss.
+ C: calibration improves GENERATORv2's predicted probabilities
+ without changing base-prediction accuracy. Whiskers show 95\% block-bootstrap intervals. Colors denote model/baseline category.}
+ \label{fig:prior}
+\end{figure}
+
+
+
+\paragraph{Learned sequence knowledge is not always readily accessible.}
+For NTv3 650M post, hiding only the central base gives a loss of $2.199$ bits. Masking an additional 12\% reduces this to $1.375$, the lowest among tested models, although heavier masking eventually worsens performance (Figure~\ref{fig:prior}B). Averaging predicted probabilities across eight masking draws reduces loss further, to $1.346$. We tested whether a fixed shift in internal activations could reproduce the benefit of additional masking. We estimated activation differences between additional-mask and single-mask queries, selected the layer and shift strength on separate data, and evaluated the shifted model on single-mask queries from held-out genomic blocks without updating model weights. For NTv3 650M post, accuracy rose from 29\% to 56\%, close to the pre-trained model's 55\%; affine-logit calibration reached 30\%. Full results, controls and uncertainty estimates are provided in Appendix~\hyperref[app:prior-mode-decision]{\ref*{app:prior-routing}}.
+
+A simpler adjustment also improves GENERATORv2: temperature calibration lowers loss from $2.168$ to $1.711$ while leaving accuracy at $50.2\%$ (Figure~\ref{fig:prior}C). Together, these results show that measured sequence-prior performance depends on how the model is queried and its outputs are used.
+
+These gains do not establish that sequence priors capture functional effects or variation between individuals. Evo2 and CENO reconstruct $55.2/62.4\%$ of assay reference bases, yet their allele scores correlate only $0.045/0.029$ with reporter effects (Appendix~\ref{app:prior-functional}). Our main prior evaluation uses GRCh38; extending strong sequence priors to natural haplotypes remains an important next step, as evident by our results in Appendix~\ref{app:prior-memory}.
+
+\section{\capheading{FunctionalPrediction}{from sequence to experimental response}} \label{sec:functional-prediction}
+
+
+\begin{figure}[!tb]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{FunctionalPrediction}
+ \includegraphics[trim=0bp 6.8bp 0bp 2bp,clip,width=0.90\linewidth]{figures/bend2_transfer_dagger_labels_outlined.pdf}
+ \capcaption{FunctionalPrediction}{\textbf{Functional post-training supports transfer across assays and genes.}
+A: mutation-induced changes in exon inclusion on
+OpenSplice, with complete genes held out of readout fitting
+(466 genes).
+B: transfer of OpenSplice-trained predictors to 4,618 COMPASS
+variants in 88 genes excluded from source training, without
+COMPASS fitting or model selection. 
+Scores average within-gene Spearman correlations.
+Experimental references compare repeat measurements; they are not ceilings.
+ Native NTv3 ($\dagger$) uses splice-boundary annotation probabilities;
+ native heads retain historical supervision. Hollow gray points show random weights; whiskers are
+ 95\% gene-bootstrap intervals (Appendix~\ref{app:simulate}).}
+ \label{fig:simulate}
+\end{figure}
+
+\paragraph{Mutation-effect prediction transfers.}
+% Among the models in Figure~\ref{fig:simulate}A, the strongest frozen readout
+% on OpenSplice \citep{quarantani2026opensplice} comes from NTv3 650M post
+% \citep{boshar2025ntv3}. The assay
+% contains 590,104 interventions from 466 genes, with complete genes held out.
+% The readout reaches macro-gene Spearman $0.564$, compared with $0.144$ for its
+% matched random architecture and $0.488$ for a task-trained one-hot ResNet
+% (Figure~\ref{fig:simulate}A). Thirteen of 16 learned models outperform their
+% matched random weights. Label-efficiency, direction and calibration results
+% remain in Appendix~\ref{app:simulate}.
+
+Next, we ask whether genomic models can predict how mutations affect
+RNA splicing. OpenSplice measures changes in exon inclusion across
+590,104 mutations in 466 genes \citep{quarantani2026opensplicepaper}.
+On held-out genes, AlphaGenome's embedding-fitted linear head reaches macro-gene
+Spearman 0.650, compared with 0.621 for its native outputs and
+0.564 for NTv3 650M post (Figure~\ref{fig:simulate}A).
+Specialist model SpliceAI reaches 0.674, although native heads retain their historical supervision and therefore differ from readouts fitted
+under the benchmark's training splits.
+
+NTv3 provides a comparison of the same architecture before and after
+functional post-training. Post-training improves mutation-effect
+prediction at both model sizes, and the 650M post-trained readout
+outperforms both its matched random architecture (0.144) and a
+task-trained one-hot ResNet (0.488). Label-efficiency, direction and calibration analyses are
+reported in Appendix~\ref{app:simulate}.
+
+We then test whether the OpenSplice-trained readouts transfer to a different assay. Readouts trained on OpenSplice are evaluated on 4,618 COMPASS mutations across 88 genes excluded from the training set, without using COMPASS labels for fitting or selection \citep{koplik2025compass}.
+Both AlphaGenome and NTv3 650M post retain substantial predictive accuracy for mutation effects averaged across cell lines, outperforming the k-mer baseline fitted on the OpenSplice training set
+(Figure~\ref{fig:simulate}B). Their performance is similar to that of native SpliceAI and AlphaGenome. These results suggest that the readouts capture functional relationships that remain useful beyond the assay and genes used for fitting.
+
+
+\paragraph{Editing efficiency depends on genomic context.}
+
+The K562 TRIP library tests editing efficiency across genomic
+locations while holding the reporter and editing program fixed
+\citep{mathis2025pridict2}. Both post-trained NTv3 models improve over
+their pre-trained counterparts, while their differences from AlphaGenome
+are not statistically resolved (Appendix~\ref{app:editing-context}).
+% addd: the fraction of reporter copies edited—across genomic locations for fixed reporter-editor combinations 
+
+% The readout also transfers to another assay and new genes. We fit on OpenSplice
+% SNVs, remove exact sequence overlaps and shared gene symbols, and evaluate 4,618
+% COMPASS variants in 88 new genes without COMPASS labels
+% \citep{koplik2025compass}. NTv3 650M post reaches $0.492$, versus $0.054$ for
+% random weights and $0.303$ for source-trained k-mers. Native SpliceAI and AlphaGenome
+% \citep{jaganathan2019spliceai,avsec2026alphagenome} reach $0.534$ and $0.492$;
+% replicate correlation is $0.617$
+% (Figure~\ref{fig:simulate}B). Prior functional supervision supports response
+% prediction even when the assay and genes change.
+
+% \subsection{Editing efficiency depends on genomic context}
+% The K562 TRIP library holds the reporter and editing program fixed while
+% testing prediction across genomic locations \citep{mathis2025pridict2}.
+% Readouts use the same 8-kb native context and hold out chromosome groups.
+% Across prime editing, adenine editing, cytosine editing and Cas9, mean Spearman
+% correlations are $0.410$ for NTv3 100M post, $0.381$ for 650M post and $0.370$
+% for AlphaGenome (Appendix~\ref{app:editing-context}).
+% Both post-trained NTv3 pipelines improve over their pre-trained counterparts
+% under fixed and nested regularization. The relative ordering of the two sizes
+% changes between readouts, and the three leading pipelines are not statistically
+% ordered. Cas9 is substantially harder than the other outcomes.
+% The four systems share one integration library; this task predicts location
+% effects on a fixed program, not which program to use
+% (Appendix~\ref{app:editing-context}).
+
+\section{\capheading{BiologicalContext}{how does function depend on the context}}
+\label{sec:biological-context}
+
+
+
+\paragraph{Mutation effects differ between cells.}
+
+Predicting a mutation's average effect does not establish whether a
+model knows where that effect is strongest. The Siraj assay measures
+the same mutations in HepG2 and K562, allowing us to evaluate both
+their mean effect and the difference between cells
+\citep{siraj2026functional}. Across 128 regulatory elements,
+AlphaGenome's native, cell-matched accessibility outputs reach
+correlation 0.532 for the mean effect and 0.398 for the cell
+difference, without fitting to Siraj labels
+(Figure~\ref{fig:context}A/B). NTv3 650M post's fitted readouts
+reach 0.492 and 0.256, respectively. Both models predict the mean
+more accurately than the difference, with a larger gap for NTv3.
+
+\begin{figure}[!tb]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{BiologicalContext}
+ \includegraphics[trim=0bp 0.7bp 0bp 5bp,clip,width=.97\linewidth]{figures/bend2_context_outlined.pdf}
+\capcaption{BiologicalContext}{\textbf{Predicting cell-specific effects.}
+A/B: mean mutation effect and HepG2--K562 difference across
+128 Siraj regulatory elements.
+Experimental references compare groups of repeat measurements (127 elements);
+they are not ceilings.
+($\dagger$) mark native outputs; unmarked NTv3 entries use fitted readouts.
+Whiskers show available 95\% element-bootstrap intervals.}
+\label{fig:context}
+\end{figure}
+
+The difficulty extends beyond this cell pair. On COMPASS,
+AlphaGenome reaches correlation 0.479 for the average splice effect
+but $-0.018$ for deviations between cells; replicate agreement for
+these deviations is 0.151 (Appendix~\ref{app:context}).
+Thus, accurate average effects can coexist with little ability to
+resolve cell dependence.
+
+\paragraph{Expression profiles distinguish tissues.}
+
+We also evaluate how well models distinguish expression profiles across tissues,
+using 5,782 held-out genes measured in 51 GTEx tissues \citep{gtex2020atlas}. For each gene and query tissue, we compare
+expression with the tissue showing the largest measured difference.
+Using native outputs, AlphaGenome reaches correlation 0.775 on these within-gene
+contrasts, compared with 0.594 for NTv3 650M post
+(Figure~\ref{fig:context-tissues}A). Because the comparison tissue is chosen using measured expression,
+this tests prediction of observed contrasts rather than prospective tissue selection.
+
+A second test asks whether a predicted expression profile across
+genes identifies the correct tissue among the 51 candidates.
+AlphaGenome achieves 68.6\% accuracy, compared with 45.1\% for
+NTv3 650M post and 7.8\% for k-mer ridge
+(Figure~\ref{fig:context-tissues}B). Chance accuracy is 2.0\%, while
+expression profiles from independent donor halves agree at 99.0\%, averaging both directions. 
+The models therefore recover substantial tissue-specific
+information, but a sizeable gap to the experimental reference remains.
+These evaluations hold out genes within represented tissues rather than testing transfer to unseen tissues
+(Appendix~\ref{app:gtex-tissue-contrast}).
+
+% Siraj measures each mutation in HepG2 and K562, allowing the cell contrast in
+% Equation~\ref{eq:context} to be tested directly \citep{siraj2026functional}.
+% Without Siraj fitting labels, AlphaGenome's cell-matched accessibility outputs
+% reach $0.532$ on the mean mutation effect and $0.398$ on the contrast.
+% NTv3 650M post's fitted readouts come closer on the mean ($0.492$) than on the contrast ($0.256$;
+% Figure~\ref{fig:context}). Predicting a shared effect is easier than recovering
+% how it changes between cells. These familiar cells do not test unseen-cell transfer.
+
+% \paragraph{Expression profiles distinguish represented tissues.}
+% Tissue context also matters beyond paired cell-line assays. Across 51 GTEx
+% tissues, AlphaGenome identifies the correct tissue profile in $68.6\%$ of queries,
+% compared with $45.1\%$ for NTv3 650M post, $7.8\%$ for k-mer ridge and $98.0\%$
+% for the donor split-half reference (Figure~\ref{fig:context-tissues}B). Profiles are
+% compared across the same 5,782 held-out genes; chance accuracy is $2.0\%$.
+% Contrasts chosen by absolute observed difference provide a complementary diagnostic:
+% AlphaGenome reaches correlation $0.775$, versus $0.594$ for NTv3 650M post (C).
+% The contrast partners use measured outcomes, and the tissue set is fixed;
+% these are represented-tissue evaluations, not prospective tissue selection or
+% unseen-tissue transfer (Appendix~\ref{app:gtex-tissue-contrast}). They establish
+% useful tissue discrimination, while the later design tests ask whether a model
+% can choose DNA satisfying simultaneous cellular objectives.
+
+\section{\capheading{GeneticInteractions}{predicting departures from additivity}}
+\label{sec:genetic-interactions}
+
+
+
+
+\paragraph{A mutation's effect depends on its genetic background.}
+The context assessed above is on the cell level, but a different genetic background can also alter mutation effects.
+%but context can also occur with genetic background, and mutation effects may change when another base is altered. 
+The Siraj assay measures the same edit on paired
+allelic backgrounds, allowing us to isolate this interaction.
+Across 68,026 paired mutations in 114 regulatory elements,
+AlphaGenome reaches interaction correlation 0.260, compared with
+0.187 for NTv3 650M post's fitted readout and 0.181 for Enformer
+(Figure~\ref{fig:compose}A). Predictions are most accurate for
+mutations within 10 bp of one another and become less accurate
+with increasing separation (Figure~\ref{fig:compose}C).
+
+\begin{figure}[!tb]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{GeneticInteractions}
+ \includegraphics[trim=0bp 5.4bp 0bp 2.5bp,clip,width=0.90\linewidth]{bend2_response.pdf}
+\capcaption{GeneticInteractions}{\textbf{Accurate combined effects
+can conceal weak interaction prediction.}
+A: difference in mutation effects between two backgrounds differing at one base.
+B: single, double and non-additive mutation effects in 110 COMPASS genes.
+C: Interaction prediction by distance between mutations.
+HepG2--K562 transfer compares measured interactions across cells (A/C).
+The experimental reference compares repeat measurements of interactions (B).
+Neither is a ceiling.
+($\dagger$) mark native outputs, and whiskers show 95\% bootstrap intervals over regulatory elements (A/C) or genes (B).}
+\label{fig:compose}
+\vspace{4pt}
+\end{figure}
+
+\paragraph{Combined-effect accuracy can conceal weak interaction prediction.}
+
+COMPASS tests non-additive interactions splicing effects by measuring single and double mutations relative to the same reference. On its 110-gene
+panel, NTv3 650M post reaches correlation 0.409 for single-mutation
+effects and 0.500 for double-mutation effects, but only 0.046 for
+the interaction remaining after subtracting the two single effects
+(Figure~\ref{fig:compose}B). Native splice predictors show the
+same pattern, and replicate correlation for the interaction measurements
+is 0.171.
+
+To assess how much interaction prediction contributes to overall
+accuracy, we remove the predicted interaction and retain only the
+additive effects. NTv3's double-mutation correlation changes only
+from 0.500 to 0.493. Similarly, removing AlphaGenome's predicted
+background dependence on Siraj changes overall correlation from
+0.528 to 0.521, a small but statistically supported decrease
+of 0.0070 (95\% interval: 0.0014--0.0120;
+Appendix~\ref{app:interaction-ablation}).
+This indicates that a model can predict combined effects accurately while
+recovering little of the interaction between mutations.
+
+
+% Paired backgrounds ask whether that same edit changes effect when a second
+% mutation changes the background. Across 68,026 paired mutations in 114 elements,
+% AlphaGenome reaches interaction correlation $0.260$, with NTv3 650M post and
+% Enformer \citep{avsec2021enformer} at $0.187$ and $0.181$ (Figure~\ref{fig:compose}A).
+% Prediction is strongest within 10 bp and declines with separation (C).
+% Distance bins contain different mutations, so this pattern does not establish
+% a causal biological cutoff.
+
+% COMPASS supplies a second interaction test, now in splicing. On its 110-gene
+% component panel, NTv3 650M post predicts single and double effects at $0.409$
+% and $0.500$, but interaction at $0.046$. Native splice heads show the same
+% separation (Figure~\ref{fig:compose}B). Interaction replicate correlation is itself
+% limited, at $0.163$. Removing predicted interaction changes NTv3's overall
+% double-effect correlation only from $0.500$ to $0.493$. On Siraj, removing
+% AlphaGenome's background dependence changes overall correlation from $0.528$
+% to $0.521$, a small supported difference of $0.0070\;[0.0014,0.0120]$
+% (Appendix~\ref{app:interaction-ablation}). Overall accuracy can therefore conceal
+% the information needed to distinguish backgrounds. Does that information help
+% choose a mutation?
+
+\section{\capheading{GenomicDesign}{selecting sequences for a desired response}} \label{sec:genomic-design}
+
+\begin{figure}[!tb]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{GenomicDesign}
+ \includegraphics[trim=0bp 4.6bp 0bp 3bp,clip,width=0.90\linewidth]{single_edit_design.pdf}
+\capcaption{GenomicDesign}{\textbf{Selecting edits for a desired
+response and cell specificity.}
+A/B: rank of the first selected edit and success at matching a
+reference-edit response as testing budget increases
+(331 targets, 110 regulatory elements).
+C: target-cell expression increase versus absolute other-cell
+change across 127 loci, varying the penalty on unwanted effects.
+Open markers ignore the other cell ($\lambda=0$), and filled markers penalize it equally ($\lambda=1$). Experimental references in A--C select edits on one group of repeat
+measurements and evaluate on the other. Models may outperform these references.
+D: task settings.
+($\dagger$) mark native outputs in A, and whiskers show 95\% element-bootstrap intervals.} \label{fig:control}
+\end{figure}
+
+We finally ask whether model predictions help choose DNA with a
+desired response. These tasks evaluate the measured outcomes of
+model-selected candidates, progressing from matching a single
+response to controlling expression across multiple cell types.
+All choices are made within experimentally assayed libraries,
+with candidate measurements withheld from selection.
+
+\paragraph{Matching a target response.}
+
+Can a model find an alternative mutation that reproduces the effect of a reference edit? In the Siraj assay, each element contains a natural variant and a measured change in activity, which we define as the target response. Excluding that position leaves 578–597 candidate substitutions per element. A model predicts an effect for every candidate and the reference edit, then ranks candidates by how closely their predicted effects match its own reference prediction. AlphaGenome scores effects as changes in its cell-matched accessibility outputs; NTv3 uses linear heads fitted on held-out elements. All candidates' measured effects are withheld until scoring.
+
+%Can a model find an alternative mutation that reproduces the effect of a reference edit? In the Siraj assay, a central allele substitution defines the desired response. Excluding that position leaves 578--597 candidate substitutions per regulatory element. Each model ranks candidates by how closely their predicted effects match its own prediction for the reference edit. AlphaGenome uses native cell-matched accessibility outputs; NTv3 uses fitted readouts evaluated on held-out regulatory elements.
+
+Across 331 targets in 110 elements, AlphaGenome's first choice
+has a mean measured residual percentile of 24.3, compared with
+30.0 for NTv3 650M post and 50 for uniform selection
+(Figure~\ref{fig:control}A; lower is better).
+Among the top ten choices, at least one mutation matches the
+reference response within assay uncertainty for 62\% of targets
+with AlphaGenome and 59\% with NTv3, compared with 38\% under
+uniform selection (B). These results show that model rankings
+can reduce the number of candidates needed to find a matching
+response.
+
+
+
+\paragraph{Increasing expression selectively.}
+\label{sec:cell-selective}
+
+We also test a more challenging task, choosing edits which increase expression in one cell
+type while minimally changing expression in another. We evaluate 167,958
+substitutions across 280 parental backgrounds at 127 Siraj loci,
+with HepG2 and K562 alternately serving as the target cell.
+Each model chooses one substitution or no edit by maximizing
+predicted utility $U_{\mathrm{cell}}=t-\lambda|o|$, where $t$
+and $o$ are expression changes relative to the unmutated parent
+in the target and other cell. Six fixed penalties describe the
+tradeoff between the two responses
+(Figure~\ref{fig:control}C). Complete loci were held out of readout fitting and native-output calibration.
+
+At equal weighting ($\lambda=1$), calibrated native AlphaGenome
+achieves measured utility 0.384, compared with 0.287 for NTv3
+650M post, 0.211 for NTv3 100M post and zero for no edit.
+All three also improve over controls matched for edit probability
+and predicted target strength; AlphaGenome's gain is 0.086
+(simultaneous 95\% interval: 0.030--0.142).
+This indicates that considering the other cell is beneficial, though equal measured target responses are not established. An embedding-fitted linear head for AlphaGenome reaches utility 0.515 under the same selection
+rule (Table~\ref{tab:bend2-reference}).
+
+To test whether the library contains better selectable edits,
+we select using one group of repeat measurements and evaluate on the other,
+then reverse the roles. On these same evaluation subsets,
+experimental selection exceeds native AlphaGenome's utility by
+0.603, with an advantage at 108 of 127 loci.
+This reference demonstrates reproducible opportunities for
+better selection within the library; it is not an upper limit
+on model performance (Appendix~\ref{app:cell-selective}).
+A related test of selectivity between allelic backgrounds is
+reported in Appendix~\ref{app:final-siraj}.
+
+
+
+\paragraph{Selecting multi-cell expression programs.}
+\label{sec:multicell-programming}
+
+The final task is to select for activity in several cell types while
+avoiding activity elsewhere. From the twelve-cell Atlas assay
+\citep{castillohair2025atlas}, we use sixteen requests: eight
+with two cells ON and ten OFF, and eight with three ON and
+nine OFF. For each request, a model selects ten enhancers from
+the same catalogue of 2,411 measured 145-nt sequences.
+Selection maximizes the predicted counterpart of
+\begin{equation}
+ U_{\mathrm{multi}}(x)
+ =
+ \min_{c\in\mathrm{ON}}y(x,c)
+ -
+ \max\!\left(0,\max_{c\in\mathrm{OFF}}y(x,c)\right),
+ \label{eq:multicell-utility}
+\end{equation}
+where $y$ is negative-control-normalized $\log_2$ reporter
+activity. This rewards activity in every requested cell while
+penalizing the strongest unwanted response. Readouts are fitted
+on 5,246 separate source constructs, excluding sequence families
+shared with the candidate catalogue. All twelve cell types are
+represented in the source data.
+
+Linear heads fitted to AlphaGenome and Enformer native outputs select sequences scoring 0.707 and 0.700 over random selection from sequences originally designed for the same task. The corresponding gains are 0.482 for NTv3 650M post and
+0.344 for NTv3 100M post
+(Figure~\ref{fig:frontier-programming}A).
+For all four pipelines, considering OFF-cell activity improves
+selection over ranking by ON-cell activity alone in every
+program and both repeat measurements
+(Appendix~\ref{app:multicell-programming}).
+
+Despite these gains, mean absolute utility remains negative:
+$-0.222$ for AlphaGenome and $-0.228$ for Enformer.
+An embedding-fitted linear head for AlphaGenome
+improves the gain over random to 0.833, but its absolute utility
+also remains negative ($-0.096$;
+Table~\ref{tab:bend2-reference}).
+By comparison, selecting on one repeat measurement and evaluating on
+the other yields mean utility $+0.673$.
+Thus, the library contains sequences that better satisfy the
+joint expression objective than current model selections.
+%The programs share cells and candidates, so their results do
+%not establish a statistically resolved model ordering.
+
+
+
+\begin{figure}[!t]
+ \setlength{\parskip}{0pt}
+ \centering\capfigure{GenomicDesign}
+ \includegraphics[trim=0bp 0bp 0bp 5.5bp,clip,width=0.9\linewidth]{figures/multicell_design_outlined.pdf}
+\capcaption{GenomicDesign}{\textbf{Selecting DNA with activity
+in desired cells and little activity elsewhere.}
+Models choose ten enhancers per request, targeting activity in
+two or three cell types.
+A: gain over intent-matched random selection across 16 requests. Each sequence is scored by its weakest requested activity, minus its strongest activity elsewhere. Dots show the two repeat measurements.
+The experimental reference selects sequences using one and evaluates them
+using the other, then swaps their roles, which is not a performance ceiling.
+B: measured activities for a comparatively successful HepG2/K562
+request using AlphaGenome.} \label{fig:frontier-programming}
+\end{figure}
+
+\section{Conclusions}
+
+Genomic models recover functional information that transfers across assays and genes, and helps select DNA with desired responses.
+Functional training largely expands these capabilities:
+predictions from embedding-fitted linear heads can match or exceed native outputs,
+suggesting that its benefits extend beyond the trained prediction
+heads. Yet accurate overall predictions can conceal weak prediction for cell types and genetic interactions, which greatly impact what sequences are worth investigating. DRAFT separates these capabilities and tests each against measured outcomes.
+
+% \paragraph{Limitations.} 
+Tasks with least reproducible experiments are often the more difficult tasks for the models, meaning performance should be interpreted in light of an assay's reliability. The chosen experimental references are somewhat naive (for example, transferring mutation effects across cell types), yet they still beat current models. The linear heads may also depend on the embedding sizes of the models, and models with different input context lengths may have an effect on task performance. Despite these limits, DRAFT shows where genomic models may help narrow hundreds of candidate mutations to a testable few, and where further progress is needed. 
+
+
+
+
+
+% where genomic models may help narrow hundreds of candidate mutations to a testable few, and where further progress is needed. In particular, the next frontier is r
+
+% The next frontier is reliable design across cellular and genetic contexts. Our 
+
+% experiment-based evaluations show both useful selection and substantial opportunities for better choices, motivating prospective tests on newly designed sequences. 
+
+
+
+
+% We hope this benchmark helps advance genomic models from predicting familiar biology to guiding new experiments.
+
+
+
+
+% \paragraph{Practical lessons.}
+% Check the query before retraining: masking and internal shifts can reveal
+% otherwise missed knowledge. Validate context differences: our adaptation
+% improves ordinary effects without established gains on cell or
+% allelic-background contrasts (Appendix~\ref{app:conditional-development}).
+% Evaluate selected outcomes, match candidates and budgets across models and
+% controls, and test frozen policies in another assay.
+
+% \paragraph{Scope and future directions.}
+% Design selection uses assayed libraries and represented cells; shared loci and
+% repeats are not independent biological replication. Personalization shows small
+% native-head gains at unseen people and loci against a distal control
+% (Appendix~\ref{app:personal-native}). Reporter function, editing efficiency and
+% off-target safety need separate tests; prospective generation and integrated
+% design-and-execution remain open.

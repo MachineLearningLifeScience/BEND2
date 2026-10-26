@@ -1,0 +1,21 @@
+{
+  "name": "bend-2-leaderboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "BEND 2.0: a genomic model results table with task charts and model comparisons.",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "npm run build"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "status": "passed",
+  "schemaVersion": "1.0.0",
+  "manuscriptCommit": "1abee7c638616c578b2fea497e63b59e68752c01",
+  "sourceWorkingTreeClean": true,
+  "tableSha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471",
+  "csvSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
+  "benchmarkSha256": "8856e60b494f27d3b4bf14478b8a3af2fe63b831de9de3155b958b1c540512d5",
+  "checkedCells": 144,
+  "publishedNonMissingCells": 118,
+  "checks": [
+    "All 144 table cells (18 rows × 8 endpoints, including experimental reference) match current source CSV presence and published rounding.",
+    "All nonmissing model/task pairs are unique.",
+    "All preserved uncertainty intervals contain their exact source point and are only attached to their reported task.",
+    "Current background reference is 0.421 HepG2–K562 transfer.",
+    "No reference index confidence intervals are fabricated.",
+    "No prior score is assigned to a native functional-output row.",
+    "Repeat data included only when matching current multi-cell source point estimates.",
+    "Task baseline rationale is explicit for all eight endpoints.",
+    "Original source snapshots are byte-preserving copies with SHA-256 hashes.",
+    "The response-matching budget reference preserves all four source rates and element-bootstrap bounds for 331 targets in 110 elements."
+  ],
+  "sources": [
+    {
+      "id": "table-1",
+      "title": "Table 1 — current displayed manuscript table",
+      "manuscriptPath": "tables/bend2-reference-main.tex",
+      "snapshotPath": "provenance/table-1.tex",
+      "sha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471"
+    },
+    {
+      "id": "table-1-records",
+      "title": "Source-linked estimates behind Table 1",
+      "manuscriptPath": "tables/bend2-main-benchmark.csv",
+      "snapshotPath": "provenance/table-1-source-records.csv",
+      "sha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28"
+    },
+    {
+      "id": "capability-style",
+      "title": "Official capability labels and colors",
+      "manuscriptPath": "capability-style.tex",
+      "snapshotPath": "provenance/capability-style.tex",
+      "sha256": "126b52a55ec956e95ab5ff21f051b88bdede0f68bd4512b132cec874b7f5c5a9"
+    },
+    {
+      "id": "methods",
+      "title": "Current main-text definitions",
+      "manuscriptPath": "body.tex",
+      "snapshotPath": "provenance/main-text-definitions.tex",
+      "sha256": "6e7ab5a1561e2d64bda30ce08d2d57f7cd8db9bf586c9afaf26f63bfe483ebe2"
+    },
+    {
+      "id": "cell-selective-methods",
+      "title": "Cell-selective selection protocol",
+      "manuscriptPath": "sections/cell-selective-design.tex",
+      "snapshotPath": "provenance/cell-selective-methods.tex",
+      "sha256": "a4e0c471d98e9d61d1c193ee11e0fb189671d89f16d6c8e304395c56e8e65bdb"
+    },
+    {
+      "id": "multicell-methods",
+      "title": "Multi-cell selection protocol",
+      "manuscriptPath": "sections/multicell-programming.tex",
+      "snapshotPath": "provenance/multicell-methods.tex",
+      "sha256": "11c1122db6331eb68816ad4924789ff7f3b2fe24a6e707ec94d8765d20f56dda"
+    },
+    {
+      "id": "model-overview",
+      "title": "Main model overview",
+      "manuscriptPath": "tables/model-overview.tex",
+      "snapshotPath": "provenance/model-overview.tex",
+      "sha256": "af788c0a59174aeb1b607b53340f4c52848e71df060720d60c1b521f726a7ac2"
+    },
+    {
+      "id": "splits",
+      "title": "Dataset split overview",
+      "manuscriptPath": "tables/data_splits_overview.tex",
+      "snapshotPath": "provenance/data-splits.tex",
+      "sha256": "eae44b39998461b64c5310db9d1d3d71c4c2af468e7255b3cc0fbd0866fab992"
+    },
+    {
+      "id": "references",
+      "title": "Manuscript bibliography",
+      "manuscriptPath": "references.bib",
+      "snapshotPath": "provenance/references.bib",
+      "sha256": "e89dcdca12027299d91f41a52297070cf74986e7b32d376d80638957e8ae0cf5"
+    },
+    {
+      "id": "repair-summary",
+      "title": "Companion response-matching endpoint records",
+      "manuscriptPath": "provenance/design-layout-20260921/fig5/inputs/siraj_compensatory_repair.summary.csv",
+      "snapshotPath": "provenance/repair-summary.csv",
+      "sha256": "433befcbc4b8c0d5d7b3779c2a2aa1c15257bd5a4cd28aaeb35ae0ccbd1ca5a7"
+    },
+    {
+      "id": "repair-budgets",
+      "title": "Response-matching budget curve records",
+      "manuscriptPath": "provenance/design-layout-20260921/fig5/inputs/siraj_compensatory_repair.budgets.csv",
+      "snapshotPath": "provenance/repair-budgets.csv",
+      "sha256": "de09860245b5207ab694d6ba6ebdcd26b9d2b956ab3b1c112c2ca208face4a03"
+    },
+    {
+      "id": "atlas-frontier",
+      "title": "Native-output multi-cell repeat records",
+      "manuscriptPath": "provenance/revision-20260921/atlas/figures/frontier_plot_data.csv",
+      "snapshotPath": "provenance/atlas-frontier.csv",
+      "sha256": "aaca65313920ce54a843ea80e44c7ccbb527a69d3fb919f8fcf6e44ec8a214e3"
+    },
+    {
+      "id": "repair-budget-reference",
+      "title": "Experimental response-matching budget reference",
+      "manuscriptPath": "provenance/experimental-reference-figures-20260923/summary.csv",
+      "snapshotPath": "provenance/repair-budget-reference.csv",
+      "sha256": "6f2cb289cfebfd538e946193fb49730a88316687740a952f35d6b6d93f979d60"
+    }
+  ]
+}

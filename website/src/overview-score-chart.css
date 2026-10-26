@@ -1,0 +1,102 @@
+.overview-score-chart {
+  --score-sequence:#8094a2;
+  --score-functional:#487c70;
+  --score-fitted-texture:repeating-linear-gradient(135deg,transparent 0 3px,#f7f5ee70 3px 4px);
+  --score-plot-height:clamp(100px,10cqw,126px);
+  container-type:inline-size;
+  margin:0;
+  color:var(--ink);
+}
+.overview-score-caption { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:baseline; gap:10px 28px; margin:0 0 18px; font:500 12px/1.4 var(--sans); }
+.overview-score-direction { grid-column:3; grid-row:1; justify-self:end; color:#717b6c; font-size:11px; font-weight:400; white-space:nowrap; }
+.overview-score-legend { grid-column:1 / -1; grid-row:2; display:flex; justify-content:flex-start; flex-wrap:wrap; gap:8px 24px; color:#636d61; font-size:11px; font-weight:400; }
+.overview-score-key { display:flex; align-items:center; gap:14px; }
+.overview-score-key > span { display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.overview-score-legend i { width:13px; height:10px; background:#8d9488; flex-shrink:0; }
+.overview-score-legend i.is-sequence { background:var(--score-sequence); }
+.overview-score-legend i.is-functional { background:var(--score-functional); }
+.overview-score-legend i.is-fitted { background-image:var(--score-fitted-texture); }
+.overview-score-plot { padding:9px 0 0; }
+.overview-score-grid { position:relative; min-width:0; padding-left:26px; }
+.overview-score-scale { position:absolute; inset:0 auto auto 0; width:20px; height:var(--score-plot-height); color:#7b8277; font:10px/1 var(--sans); font-variant-numeric:tabular-nums; }
+.overview-score-scale > span { position:absolute; right:0; bottom:var(--tick-position); transform:translateY(50%); }
+.overview-score-guides { position:absolute; left:26px; right:0; top:0; height:var(--score-plot-height); pointer-events:none; }
+.overview-score-reference,.overview-score-zero { position:absolute; left:0; right:0; height:0; }
+.overview-score-reference { bottom:var(--reference-position); border-top:1px dotted #bdc5b7; }
+.overview-score-zero { bottom:var(--zero-position); border-top:1px solid #c6ccbf; }
+.overview-score-bars { position:relative; display:grid; grid-template-columns:repeat(var(--model-count),minmax(0,1fr)); gap:clamp(1px,.15cqw,3px); }
+.overview-score-item { --score-colour:var(--score-functional); position:relative; min-width:0; outline-offset:0; }
+.overview-score-item:focus-visible { outline:1px solid #587461; outline-offset:2px; }
+.overview-score-column { position:relative; height:var(--score-plot-height); }
+.overview-score-bar { position:absolute; left:50%; width:clamp(16px,2.5cqw,32px); bottom:var(--score-bottom); height:var(--score-height); transform:translateX(-50%); background:var(--score-colour); }
+.overview-score-item.is-sequence { --score-colour:var(--score-sequence); }
+.overview-score-item.is-unknown { --score-colour:#90988e; }
+.overview-score-item.is-fitted .overview-score-bar { background-image:var(--score-fitted-texture); }
+.overview-score-value { position:absolute; left:0; right:0; bottom:calc(var(--score-label) + 5px); text-align:center; color:#435446; font:10.5px/1 var(--sans); font-variant-numeric:tabular-nums; }
+.overview-score-name { display:grid; align-content:start; gap:1px; padding-top:9px; text-align:center; font:10.5px/1.3 var(--sans); }
+.overview-score-name > span { overflow-wrap:normal; }
+.overview-score-readout { color:#778071; font-size:10px; }
+.overview-score-tooltip { position:absolute; z-index:3; top:33px; left:50%; display:grid; gap:3px; width:max-content; max-width:220px; padding:8px 10px; border:1px solid #cbd0c2; background:var(--paper,#f7f5ee); color:#53624f; font:11px/1.35 var(--sans); opacity:0; visibility:hidden; transform:translateX(-50%); pointer-events:none; }
+.overview-score-tooltip strong { color:var(--ink); font-weight:500; }
+.overview-score-item:nth-child(-n+2) .overview-score-tooltip { left:0; transform:none; }
+.overview-score-item:nth-last-child(-n+2) .overview-score-tooltip { left:auto; right:0; transform:none; }
+.overview-score-item:focus-visible .overview-score-tooltip { visibility:visible; opacity:1; }
+@media (hover:hover) {
+  .overview-score-item:has(.overview-score-bar:hover,.overview-score-name:hover) .overview-score-tooltip { visibility:visible; opacity:1; }
+}
+@container (max-width:1040px) {
+  .overview-score-caption { column-gap:20px; }
+  .overview-score-name { font-size:clamp(9.5px,1.1cqw,10px); }
+  .overview-score-name > span:first-child { min-height:2.6em; }
+  .overview-score-readout { font-size:9.5px; }
+}
+@container (max-width:820px) {
+  .overview-score-grid { --score-plot-height:120px; padding:0 16px 108px 22px; }
+  .overview-score-scale { width:17px; }
+  .overview-score-guides { left:22px; right:16px; }
+  .overview-score-bars { gap:1px; }
+  .overview-score-bar { width:clamp(13px,3cqw,24px); }
+  .overview-score-name { position:absolute; top:calc(var(--score-plot-height) + 10px); right:50%; width:max-content; padding:0; text-align:right; font-size:11px; line-height:1.3; transform:rotate(-55deg); transform-origin:top right; }
+  .overview-score-name > span { white-space:nowrap; }
+  .overview-score-name > span:first-child { min-height:0; }
+  .overview-score-name wbr { display:none; }
+  .overview-score-readout { font-size:10px; }
+}
+@container (max-width:480px) {
+  .overview-score-grid { padding:0 6px 142px 20px; }
+  .overview-score-guides { left:20px; right:6px; }
+  .overview-score-name { display:block; font-size:10.5px; transform:rotate(-65deg); }
+  .overview-score-readout { font-size:10px; }
+  .overview-score-readout::before { content:" · "; }
+  .overview-score-value { font-size:clamp(9px,2.5cqw,10.5px); }
+  .overview-score-bar { width:clamp(11px,3cqw,14px); }
+  .overview-score-item:nth-last-child(-n+5) .overview-score-tooltip { left:auto; right:0; transform:none; }
+}
+@container (max-width:319px) {
+  .overview-score-caption { margin-bottom:28px; }
+  .overview-score-grid { --score-name-width:clamp(108px,29cqw,138px); --score-value-width:36px; --score-row-gap:12px; padding:0; }
+  .overview-score-bars { grid-template-columns:1fr; gap:6px; }
+  .overview-score-item { display:grid; grid-template-columns:var(--score-name-width) minmax(0,1fr); grid-template-areas:"name bar"; column-gap:var(--score-row-gap); align-items:center; }
+  .overview-score-name { grid-area:name; position:static; display:grid; width:auto; padding:0; text-align:left; font-size:11.5px; line-height:1.25; transform:none; }
+  .overview-score-name > span { white-space:nowrap; }
+  .overview-score-name > span:first-child { min-height:0; }
+  .overview-score-readout { font-size:10px; }
+  .overview-score-readout::before { content:none; }
+  .overview-score-column { grid-area:bar; height:14px; margin-right:var(--score-value-width); }
+  .overview-score-bar { left:var(--score-bottom); width:var(--score-height); top:50%; bottom:auto; height:11px; transform:translateY(-50%); }
+  .overview-score-value { top:50%; bottom:auto; left:calc(100% + 8px); right:auto; width:calc(var(--score-value-width) - 8px); transform:translateY(-50%); text-align:right; font-size:11px; }
+  .overview-score-guides { inset:0 var(--score-value-width) 0 calc(var(--score-name-width) + var(--score-row-gap)); height:auto; }
+  .overview-score-reference,.overview-score-zero { top:0; bottom:0; right:auto; height:auto; width:0; border-top:0; }
+  .overview-score-reference { left:var(--reference-position); border-left:1px dotted #bdc5b7; }
+  .overview-score-zero { left:var(--zero-position); border-left:1px solid #c6ccbf; }
+  .overview-score-scale { inset:-19px var(--score-value-width) auto calc(var(--score-name-width) + var(--score-row-gap)); width:auto; height:12px; }
+  .overview-score-scale > span { left:var(--tick-position); right:auto; top:0; bottom:auto; transform:translateX(-50%); }
+  .overview-score-item .overview-score-tooltip { top:calc(100% + 3px); left:auto; right:0; transform:none; }
+}
+@container (max-width:460px) {
+  .overview-score-legend { display:grid; gap:8px; }
+  .overview-score-key { display:grid; grid-template-columns:126px 1fr; gap:12px; }
+}
+@media print {
+  .overview-score-tooltip { display:none; }
+}

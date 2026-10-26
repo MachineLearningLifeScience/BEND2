@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="168" viewBox="0 0 1000 168" role="img" aria-labelledby="edit-selection-title edit-selection-description">
+  <title id="edit-selection-title">From a reference edit to a matching response</title>
+  <desc id="edit-selection-description">Schematic. A reference single-base edit defines a target response. A model ranks alternative edits outside that position. The top k candidates are tested; a target is reached if at least one measured response matches the reference within assay uncertainty.</desc>
+  <!-- Named views keep the same three-stage sequence on narrow screens. -->
+  <view id="reference" viewBox="0 0 300 168"/>
+  <view id="ranking" viewBox="350 0 300 168"/>
+  <view id="matching" viewBox="700 0 300 168"/>
+  <defs>
+    <marker id="flow-arrow" markerWidth="5" markerHeight="7" refX="4.5" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L4 3.5 L1 6" fill="none" stroke="#aaa295" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <g id="candidate-dna" fill="none" stroke-linecap="round">
+      <path d="M390 0H530" stroke="#b1afa5" stroke-width="2"/>
+    </g>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#181914">
+    <g id="reference-panel">
+      <text x="0" y="20" font-size="16">Reference edit</text>
+      <text x="0" y="41" fill="#68675f" font-size="12">Defines the target response</text>
+      <path d="M10 105H150" fill="none" stroke="#a9afb2" stroke-width="2"/>
+      <rect x="76" y="101" width="8" height="8" fill="#2463a6" stroke="#f4f1e9" stroke-width="1.4"/>
+      <path d="M169 105H192" fill="none" stroke="#aaa295" stroke-width="1.1" marker-end="url(#flow-arrow)"/>
+      <path d="M212 105H279" fill="none" stroke="#2463a6" stroke-width="2.5"/>
+      <rect x="275" y="101" width="8" height="8" fill="#2463a6" stroke="#f4f1e9" stroke-width="1.4"/>
+      <text x="246" y="82" text-anchor="middle" font-size="11" fill="#2463a6">Target</text>
+    </g>
+    <path d="M314 105H334" fill="none" stroke="#aaa295" stroke-width="1.1" marker-end="url(#flow-arrow)"/>
+    <g id="ranking-panel">
+      <text x="350" y="20" font-size="16">Rank alternatives</text>
+      <text x="350" y="41" fill="#68675f" font-size="12">Outside the reference site</text>
+      <g fill="#8b8980" font-size="11" text-anchor="middle">
+        <text x="366" y="72">1</text>
+        <text x="366" y="97">2</text>
+        <text x="366" y="122">3</text>
+        <text x="366" y="147" opacity=".55">4</text>
+      </g>
+      <use href="#candidate-dna" y="68"/>
+      <use href="#candidate-dna" y="93"/>
+      <use href="#candidate-dna" y="118"/>
+      <use href="#candidate-dna" y="143" opacity=".45"/>
+      <g fill="#be4d35" stroke="#f4f1e9" stroke-width="1.6">
+        <circle cx="418" cy="68" r="4.2"/>
+        <circle cx="493" cy="93" r="4.2"/>
+        <circle cx="441" cy="118" r="4.2"/>
+      </g>
+      <circle cx="509" cy="143" r="3.6" fill="#b1afa5" stroke="#f4f1e9" stroke-width="1.6" opacity=".65"/>
+      <path d="M547 59H553V127H547" fill="none" stroke="#aaa295" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="565" y="97" font-size="12" fill="#68675f">Top <tspan font-style="italic">k</tspan></text>
+    </g>
+    <path d="M664 105H684" fill="none" stroke="#aaa295" stroke-width="1.1" marker-end="url(#flow-arrow)"/>
+    <g id="matching-panel">
+      <text x="700" y="20" font-size="16">Test the top <tspan font-style="italic">k</tspan></text>
+      <text x="700" y="41" fill="#68675f" font-size="12">A match within assay uncertainty</text>
+      <rect x="864" y="75" width="20" height="69" fill="#2463a6" opacity=".08"/>
+      <path d="M874 73V146" fill="none" stroke="#2463a6" stroke-opacity=".6" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+      <text x="874" y="65" text-anchor="middle" font-size="11" fill="#2463a6">Target</text>
+      <g fill="#8b8980" font-size="11" text-anchor="middle">
+        <text x="716" y="86">1</text>
+        <text x="716" y="113">2</text>
+        <text x="716" y="140">3</text>
+      </g>
+      <g fill="none" stroke="#b1afa5" stroke-width="2" stroke-linecap="round">
+        <path d="M739 82H819"/>
+        <path d="M739 136H940"/>
+      </g>
+      <g fill="#b1afa5" stroke="#f4f1e9" stroke-width="1.6">
+        <circle cx="819" cy="82" r="4"/>
+        <circle cx="940" cy="136" r="4"/>
+      </g>
+      <path d="M739 109H871" fill="none" stroke="#be4d35" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="871" cy="109" r="4.4" fill="#be4d35" stroke="#f4f1e9" stroke-width="1.6"/>
+      <path d="M900 108L903 111L909 104" fill="none" stroke="#be4d35" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="916" y="113" fill="#a34f3d" font-size="11">Match</text>
+    </g>
+  </g>
+</svg>

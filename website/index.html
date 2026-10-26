@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f1e9" />
+    <meta
+      name="description"
+      content="BEND 2.0: evaluating genomic models across sequence priors, functional prediction, biological context, genetic interactions and genomic design."
+    />
+    <title>BEND 2.0 · Genomic model leaderboard</title>
+    <link rel="icon" href="./assets/mark.svg" type="image/svg+xml" />
+    <link rel="preload" href="./assets/fonts/newsreader-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/explorer.css" />
+    <link rel="stylesheet" href="./src/measurement-detail.css" />
+    <link rel="stylesheet" href="./src/atlas.css" />
+    <link rel="stylesheet" href="./src/overview-score-chart.css" />
+    <link rel="stylesheet" href="./src/overview.css" />
+    <link rel="stylesheet" href="./src/table-headings.css" />
+    <link rel="stylesheet" href="./src/design-passage.css" />
+    <link rel="stylesheet" href="./src/design-example.css" />
+    <link rel="stylesheet" href="./src/navigation.css" />
+    <script type="module" src="./src/app.js"></script>
+    <script type="module" src="./src/table-headings.js"></script>
+    <script type="module" src="./src/hero-surface.js"></script>
+    <script type="module" src="./src/design-passage.js"></script>
+  </head>
+  <body class="quiet-layout atlas-layout" id="top">
+    <div class="hero-atmosphere" aria-hidden="true"><canvas id="hero-surface" hidden></canvas></div>
+    <a class="skip-link" href="#leaderboard">Skip to results</a>
+    <header class="research-header">
+      <div class="header-inner page-width">
+        <a class="research-brand" href="#top" aria-label="BEND 2.0 home">BEND <span>2.0</span></a>
+        <button class="navigation-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation">
+          <span class="navigation-current" aria-hidden="true">Leaderboard</span>
+          <span class="navigation-icon" aria-hidden="true"></span>
+        </button>
+        <div class="navigation-panel" id="site-navigation">
+          <nav class="page-nav" aria-label="Page sections">
+            <a href="#leaderboard" aria-current="location">Leaderboard</a>
+            <a href="#explore">Explore the results</a>
+            <a href="#design">Sequence design</a>
+          </nav>
+          <nav class="publication-links" aria-label="Project links">
+            <a href="https://github.com/yhsure/genomic-bending/tree/benchmark" target="_blank" rel="noopener noreferrer"><svg class="publication-mark publication-mark-github" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>GitHub</a>
+            <a href="https://example.com/paper" target="_blank" rel="noopener noreferrer" title="Paper link — placeholder"><svg class="publication-mark publication-mark-arxiv" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M3.8423 0a1.0037 1.0037 0 0 0-.922.6078c-.1536.3687-.0438.6275.2938 1.1113l6.9185 8.3597-1.0223 1.1058a1.0393 1.0393 0 0 0 .003 1.4229l1.2292 1.3135-5.4391 6.4444c-.2803.299-.4538.823-.2971 1.1986a1.0253 1.0253 0 0 0 .9585.635.9133.9133 0 0 0 .6891-.3405l5.783-6.126 7.4902 8.0051a.8527.8527 0 0 0 .6835.2597.9575.9575 0 0 0 .8777-.6138c.1577-.377-.017-.7502-.306-1.1407l-7.0518-8.3418 1.0632-1.13a.9626.9626 0 0 0 .0089-1.3165L4.6336.4639s-.3733-.4535-.768-.463zm0 .272h.0166c.2179.0052.4874.2715.5644.3639l.005.006.0052.0055 10.169 10.9905a.6915.6915 0 0 1-.0072.945l-1.0666 1.133-1.4982-1.7724-8.5994-10.39c-.3286-.472-.352-.6183-.2592-.841a.7307.7307 0 0 1 .6704-.4401Zm14.341 1.5701a.877.877 0 0 0-.6554.2418l-5.6962 6.1584 1.6944 1.8319 5.3089-6.5138c.3251-.4335.479-.6603.3247-1.0292a1.1205 1.1205 0 0 0-.9763-.689zm-7.6557 12.2823 1.3186 1.4135-5.7864 6.1295a.6494.6494 0 0 1-.4959.26.7516.7516 0 0 1-.706-.4669c-.1119-.2682.0359-.6864.2442-.9083l.0051-.0055.0047-.0055z"/></svg>Paper</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <section class="publication-header" data-scene-window aria-labelledby="paper-title">
+      <div class="hero-content page-width">
+      <div class="publication-masthead" aria-hidden="true"></div>
+      <div class="edition-cover">
+        <div class="edition-heading">
+          <h1 id="paper-title">Benchmarking the Capabilities Needed to Design DNA</h1>
+        </div>
+      </div>
+      </div>
+    </section>
+    <main class="atlas-main">
+      <div class="paper-surface results-surface">
+      <div class="page-width">
+      <section id="overview" class="benchmark-overview" aria-label="Benchmark overview"></section>
+      <section
+        class="leaderboard-section"
+        id="leaderboard"
+        aria-label="Benchmark results"
+      >
+        <div class="board-toolbar">
+          <div class="toolbar-actions">
+            <button id="table-scroll-cue" class="table-scroll-cue" data-action="scroll-table" hidden>More tasks <span aria-hidden="true">→</span></button>
+            <button
+              class="icon-button"
+              data-action="download"
+              aria-label="Download results as CSV"
+              title="Download results"
+            ></button>
+          </div>
+        </div>
+        <div class="table-frame">
+        <div
+          class="table-wrapper"
+          id="table-wrapper"
+          role="region"
+          aria-label="Model results; scroll horizontally for more tasks"
+          tabindex="0"
+        ></div>
+        </div>
+      </section>
+      <section id="category-guide" class="benchmark-categories" aria-label="The five benchmark categories"></section>
+      </div>
+      </div>
+      <div class="paper-surface explore-surface">
+      <div class="page-width">
+      <section id="explore" class="research-section" aria-labelledby="explore-title">
+        <header class="research-section-heading">
+          <h2 id="explore-title">Explore the results</h2>
+        </header>
+        <div class="task-workspace">
+          <aside class="task-rail" id="task-rail" aria-label="Select a task"></aside>
+          <div class="task-workspace-main">
+            <div id="explore-heading"></div>
+            <div class="explore-view-bar">
+              <div class="explore-views" role="group" aria-label="Comparison view">
+                <button data-explore-mode="ranking" aria-pressed="true">Model ranking</button>
+                <button data-explore-mode="training" aria-pressed="false">Training</button>
+                <button data-explore-mode="readout" aria-pressed="false">Readouts</button>
+              </div>
+              <button class="explore-table-link" data-action="explore-in-table">View in table ↑</button>
+            </div>
+            <div id="explore-options"></div>
+            <div id="explore-chart"></div>
+            <div id="explore-notes"></div>
+          </div>
+        </div>
+      </section>
+      </div>
+      </div>
+      <section id="design" class="design-passage" aria-labelledby="design-title">
+        <div class="passage-scroll">
+          <div class="passage-stage">
+            <div class="passage-inner page-width">
+              <a class="passage-shortcut" href="#design-results" aria-controls="design-results"><span class="passage-shortcut-label">View benchmark results</span><span class="passage-shortcut-icon" aria-hidden="true">↗</span></a>
+              <header class="passage-heading">
+                <h2 id="design-title" tabindex="-1">How many edits would you need to test?</h2>
+                <nav class="passage-guide" aria-label="Design experiment">
+                  <button class="passage-previous" type="button" aria-label="Previous step" aria-controls="design-example" disabled><span aria-hidden="true">←</span></button>
+                  <p class="passage-cue" aria-live="polite" aria-atomic="true">We start with an edit whose effect on RNA activity has been measured.</p>
+                  <button class="passage-next" type="button" aria-label="Next: predict matching edits" aria-controls="design-example"><span aria-hidden="true">→</span></button>
+                </nav>
+              </header>
+              <div class="passage-exhibit">
+                <div id="design-example" class="passage-diagram" aria-label="Worked example of editing a DNA sequence"></div>
+                <div id="design-results" class="passage-results" tabindex="-1" aria-label="Measured design-budget results" inert>
+                  <div id="design-content"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="about-surface" data-scene-window>
+      <div class="page-width">
+      <section id="about" class="research-section" aria-labelledby="about-title">
+        <header class="research-section-heading">
+          <div class="chapter-title"><span class="chapter-number" aria-hidden="true">03</span><h2 id="about-title">A benchmark for<br>genomic design</h2></div>
+        </header>
+        <div class="about-columns">
+          <div class="about-context">
+            <div class="about-reading">
+              <h3>Why?</h3>
+              <p>Designing DNA starts with a biological goal and a decision about what to change. The answer depends on where a sequence will be used and how its parts work together. Experiments tell us whether a proposed design does what we intended.</p>
+              <p>BEND 2.0 was built around that question. We compare models using experimental measurements, including cases where the same edit behaves differently depending on the cell type or surrounding DNA. We want to understand when their predictions are useful for deciding what to test next.</p>
+            </div>
+            <div class="about-notes">
+              <section class="dataset-resources" aria-labelledby="data-sources-title"><h3 id="data-sources-title">Data sources</h3><div id="dataset-links"></div></section>
+              <div class="about-support-block">
+                <h3 class="about-support-heading">Acknowledgements</h3>
+                <p class="about-support">Supported by the Novo Nordisk Foundation through the MLSS Center (NNF20OC0062606), CAZAI (NNF22OC0077058) and NovoSTAR programme, and by the Pioneer Centre for AI (DNRF grant P1).</p>
+              </div>
+            </div>
+          </div>
+          <div class="about-resources"><h3>Code &amp; data</h3>
+            <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/quickstart.md" target="_blank" rel="noopener noreferrer"><span>Evaluate a new model</span><span>GitHub ↗</span></a>
+            <button data-action="download-all"><span>All benchmark results</span><span>CSV ↓</span></button>
+            <a href="https://github.com/frederikkemarin/BEND" target="_blank" rel="noopener noreferrer"><span>Original BEND</span><span>GitHub ↗</span></a>
+            <section class="citation-resource" aria-labelledby="citation-title">
+              <header class="citation-heading">
+                <h4 id="citation-title">Cite BEND 2.0</h4>
+                <div class="citation-actions">
+                  <button data-action="copy-citation" aria-label="Copy BibTeX" hidden><span data-citation-copy-label aria-live="polite">Copy BibTeX</span></button>
+                  <a id="citation-download" href="./assets/bend2.bib" download="bend2.bib" aria-label="Download BibTeX">Download .bib <span aria-hidden="true">↓</span></a>
+                </div>
+              </header>
+              <pre class="citation-code" hidden><code id="bibtex-citation"></code></pre>
+            </section>
+          </div>
+        </div>
+      </section>
+      </div>
+      </div>
+    </main>
+    <div class="footer-surface" data-scene-window>
+    <footer class="page-width">
+      <span class="design-credit">Designed by <span class="designer-name">Andreas Bjerregaard</span></span>
+      <a href="#top">Back to top ↑</a>
+    </footer>
+    </div>
+    <dialog id="detail-dialog" aria-labelledby="dialog-title">
+      <div id="dialog-content"></div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><div class="noscript page-width">
+        The results need JavaScript.
+        <a href="./data/benchmark.json">Download the data</a>.
+      </div></noscript
+    >
+  </body>
+</html>

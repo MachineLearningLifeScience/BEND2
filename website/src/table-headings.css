@@ -1,0 +1,9 @@
+/* Same headings, held below the masthead while a wide table scrolls past. */
+.table-headings { position:fixed; z-index:22; background:var(--paper); }
+.table-headings[hidden] { display:none!important; }
+.table-headings-viewport { overflow-x:auto; overflow-y:hidden; scrollbar-width:none; }
+.table-headings-viewport::-webkit-scrollbar { display:none; }
+.quiet-layout .table-headings .results-table { min-width:0; }
+.quiet-layout .table-headings .results-table thead { position:static; }
+.table-headings .model-header { box-shadow:6px 0 8px -8px #575449; }
+@media print { .table-headings { display:none!important; } }

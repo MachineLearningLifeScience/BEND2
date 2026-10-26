@@ -1,0 +1,89 @@
+% Capability hierarchy: colored name prefixes; neutral titles and captions.
+% Data colors inside the plots retain their original meanings.
+\usepackage{xcolor}
+\definecolor{capSequencePriors}{HTML}{9C7524}
+\definecolor{capFunctionalPrediction}{HTML}{2463A6}
+\definecolor{capBiologicalContext}{HTML}{19836E}
+\definecolor{capGeneticInteractions}{HTML}{7956A5}
+\definecolor{capGenomicDesign}{HTML}{BE4D35}
+\definecolor{capMutationEffectsAndContext}{HTML}{19836E}
+\definecolor{capEditExecution}{HTML}{526674}
+\definecolor{capPersonalPrediction}{HTML}{AE4275}
+
+% Use descriptive category keys in every \cap... command.
+% Example: \caphighlight{FunctionalPrediction}, \capfigure{GenomicDesign}.
+\newcommand{\caplabelSequencePriors}{Sequence priors}
+\newcommand{\caplabelFunctionalPrediction}{Functional prediction}
+\newcommand{\caplabelBiologicalContext}{Biological context}
+\newcommand{\caplabelGeneticInteractions}{Genetic interactions}
+\newcommand{\caplabelGenomicDesign}{Genomic design}
+\newcommand{\caplabelMutationEffectsAndContext}{Mutation Effects and Context}
+\newcommand{\caplabelEditExecution}{Edit Execution}
+\newcommand{\caplabelPersonalPrediction}{Personal Prediction}
+% Compatibility aliases for older snippets and archived figure/table generators.
+\colorlet{capDesignDecisions}{capGenomicDesign}
+\let\caplabelDesignDecisions\caplabelGenomicDesign
+\colorlet{capPrior}{capSequencePriors}
+\let\caplabelPrior\caplabelSequencePriors
+\colorlet{capSimulate}{capFunctionalPrediction}
+\let\caplabelSimulate\caplabelFunctionalPrediction
+\colorlet{capContext}{capBiologicalContext}
+\let\caplabelContext\caplabelBiologicalContext
+\colorlet{capCompose}{capGeneticInteractions}
+\let\caplabelCompose\caplabelGeneticInteractions
+\colorlet{capControl}{capGenomicDesign}
+\let\caplabelControl\caplabelGenomicDesign
+\colorlet{capResponse}{capMutationEffectsAndContext}
+\let\caplabelResponse\caplabelMutationEffectsAndContext
+\colorlet{capExecution}{capEditExecution}
+\let\caplabelExecution\caplabelEditExecution
+\colorlet{capPersonal}{capPersonalPrediction}
+\let\caplabelPersonal\caplabelPersonalPrediction
+
+\newcommand{\caplabel}[1]{\csname caplabel#1\endcsname}
+
+% Section-name prefixes and vertical figure classification indices share a palette.
+\DeclareRobustCommand{\capname}[1]{\textcolor{cap#1}{\caplabel{#1}}}
+\DeclareRobustCommand{\capheading}[2]{\capname{#1}: #2}
+\newcommand{\caplead}[2]{\textbf{#2}}
+\pdfstringdefDisableCommands{%
+  \def\capname#1{\caplabel{#1}}%
+  \def\capheading#1#2{\caplabel{#1}: #2}}
+
+% Capture the whole multi-panel figure, then place one full-height category index.
+\newsavebox{\capPlotBox}
+\newsavebox{\capLabelBox}
+\newlength{\capPlotHeight}
+\newlength{\capUpperRule}
+\newlength{\capLowerRule}
+\newcommand{\capfigure}[1]{%
+  \begin{lrbox}{\capPlotBox}%
+  \begin{minipage}[b]{\dimexpr\linewidth-16pt\relax}\centering}
+\newcommand{\caprender}[1]{%
+  \end{minipage}\end{lrbox}%
+  \sbox{\capLabelBox}{\rotatebox{90}{%
+    \textcolor{cap#1}{\fontfamily{phv}\fontseries{m}\fontshape{sl}%
+    \fontsize{7}{8}\selectfont \caplabel{#1}}}}%
+  \setlength{\capPlotHeight}{\dimexpr\ht\capPlotBox+\dp\capPlotBox\relax}%
+% Fixed physical length, matching the accepted main Context figure.
+  \setlength{\capUpperRule}{15.07bp}%
+  \setlength{\capLowerRule}{\dimexpr\capPlotHeight-\capUpperRule-\ht\capLabelBox-\dp\capLabelBox-11pt\relax}%
+  \par\noindent\hbox to\linewidth{\hfil%
+    \raisebox{\dp\capPlotBox}{\usebox{\capPlotBox}}\hspace{6pt}%
+    \vbox{\offinterlineskip%
+      \hbox to8pt{\hfil\textcolor{cap#1!80!white}{\rule{.45pt}{\capUpperRule}}\hfil}%
+      \vskip5.5pt%
+      \hbox to8pt{\hfil\usebox{\capLabelBox}\hfil}%
+      \vskip5.5pt%
+      \hbox to8pt{\hfil\textcolor{cap#1!80!white}{\rule{.45pt}{\capLowerRule}}\hfil}}%
+    \hfil}\par}
+% Captions stay entirely black.
+% A compact, consistent gap for classified figures; table captions are unchanged.
+\newcommand{\capcaption}[2]{\caprender{#1}%
+  \setlength{\abovecaptionskip}{4pt}\caption{#2}}
+
+% Capability taxonomy: black lettering on a restrained category-colored highlight.
+\DeclareRobustCommand{\caphighlight}[1]{%
+  \begingroup\setlength{\fboxsep}{1.4pt}%
+  \colorbox{cap#1!17!white}{\textcolor{black}{\caplabel{#1}:}}\endgroup}
+\pdfstringdefDisableCommands{\def\caphighlight#1{\caplabel{#1}}}

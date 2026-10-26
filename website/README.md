@@ -1,4 +1,35 @@
-# Website data integration
+# Website
+
+This folder contains a committed starting snapshot of the BEND 2.0 website,
+connected to the benchmark's contribution flow. It preserves the existing
+visual design and scoring. The separate active website project remains the
+authoritative place for its ongoing design work until those changes are
+integrated deliberately; its unfinished edits were not copied or modified.
+
+## Run locally
+
+From the repository root, with the benchmark environment activated:
+
+```bash
+pip install -e .
+npm --prefix website ci
+npm --prefix website run dev
+```
+
+Open the printed local URL. For a self-contained static output:
+
+```bash
+npm --prefix website run build
+```
+
+The output is `website/dist/`. Both commands first generate leaderboard data.
+Node.js 22 or newer is required. If the active Python is elsewhere, set
+`BEND2_PYTHON=/absolute/path/to/venv/bin/python` before the npm command. Restart
+the development server after changing contribution JSON files. The committed
+snapshot still has a placeholder paper link; set the verified publication URL
+when that release information is available.
+
+## Website data integration
 
 The leaderboard is built from two reviewable inputs:
 
@@ -66,7 +97,9 @@ Do not execute a submitted adapter during a site build or privileged PR check.
 
 ## Snapshot provenance
 
-The paper snapshot was copied byte-for-byte from the committed website source:
+The runtime files and paper snapshot were copied from the committed website source.
+`snapshot.json` records the imported file hashes before integration edits. The
+paper data itself was copied byte-for-byte:
 
 - Repository: `genomic-bending-leaderboard`
 - Producing commit: `509a14056b6102258a2df1c83eefe0ee76140e32`

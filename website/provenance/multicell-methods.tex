@@ -1,0 +1,94 @@
+\subsection{Selecting enhancers for multi-cell expression programs}
+\label{app:multicell-programming}
+
+\paragraph[Assay, candidates and source split.]{\phantomsection\label{app:multicell-split}Assay, candidates and source split.}
+We use Atlas reporter measurements \citep{castillohair2025atlas}
+(\href{https://zenodo.org/records/17410822}{Zenodo record 17410822}).
+The sixteen requests are its eight double-target and eight triple-target
+Fast SeqProp (FSP) programs, without outcome filtering. Every request receives
+all 2,411 distinct 145-nt sequences from the double/triple FSP and genomic
+categories, regardless of original target. Exact DNA duplicates with identical
+counts are collapsed. The twelve cell lines are NT2\_D1,
+GM12878, 786\_O, SKNSH, WERI\_Rb1, SJCRH30, HepG2, K562, MCF7, HeLaS3, HEK293
+and HMC3; HEK293 denotes the authors' HEK293T key. Retina is excluded because
+it has only one RNA measurement.
+
+Calibration uses single-target FSP, Deep Exploration Network, genomic and
+tunable-FSP constructs. Families are connected components linking shared
+background/DHS identifiers and sequences within global Levenshtein distance 29
+on either strand. Excluding
+families that touch candidates leaves 5,246 source sequences. A deterministic
+family-hash split assigns 4,223 to training and 1,023 to validation; refitting
+uses all 5,246.
+
+\paragraph{Measured activity.}
+For each cell and repeat $r\in\{1,2\}$, activity is
+\[
+ y_{icr}=\log_2\frac{R_{icr}+0.5}{D_{icr}+0.5}
+ -\operatorname{median}_{j\in\mathcal N}
+   \log_2\frac{R_{jcr}+0.5}{D_{jcr}+0.5},
+\]
+using UMI-deduplicated counts and the published 35 negative controls $\mathcal N$,
+which had undergone pooled outlier removal from forty. DNA preparations follow
+Supplementary Table~8. We retain the source DNA QC ($>20$ total reads in every
+preparation) without an additional RNA outcome filter. The two RNA measurements come from separate
+transfections; DNA repeats are technical sequencing replicates of shared plasmid
+preparations. Normalization is separate for each cell and repeat.
+
+\paragraph{Model predictions.}
+Inserts in the published orientation receive the 16-nt left and 6-nt right cloning
+junctions, with Ns outside. Inputs are 16,384 bases for AlphaGenome, 196,608 for
+Enformer and 1,024 for NTv3 post; they represent short inserts, not complete
+reporters or genomic loci. We use all 4,418 AlphaGenome human ATAC, DNase, CAGE,
+RNA-seq and histone/TF ChIP tracks, 5,313 Enformer human outputs and 7,362 NTv3
+human BigWig outputs. Released nonlinear heads precede insert averaging, with
+128-bp bins weighted by overlap. NTv3 uses its official 384-position crop.
+Pooled outputs receive $\log(1+x)$, without reverse-complement ensembling or
+projection. These native outputs require assay calibration.
+AlphaGenome hidden-feature readouts use the same calibration and candidate catalogue.
+
+\paragraph{Calibration and controls.}
+Source targets average both normalized repeats. Training statistics standardize
+features; dimensions with standard deviation at most $10^{-7}$ are removed,
+and features are divided by the square root of retained width. Ridge minimizes
+sample-mean summed squared error plus $\lambda\lVert W\rVert_F^2$, leaving the
+intercept unpenalized. Mean twelve-cell validation MSE selects among seventeen
+penalties $10^{-8},10^{-7.5},\ldots,1$; scaling and coefficients are then refitted
+on all source rows. The same procedure calibrates the authors' 64 DHS predictions
+and strand-invariant 1--6-mer frequencies.
+
+The CNN has three convolutional layers and twelve outputs. Source validation
+selects the learning rate and stopping epoch for each of three seeds. Models
+are then refitted on all source sequences and their predictions averaged.
+Candidate measurements are used only for evaluation; architecture and training
+settings are supplied with the code.
+
+\paragraph{Selection and evaluation.}
+Predictors rank candidates by Equation~\ref{eq:multicell-utility}, selecting ten
+with ascending-ID ties and no abstention.
+The same nominations are scored in both repeat measurements, averaged within program
+and then equally across sixteen programs.
+Controls are each predictor's minimum-ON-only ranking, uniform catalogue selection
+and uniform selection within the author-intended target cohort; random utilities
+are exact expectations. Experimental selection ranks with one repeat measurement and
+scores the other, reciprocally; these evaluations are dependent.
+Figure~\ref{fig:frontier-programming}A subtracts
+intent-matched random utility per program/repeat; markers show repeats, not
+confidence intervals.
+
+\begin{figure}[!htbp]
+ \centering\capfigure{GenomicDesign}
+ \includegraphics[width=.92\linewidth]{multicell_selector_control.pdf}
+ \capcaption{GenomicDesign}{\textbf{Considering unwanted activity improves sequence selection.}
+ The same full-profile utility evaluates target-only and full-profile selections,
+ averaged over ten nominations, sixteen requests and both repeat measurements. Open
+ markers rank by the weakest requested activity alone; filled markers also
+ penalize the strongest unwanted activity. The experimental reference selects
+ on the other repeat measurement, reciprocally. Connecting lines are policy differences,
+ not uncertainty intervals.}
+ \label{fig:atlas-selector-control}
+\end{figure}
+
+Figure~\ref{fig:frontier-programming}B shows the ten AlphaGenome nominations for
+HepG2/K562 in predicted order, with profiles averaged across both repeats. This comparatively successful request illustrates the setting, not aggregate performance.
+Figure~\ref{fig:atlas-selector-control} compares full-profile and ON-only selection.

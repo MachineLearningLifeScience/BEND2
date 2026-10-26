@@ -408,6 +408,14 @@ def _validate(data):
         elif task != "atlas_profile":
             raise ValueError(f"Missing frozen bootstrap interval for {task}")
         _subset(_PROTOCOLS[task], row["protocol"], f"{task}.protocol")
+        if task == "atlas_profile":
+            repeats = row["protocol"].get("replicate_values")
+            if not isinstance(repeats, list) or len(repeats) != 2:
+                raise ValueError("Atlas requires both measured replicate values")
+            for value in repeats:
+                _number(value, "Atlas replicate")
+            if not math.isclose(sum(repeats) / 2, metric["value"], rel_tol=1e-12, abs_tol=1e-12):
+                raise ValueError("Atlas gain differs from the mean of its measured replicates")
         _validate_data(task, row["data"])
         required = [f"{task}/{table}.parquet" for table in _TABLES[task]]
         required.append(f"{task}/protocol.json")
@@ -478,7 +486,7 @@ def _verify_bundle(data, bundle):
             raise ValueError("Evidence does not describe a complete BEND 2.0 run")
         if {task: _task_summary(row) for task, row in result["tasks"].items()} != data["tasks"]:
             raise ValueError("Submitted scores or protocols differ from the evidence")
-        files = {}
+        files = dict(result.get("implementation_files", {}))
         for task, row in result["tasks"].items():
             files.update(row["files"])
             if archive.getinfo(f"{task}/protocol.json").file_size > 2_000_000:
@@ -581,6 +589,8 @@ def build_leaderboard(base, submissions, output=None):
                 else [data["coverage"][task]["reason"]],
                 "uncertainty": None,
             }
+            if row and task == "atlas_profile":
+                item["replicateValues"] = row["protocol"]["replicate_values"]
             if row and row["metric"].get("ci95"):
                 interval = row["metric"]["ci95"]
                 item["uncertainty"] = {
