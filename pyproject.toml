@@ -16,6 +16,7 @@ dependencies = ["numpy>=2.0", "pandas>=2.2", "pyarrow>=17", "scipy>=1.13", "scik
 [project.optional-dependencies]
 genome = ["py2bit>=1.0.1"]
 huggingface = ["torch>=2.7", "transformers>=4.57,<5"]
+reference = ["torch>=2.7", "transformers>=4.57,<5", "einops>=0.8"]
 dev = ["build>=1.2", "twine>=6", "pytest>=8", "ruff>=0.9"]
 
 [project.urls]

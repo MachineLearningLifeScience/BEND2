@@ -61,9 +61,9 @@ result.to_dataframe()
 
 Already have an encoder in memory? Pass it directly to
 [`Model`](docs/quickstart.md#use-python-directly); no adapter file is needed.
-For a pretrained DNA model, try the
-[pinned HyenaDNA example](examples/huggingface_model.py) with the
-[optional Hugging Face integration](docs/models.md#hugging-face-models).
+For a pretrained DNA model, use the [pinned DNABERT-2 embedding or NTv3
+native-prior adapters](docs/reference-models.md). A [generic Hugging Face
+integration](docs/models.md#hugging-face-models) is also available.
 
 ## Choose what to evaluate
 
@@ -91,16 +91,23 @@ command with the same model and output directory continues verified work.
 assay and long-context GTEx inputs. Read [task sizes and requirements](docs/tasks.md)
 before that run; tissue identification requires the `genome` extra.
 
-## Share your result
+## Submit to the leaderboard
 
 ```bash
 bend2 export results/my-model
+# Upload submission.zip to a versioned public download location, then:
+bend2 submit results/my-model --evidence-url https://your-host/submission.zip
 ```
 
-This creates `submission.zip` with scores, prediction-level evidence, and
-provenance. Open a [model-submission issue](https://github.com/yhsure/genomic-bending/issues/new)
-and attach it. Maintainers review the model declaration and results before
-adding a row. No weights or embedding caches need to be uploaded.
+The second command prepares one small JSON file. Add it under `submissions/`
+in a pull request targeting `benchmark`. Review and merge adds the model to
+our next website build; weights and prediction archives stay outside Git.
+You can also send the JSON and evidence link through the model-submission issue
+form, and a maintainer can open the PR. See the [submission guide](docs/submitting.md)
+for model/source declarations, evidence hosting and review.
+
+The same steps work in Python with `result.bundle()` and
+`result.prepare_submission(evidence_url=...)`. Evaluation never uploads results.
 
 **[Quickstart](docs/quickstart.md)** · **[Model interface](docs/models.md)** ·
 **[Tasks and compute](docs/tasks.md)** · **[Submission guide](docs/submitting.md)** ·
@@ -108,7 +115,7 @@ adding a row. No weights or embedding caches need to be uploaded.
 
 ## Contribute
 
-This repository contains the benchmark package, small runnable examples, and
-user documentation. See [CONTRIBUTING.md](CONTRIBUTING.md) for package changes
+This repository contains the benchmark package, runnable examples, user
+documentation, reviewed contribution files, and the website in `website/`. See [CONTRIBUTING.md](CONTRIBUTING.md) for package changes
 and [CITATION.cff](CITATION.cff) for citation metadata. Dataset terms are
 separate from the software license.

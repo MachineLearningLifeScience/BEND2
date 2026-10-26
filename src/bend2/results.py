@@ -7,6 +7,7 @@ import json
 import math
 import os
 import re
+import shutil
 import tempfile
 import zipfile
 from pathlib import Path
@@ -61,6 +62,12 @@ class Run:
             [{"task": task, **row["metric"]} for task, row in self.data["tasks"].items()]
         )
 
+    def prepare_submission(self, evidence_url, output=None, **metadata):
+        """Prepare the JSON for a leaderboard PR after hosting :meth:`bundle`."""
+        from bend2.submissions import prepare_submission
+
+        return prepare_submission(self, evidence_url, output, **metadata)
+
     def validate(self):
         """Check recorded files and scores, not authorship or absence of leakage."""
         data = self.data
@@ -98,6 +105,16 @@ class Run:
             path = self.directory / "model.py"
             if not path.is_file() or digest(path) != data["adapter_file"]:
                 raise ValueError("The saved model adapter has changed")
+        for relative, expected in data.get("implementation_files", {}).items():
+            path = (self.directory / relative).resolve()
+            if (
+                not relative.startswith("implementation/")
+                or ".." in Path(relative).parts
+                or not path.is_relative_to(self.directory)
+                or not path.is_file()
+                or digest(path) != expected
+            ):
+                raise ValueError(f"Recorded benchmark implementation changed: {relative}")
         return data
 
     def write_submission(self):
@@ -180,6 +197,7 @@ class Run:
         self.write_submission()
         data = self.data
         files = {"result.json", "submission.json"}
+        files.update(data.get("implementation_files", {}))
         if data.get("adapter_file"):
             files.add("model.py")
         for row in data["tasks"].values():
@@ -188,6 +206,12 @@ class Run:
         temporary = self.directory / ".submission.zip"
         with zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(files):
-                archive.write(self.directory / path, arcname=path)
+                # Stable bytes make an already uploaded bundle reusable when preparing
+                # its PR record. Filesystem timestamps and umasks are not evidence.
+                entry = zipfile.ZipInfo(path, date_time=(1980, 1, 1, 0, 0, 0))
+                entry.compress_type = zipfile.ZIP_DEFLATED
+                entry.external_attr = 0o100644 << 16
+                with (self.directory / path).open("rb") as source, archive.open(entry, "w") as dest:
+                    shutil.copyfileobj(source, dest)
         os.replace(temporary, destination)
         return destination

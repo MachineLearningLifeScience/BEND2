@@ -9,6 +9,8 @@ import pytest
 
 import bend2
 from bend2.model import composition
+from bend2.results import digest
+from bend2.submissions import validate_submission
 
 
 def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
@@ -29,6 +31,16 @@ def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
     assert not list(result.directory.rglob("*.html"))
     submission = json.loads(result.submission.read_text())
     assert submission["ready_for_review"] and len(submission["coverage"]) == 8
+    checksum = digest(result.bundle())
+    assert digest(result.bundle()) == checksum
+    contribution = result.prepare_submission(
+        "https://example.org/submission.zip",
+        model_url="https://example.org/model",
+        adapter_url="https://example.org/adapter.py",
+    )
+    record = validate_submission(contribution, bundle=result.directory / "submission.zip")
+    assert record["coverage"]["atlas_profile"]["status"] == "evaluated"
+    assert len(record["coverage"]) == 8
     changed = result.data
     changed["tasks"]["atlas_profile"]["metric"]["value"] = 100.0
     (result.directory / "result.json").write_text(json.dumps(changed))
@@ -53,6 +65,9 @@ def test_interrupted_inference_resumes_completed_batches(tmp_path):
     options = dict(output=tmp_path / "run", cache_dir=tmp_path / "cache", batch_size=1000)
     with pytest.raises(RuntimeError, match="interrupted"):
         bend2.evaluate(model, **options)
+    options["batch_size"] = 128
+    model.name = "Corrected display name"
+    model.training_data = "none"
     result = bend2.evaluate(model, **options)
     assert encoder.successful == 7657
     assert result.scores["atlas_profile"] == pytest.approx(-0.7378073152527498, abs=1e-12)
@@ -63,11 +78,18 @@ def test_interrupted_inference_resumes_completed_batches(tmp_path):
 
 
 def test_prior_exposes_only_hidden_targets(tmp_path):
+    calls, successful = 0, 0
+
     def probabilities(sequences, positions):
+        nonlocal calls, successful
+        calls += 1
+        if calls == 2:
+            raise RuntimeError("Interrupted native prior")
         assert all(
             len(seq) == 1200 and pos == 600 and seq[pos] == "N"
             for seq, pos in zip(sequences, positions, strict=True)
         )
+        successful += len(sequences)
         return np.full((len(sequences), 4), 0.25)
 
     model = bend2.Model(
@@ -77,8 +99,10 @@ def test_prior_exposes_only_hidden_targets(tmp_path):
         training_data="none",
         probability_interface="uniform probabilities",
     )
-    result = bend2.evaluate(
-        model, tasks="prior", output=tmp_path / "run", cache_dir=tmp_path / "cache"
-    )
+    options = dict(tasks="prior", output=tmp_path / "run", cache_dir=tmp_path / "cache")
+    with pytest.raises(RuntimeError, match="Interrupted native prior"):
+        bend2.evaluate(model, **options)
+    result = bend2.evaluate(model, batch_size=7, **options)
+    assert successful == 512
     assert result.scores == {"prior": 2.0}
     assert result.data["tasks"]["prior"]["metric"]["ci95"] == [2.0, 2.0]

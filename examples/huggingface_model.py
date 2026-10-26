@@ -1,6 +1,7 @@
 """Run a real DNA model on CPU: bend2 run examples/huggingface_model.py --tasks atlas_profile
 
-Install the optional runtime first: pip install 'bend2[huggingface]'
+Install the optional runtime first:
+pip install 'bend2[huggingface] @ git+https://github.com/yhsure/genomic-bending.git@benchmark'
 Weights download on the first run and remain in the standard Hugging Face cache.
 This small checkpoint supports the 145-base Atlas sequences. It cannot cover
 GTEx's 131,072-base inputs; choose a longer-context model for that task.

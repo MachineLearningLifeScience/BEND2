@@ -76,6 +76,7 @@ The result object exposes:
 | `result.submission` | Path to the machine-readable submission |
 | `result.to_dataframe()` | A Pandas table of task metrics |
 | `result.bundle()` | Create the review ZIP and return its path |
+| `result.prepare_submission(evidence_url=...)` | Generate the JSON for a leaderboard PR |
 
 In a notebook, use `result.to_dataframe()` to display and work with the
 scores. In a script, use `result.scores` for a dictionary of headline values.
@@ -141,9 +142,15 @@ checks model identity, inputs, and implementation before reusing completed
 work. Changing the checkpoint or preprocessing means a new model revision
 and a new output directory.
 
-Batch size is part of the inference identity. If your encoder runs out of
-memory, lower `--batch-size` and choose a new output directory; this recomputes
-inference rather than reusing embeddings from the previous batch size.
+If your encoder runs out of memory, lower `--batch-size` and repeat the command
+with the same output directory. Completed embedding and native-prior batches
+remain cached. Descriptive model metadata can be corrected without repeating
+inference. Callbacks must produce the same representation independently of
+batch size; declare numerical settings in `inference_config`.
+
+Changing a scientific readout requires a new output directory, but reuses
+compatible inference. Changes to command-line presentation, submission handling
+or documentation do not invalidate it.
 
 Data are shared through `~/.cache/bend2`, configurable with `--cache-dir` or
 `BEND2_CACHE`. Keep inference caches to continue a run; they do not belong in
@@ -153,5 +160,6 @@ the submission. See [data and caching](data.md) for offline use.
 bend2 export results/my-model
 ```
 
-Attach the resulting ZIP through [the submission process](submitting.md).
+Host the resulting ZIP and generate the small contribution JSON through
+[the submission process](submitting.md).
 Local evaluation does not upload anything or publish a leaderboard entry.

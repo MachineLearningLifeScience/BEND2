@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sqlite3
 from collections.abc import Mapping
 
@@ -96,6 +97,82 @@ class Embeddings(Mapping):
             "dimension": self.width,
             "dtype": "float32",
         }
+
+    def close(self):
+        self.db.close()
+
+
+class Probabilities:
+    """Checkpoint native-prior batches in float64, including individual-query shape."""
+
+    def __init__(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.db = sqlite3.connect(path, timeout=60)
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute(
+            "CREATE TABLE IF NOT EXISTS probabilities "
+            "(key BLOB PRIMARY KEY, shape TEXT, value BLOB, digest BLOB) WITHOUT ROWID"
+        )
+
+    def evaluate(self, sequences, positions, callback, batch_size, progress):
+        keys = [
+            key(f"{position}:{sequence}")
+            for sequence, position in zip(sequences, positions, strict=True)
+        ]
+        values, missing = [None] * len(keys), []
+        shape = None
+        for index, identity in enumerate(keys):
+            row = self.db.execute(
+                "SELECT shape,value,digest FROM probabilities WHERE key=?", (identity,)
+            ).fetchone()
+            if row is None:
+                missing.append(index)
+                continue
+            dimensions, raw, checksum = row
+            if hashlib.sha256(raw).digest() != checksum:
+                raise ValueError("Probability cache checksum mismatch; remove this model cache")
+            values[index] = np.frombuffer(raw, dtype="<f8").reshape(json.loads(dimensions))
+            shape = self._validate(values[index][None, ...], 1, shape)
+        for start in range(0, len(missing), batch_size):
+            indices = missing[start : start + batch_size]
+            batch = callback([sequences[i] for i in indices], [positions[i] for i in indices])
+            shape = self._validate(batch, len(indices), shape)
+            batch = np.asarray(batch, dtype="<f8")
+            rows = []
+            for index, value in zip(indices, batch, strict=True):
+                raw = value.tobytes()
+                rows.append((keys[index], json.dumps(shape), raw, hashlib.sha256(raw).digest()))
+                values[index] = value.copy()
+            with self.db:
+                self.db.executemany("INSERT OR IGNORE INTO probabilities VALUES (?,?,?,?)", rows)
+            progress(f"Scored {start + len(indices):,} new prior windows")
+        return np.stack(values), {
+            "new_sequences": len(missing),
+            "cached_sequences": len(keys) - len(missing),
+            "shape_per_window": list(shape),
+            "dtype": "float64",
+        }
+
+    @staticmethod
+    def _validate(values, rows, shape):
+        if (
+            not isinstance(values, np.ndarray)
+            or values.ndim not in (2, 3)
+            or values.shape[0] != rows
+            or values.shape[-1] != 4
+            or (values.ndim == 3 and values.shape[1] < 1)
+            or values.dtype.kind not in "fiu"
+        ):
+            raise ValueError("probabilities must return NumPy [batch, 4] or [batch, queries, 4]")
+        if shape is not None and values.shape[1:] != shape:
+            raise ValueError("Probability query shape must stay fixed across batches")
+        if (
+            not np.isfinite(values).all()
+            or ((values < 0) | (values > 1)).any()
+            or not np.allclose(values.sum(-1), 1, atol=1e-7, rtol=0)
+        ):
+            raise ValueError("Probabilities must be finite, in [0, 1], and sum to one")
+        return values.shape[1:]
 
     def close(self):
         self.db.close()

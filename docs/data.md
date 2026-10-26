@@ -39,6 +39,24 @@ cache on one machine and copy it to another. Install `bend2[genome]` to read the
 GTEx reference windows. These windows are read on demand from the 2bit genome;
 BEND does not create a second 2.5 GB sequence file.
 
+### Inference and readout storage
+
+Embedding and prior caches are separate from datasets. Each successful inference
+batch is committed, so reducing batch size after an interruption retains the work.
+Cache keys bind weights, adapter code and declared numerical configuration, without
+binding display metadata or command-line code. Prior values preserve float64
+probabilities and individual-query shapes. Both caches check stored byte hashes.
+
+Wide intervention readouts write alternate-minus-reference features once to
+`<cache>/readouts/` and access bounded windows while fitting. Temporary files are
+removed on success or ordinary failure; an operating-system kill may leave a
+`bend2-*` scratch directory that can be deleted once no evaluation is using it.
+Budget roughly `4 × number_of_records × embedding_width` bytes for this scratch
+matrix, in addition to the reusable embedding database. For OpenSplice at 4,096
+features that is about 9.7 GB. Use fast local scratch on a cluster when available.
+The small-feature path retains the original scikit-learn fit; both paths use the
+same groups, features, regularization and solver tolerance.
+
 ## Sources and terms
 
 The software license does not replace the terms of the underlying data.

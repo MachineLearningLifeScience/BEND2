@@ -13,11 +13,10 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-import numpy as np
 from filelock import FileLock
 
 from bend2 import datasets
-from bend2.cache import Embeddings
+from bend2.cache import Embeddings, Probabilities
 from bend2.catalog import CATALOG
 from bend2.model import Model
 from bend2.results import Run, digest, slug, write_json
@@ -56,6 +55,34 @@ def implementation():
     return sha.hexdigest()
 
 
+def _hash(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+
+
+def protocol_identity(runtime):
+    """Only scientific code and numeric libraries invalidate completed scores."""
+    root = Path(__file__).parent
+    files = [
+        *root.glob("_tasks/*.py"),
+        root / "readouts.py",
+        root / "datasets.py",
+        root / "assets.json",
+        root / "catalog.py",
+        root / "runner.py",
+    ]
+    if (root / "_linear.py").exists():
+        files.append(root / "_linear.py")
+    return _hash(
+        {
+            "sources": {str(path.relative_to(root)): digest(path) for path in sorted(files)},
+            "numeric_runtime": {
+                key: runtime.get(key)
+                for key in ("numpy", "scipy", "scikit-learn", "pandas", "py2bit")
+            },
+        }
+    )
+
+
 def _inputs(task, data):
     if task == "atlas_profile":
         return data["population"].query('split != "excluded_source_family"').sequence
@@ -87,7 +114,9 @@ def evaluate(
     ``tasks='all'`` selects every supported capability, recording others as
     skipped. Explicitly requested unsupported tasks fail before data downloads.
     Reusing an output directory resumes completed tasks; a revision is required
-    for resume. The model identity, runtime and package source must match.
+    for resume. Batch size and descriptive metadata may change. Weights, adapter
+    inference settings and the scientific protocol must match. Inference caches
+    are independent of command-line, documentation and result-format changes.
     """
     if not isinstance(model, Model):
         raise TypeError("Pass a bend2.Model, for example Model('mine', embed=encode)")
@@ -122,24 +151,46 @@ def evaluate(
         .resolve()
     )
     output.mkdir(parents=True, exist_ok=True)
-    identity_spec = {
-        "model": model.identity(),
-        "environment": environment(),
-        "implementation": implementation(),
-        "batch_size": batch_size,
+    runtime = environment()
+    inference_runtime = {
+        key: runtime[key]
+        for key in ("python", "numpy", "torch", "transformers", "tokenizers", "jax", "tensorflow")
+        if key in runtime
+    }
+    inference_specs = {
+        capability: {
+            "format": 2,
+            "model": model.inference_identity(capability),
+            "runtime": inference_runtime,
+        }
+        for capability in model.metadata()["capabilities"]
     }
     if not model.revision:
-        identity_spec["uncached_run"] = uuid.uuid4().hex
-    identity = hashlib.sha256(json.dumps(identity_spec, sort_keys=True).encode()).hexdigest()
+        for spec in inference_specs.values():
+            spec["uncached_run"] = uuid.uuid4().hex
+    inference_ids = {key: _hash(value) for key, value in inference_specs.items()}
+    identity_spec = {
+        "model": model.identity(),
+        "inference": inference_ids,
+        "protocol": protocol_identity(runtime),
+    }
+    identity = _hash(identity_spec)
     run = Run(output)
     # OS-backed locking is released after a crash and works on Windows, Linux and macOS.
     with FileLock(output / ".run.lock", timeout=0):
         if (output / "result.json").exists():
             result = run.validate()
-            if result["identity"] != identity:
+            previous = result["identity_spec"]
+            if (
+                previous.get("inference") != inference_ids
+                or previous.get("protocol") != identity_spec["protocol"]
+            ):
                 raise ValueError(
-                    "This output belongs to a different model, batch size, runtime or package. Choose a new output directory. Declare revision= to enable resume."
+                    "This output uses different weights, inference settings or a scientific protocol. "
+                    "Choose a new output directory; compatible cached inference is reused. "
+                    "Declare revision= to enable resume."
                 )
+            result.update(identity=identity, identity_spec=identity_spec, model=model.metadata())
             result["requested_tasks"] = list(dict.fromkeys(result["requested_tasks"] + requested))
             result["skipped"].update(skipped)
         else:
@@ -154,25 +205,45 @@ def evaluate(
                 "identity": identity,
                 "identity_spec": identity_spec,
                 "model": model.metadata(),
-                "environment": identity_spec["environment"],
+                "environment": runtime,
+                "inference_specs": inference_specs,
                 "created_at": timestamp.isoformat(),
                 "requested_tasks": requested,
                 "skipped": skipped,
                 "tasks": {},
             }
-            if model._source_file:
-                (output / "model.py").write_bytes(model._source_file.read_bytes())
-                result["adapter_file"] = digest(output / "model.py")
+            # Preserve the small installed implementation, including bundled adapters.
+            # A development version string or source digest alone is not recoverable code.
+            root = Path(__file__).parent
+            result["implementation_files"] = {}
+            for source in sorted([*root.rglob("*.py"), *root.rglob("*.json")]):
+                relative = Path("implementation/bend2") / source.relative_to(root)
+                destination = output / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(source.read_bytes())
+                result["implementation_files"][relative.as_posix()] = digest(destination)
+        if model._source_file:
+            (output / "model.py").write_bytes(model._source_file.read_bytes())
+            result["adapter_file"] = digest(output / "model.py")
+        result.setdefault("invocations", []).append(
+            {
+                "started_at": timestamp.isoformat(),
+                "batch_size": batch_size,
+                "environment": runtime,
+                "implementation": implementation(),
+            }
+        )
         result["status"] = "running"
         result.pop("error", None)
         write_json(output / "result.json", result)
-        store = None
-        shared, data_cache = {}, {}
+        store, prior_store = None, None
+        cache_root = datasets.cache_root(cache_dir)
+        shared = {"scratch_dir": cache_root / "readouts", "progress": notify}
+        shared["scratch_dir"].mkdir(parents=True, exist_ok=True)
+        data_cache = {}
         try:
             if any(task != "prior" for task in selected):
-                store = Embeddings(
-                    datasets.cache_root(cache_dir) / "embeddings" / f"{identity}.sqlite"
-                )
+                store = Embeddings(cache_root / "embeddings" / f"{inference_ids['embed']}.sqlite")
             for task in selected:
                 notify(f"{task}: {CATALOG[task][2]}")
                 started = time.monotonic()
@@ -192,6 +263,10 @@ def evaluate(
                             f"Data identity changed for {task}; use a new output directory"
                         )
                     notify(f"{task}: using verified completed result")
+                    if family != "cell_selective":
+                        closed = data_cache.pop(family)
+                        if hasattr(closed.get("sequences"), "close"):
+                            closed["sequences"].close()
                     continue
                 probabilities = None
                 inference = {}
@@ -202,25 +277,12 @@ def evaluate(
                         sequence[:position] + "N" + sequence[position + 1 :]
                         for sequence, position in zip(panel.sequence, positions, strict=True)
                     ]
-                    batches = []
-                    for start in range(0, len(masked), batch_size):
-                        values = model.probabilities(
-                            masked[start : start + batch_size],
-                            positions[start : start + batch_size],
-                        )
-                        rows = len(masked[start : start + batch_size])
-                        if (
-                            not isinstance(values, np.ndarray)
-                            or values.ndim not in (2, 3)
-                            or values.shape[0] != rows
-                            or values.shape[-1] != 4
-                            or (values.ndim == 3 and values.shape[1] == 0)
-                        ):
-                            raise ValueError(
-                                "probabilities must return NumPy [batch, 4] or [batch, queries, 4], in A/C/G/T order"
-                            )
-                        batches.append(values.copy())
-                    probabilities = np.concatenate(batches)
+                    prior_store = Probabilities(
+                        cache_root / "probabilities" / f"{inference_ids['probabilities']}.sqlite"
+                    )
+                    probabilities, inference = prior_store.evaluate(
+                        masked, positions, model.probabilities, batch_size, notify
+                    )
                 else:
                     inference = store.fill(_inputs(task, data), model.embed, batch_size, notify)
                 notify(f"{task}: fitting and scoring the fixed protocol")
@@ -263,6 +325,8 @@ def evaluate(
         finally:
             if store is not None:
                 store.close()
+            if prior_store is not None:
+                prior_store.close()
             for data in data_cache.values():
                 if hasattr(data.get("sequences"), "close"):
                     data["sequences"].close()

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 import marshal
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -32,6 +33,7 @@ class Model:
     pooling: str = ""
     probability_interface: str = ""
     source: str = ""
+    inference_config: dict = field(default_factory=dict)
     _source_file: Path | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
@@ -52,6 +54,10 @@ class Model:
         ):
             if not isinstance(getattr(self, key), str):
                 raise TypeError(f"{key} must be a string")
+        if not isinstance(self.inference_config, dict):
+            raise TypeError("inference_config must be a JSON object")
+        # Copy declarations so mutating the caller's configuration cannot change a run.
+        self.inference_config = json.loads(json.dumps(self.inference_config, allow_nan=False))
 
     def metadata(self):
         fields = (
@@ -64,10 +70,31 @@ class Model:
             "source",
         )
         result = {name: getattr(self, name).strip() for name in fields}
+        result["inference_config"] = self.inference_config
         result["capabilities"] = [
             name for name in ("embed", "probabilities") if getattr(self, name) is not None
         ]
         return result
+
+    def inference_identity(self, capability):
+        """Cache weights, representation and adapter code independently of display metadata.
+
+        Declare inference-affecting options (precision, preprocessing and device) in
+        ``inference_config``. Change ``revision`` when weights or external helpers change.
+        Callbacks must produce the same representation independently of batch size.
+        """
+        if capability not in ("embed", "probabilities") or getattr(self, capability) is None:
+            raise ValueError(f"Model does not provide {capability}")
+        fields = (
+            ("revision", "representation", "pooling")
+            if capability == "embed"
+            else ("revision", "probability_interface")
+        )
+        return {
+            **{key: getattr(self, key).strip() for key in fields},
+            "inference_config": self.inference_config,
+            "adapter": _inference_code(getattr(self, capability)),
+        }
 
     def identity(self):
         """Bind declared weights/preprocessing and the adapter's available source."""
@@ -96,6 +123,74 @@ class Model:
         if self._source_file is not None:
             result["adapter"]["file"] = hashlib.sha256(self._source_file.read_bytes()).hexdigest()
         return result
+
+
+def _inference_code(function):
+    """Fingerprint executable callback source and its local callable helpers.
+
+    Keep the complete adapter file in run provenance; editing its model label or
+    citation should not invalidate expensive inference. External weights, mutable
+    state and non-callable configuration are declared by revision/configuration.
+    """
+
+    def owner(value):
+        if inspect.ismethod(value):
+            bound = value.__self__
+            return bound if inspect.isclass(bound) else type(bound)
+        return value if inspect.isroutine(value) or inspect.isclass(value) else type(value)
+
+    pending, seen, sources = [owner(function)], set(), {}
+    while pending:
+        item = pending.pop()
+        if id(item) in seen:
+            continue
+        seen.add(id(item))
+        try:
+            source = inspect.getsource(item).encode()
+        except (OSError, TypeError):
+            code = getattr(item, "__code__", None)
+            source = marshal.dumps(code) if code else repr(item).encode()
+        name = getattr(item, "__qualname__", type(item).__qualname__)
+        sources[name] = hashlib.sha256(source).hexdigest()
+        module = getattr(item, "__module__", None)
+        if inspect.isclass(item):
+            # Capture inherited adapter implementations, without following an
+            # imported framework's class hierarchy or traversing model weights.
+            pending.extend(base for base in item.__bases__ if base.__module__ == module)
+            methods = []
+            for member in vars(item).values():
+                if isinstance(member, (staticmethod, classmethod)):
+                    methods.append(member.__func__)
+                elif isinstance(member, property):
+                    methods.extend(part for part in (member.fget, member.fset) if part)
+                else:
+                    methods.append(member)
+            # Fingerprint methods independently too: notebook-defined classes
+            # often have no inspectable class source, while their code is present.
+            pending.extend(
+                member
+                for member in methods
+                if (inspect.isfunction(member) or inspect.isclass(member))
+                and getattr(member, "__module__", None) == module
+            )
+            continue
+        else:
+            methods = [item]
+        for method in methods:
+            code = getattr(method, "__code__", None)
+            namespace = getattr(method, "__globals__", {})
+            helpers = [namespace.get(key) for key in code.co_names] if code else []
+            for cell in getattr(method, "__closure__", None) or ():
+                try:
+                    helpers.append(cell.cell_contents)
+                except ValueError:  # An uninitialized closure cell has no dependency yet.
+                    pass
+            for helper in helpers:
+                if callable(helper):
+                    target = owner(helper)
+                    if getattr(target, "__module__", None) == module:
+                        pending.append(target)
+    return sources
 
 
 def composition():

@@ -98,6 +98,29 @@ def main(argv=None):
         "export", help="Check files and create a leaderboard submission.zip"
     )
     export.add_argument("directory", type=Path)
+    submit = commands.add_parser(
+        "submit", help="Prepare a small leaderboard PR record from an evaluated run"
+    )
+    submit.add_argument("directory", type=Path)
+    submit.add_argument("--evidence-url", required=True, help="Public HTTPS URL of submission.zip")
+    submit.add_argument("--output", type=Path, help="Destination submissions/<model-id>.json")
+    submit.add_argument("--model-url", help="Model/checkpoint page, if not declared in source=")
+    submit.add_argument(
+        "--adapter-url", help="Adapter source, if model.py is absent from the bundle"
+    )
+    submit.add_argument("--family", default="", help="Model family name")
+    submit.add_argument("--parameter-label", default="", help="Display size, for example 117M")
+    validate = commands.add_parser("validate-submission", help="Validate a contribution as data")
+    validate.add_argument("path", type=Path)
+    validate.add_argument("--bundle", type=Path, help="Also check a downloaded evidence ZIP")
+    leaderboard = commands.add_parser(
+        "build-leaderboard", help="Combine reviewed submissions with frozen paper results"
+    )
+    leaderboard.add_argument(
+        "--reference", type=Path, default=Path("website/data/benchmark.paper.json")
+    )
+    leaderboard.add_argument("--submissions", type=Path, default=Path("submissions"))
+    leaderboard.add_argument("--output", type=Path, default=Path("website/data/benchmark.json"))
     args = parser.parse_args(argv)
     try:
         if args.command == "tasks":
@@ -120,6 +143,45 @@ def main(argv=None):
                     "Bundle created for inspection; complete the run and declarations before submitting.",
                     file=sys.stderr,
                 )
+            return 0
+        if args.command == "submit":
+            from bend2.submissions import prepare_submission
+
+            path = prepare_submission(
+                Run(args.directory),
+                args.evidence_url,
+                args.output,
+                model_url=args.model_url,
+                adapter_url=args.adapter_url,
+                family=args.family,
+                parameter_label=args.parameter_label,
+            )
+            print(f"Prepared {path}")
+            print(
+                "Open a pull request adding this file under submissions/ on the benchmark branch."
+            )
+            print(
+                "Guide: https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md"
+            )
+            print("Nothing has been uploaded or published by this command.")
+            return 0
+        if args.command == "validate-submission":
+            from bend2.submissions import validate_submission
+
+            record = validate_submission(args.path, bundle=args.bundle)
+            print(f"Valid: {record['model']['name']}")
+            print(
+                "Evidence bundle verified."
+                if args.bundle
+                else "Metadata/protocol checked; evidence bundle not checked."
+            )
+            return 0
+        if args.command == "build-leaderboard":
+            from bend2.submissions import build_leaderboard
+
+            data = build_leaderboard(args.reference, args.submissions, args.output)
+            count = sum(model.get("origin") == "community" for model in data["models"])
+            print(f"Built {args.output}: {count} community models; frozen paper rows retained")
             return 0
         model = load_model(args.model)
         last = 0.0
@@ -160,6 +222,7 @@ def main(argv=None):
         print(f"\nResults: {result.directory / 'result.json'}")
         print(f"Submission: {result.submission}")
         print(f"Bundle: bend2 export {shlex.quote(str(result.directory))}")
+        print("Next: host the ZIP, then use bend2 submit with its --evidence-url.")
         return 0
     except KeyboardInterrupt:
         print(

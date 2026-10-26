@@ -72,7 +72,8 @@ Keep these declarations with your adapter:
 | `training_data` | Pretraining and subsequent training data, including possible benchmark exposure |
 | `representation` | Output layer and any projection or feature transformation |
 | `pooling` | How sequence or token outputs become one vector |
-| `source` | Optional model, checkpoint, or implementation URL |
+| `source` | Model, checkpoint, or implementation URL (needed for submission) |
+| `inference_config` | JSON object of numerical/preprocessing options such as precision, device and windowing |
 
 Only a name and one callable are needed for local exploration. Missing
 checkpoint or training declarations mark the submission incomplete; fill
@@ -85,6 +86,28 @@ weights. A moving branch such as `main` is not a checkpoint identity.
 Changing weights, preprocessing, or a remote model endpoint requires a new
 revision and a new run. Accurate training-data declarations matter even when
 the package can reproduce the score.
+
+### Inference configuration and reuse
+
+For example, set `inference_config={"precision": "float32", "device": "cuda:0"}`
+when these affect your implementation. Include closure parameters and helper
+configuration that can alter outputs. The cache binds the checkpoint, representation,
+pooling, callback/class source, local callable helpers, numerical runtime and
+these explicit settings. Change the revision when external helper code or weights
+change. Arbitrary mutable Python state cannot be inferred automatically.
+
+Representations must be independent of batch size and input ordering. Disable
+training-time randomness, padding-dependent pooling and stateful batch statistics.
+Changing batch size, display name, source link or training-data description can
+reuse completed inference; changing an inference setting cannot.
+
+## Reference model adapters
+
+[DNABERT-2 embeddings and NTv3 native prior](reference-models.md) have explicit,
+pinned model-specific interfaces. They preserve the allowed sequence context and
+identify their precision, pooling and checkpoint code. Use these when evaluating
+those exact configurations; a generic model loader does not establish scientific
+equivalence with a paper row.
 
 ## Hugging Face models
 

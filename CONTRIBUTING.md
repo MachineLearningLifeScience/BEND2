@@ -1,8 +1,9 @@
 # Contributing to BEND 2.0
 
-The main contribution is a benchmark result. **Adding your model does not
-require a fork or pull request.** Implement the model interface, run the tasks,
-and follow [the submission guide](docs/submitting.md).
+The main contribution is a benchmark result. Implement the model interface,
+run the tasks, and submit one generated JSON file in a pull request. An issue
+form is available if you prefer maintainer help. Neither route requires adding
+your model implementation to this repository. See [the submission guide](docs/submitting.md).
 
 ## Improve the package
 
@@ -50,6 +51,8 @@ review branch.
 - `src/bend2/`: the installable package and task implementations.
 - `examples/`: small, complete examples people can adapt.
 - `docs/`: model, task, and submission guidance.
+- `submissions/`: reviewed community result records.
+- `website/`: static site and additive leaderboard build.
 
 Generated runs, model checkpoints, personal job scripts, manuscripts, figures,
 and experiment archives do not belong in this source tree. Link a scientific

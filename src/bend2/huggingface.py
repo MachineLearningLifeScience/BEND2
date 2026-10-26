@@ -56,6 +56,13 @@ def model(
         ),
         pooling="mean non-special tokens; same-length batches; no padding or truncation",
         source=f"https://huggingface.co/{checkpoint}/tree/{revision}",
+        inference_config={
+            "checkpoint": checkpoint,
+            "device": device,
+            "precision": "float32",
+            "max_tokens": max_tokens,
+            "trust_remote_code": trust_remote_code,
+        },
     )
 
 
