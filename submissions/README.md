@@ -35,3 +35,7 @@ Do not add example results here: every JSON in this directory becomes a
 community row in a build. No ZIPs, predictions, model implementations or weights
 belong in this directory. Use the issue form if you prefer a maintainer to open
 the PR for you.
+
+Publication also requires a matching maintainer-generated receipt in `reviews/`.
+Contributors do not add their own acceptance or reproduction status. See the
+[review guide](../docs/reviewing.md) for trusted rescoring and selective reruns.

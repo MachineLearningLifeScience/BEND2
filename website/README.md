@@ -31,11 +31,12 @@ when that release information is available.
 
 ## Website data integration
 
-The leaderboard is built from two reviewable inputs:
+The leaderboard is built from three reviewable inputs:
 
 - `data/benchmark.paper.json`: the frozen paper snapshot.
 - `../submissions/*.json`: community contributions accepted by maintainer review
   and merge into the publication branch.
+- `../reviews/*.json`: matching trusted rescoring receipts and any per-task rerun records.
 
 Generate the frontend's combined `data/benchmark.json`:
 
@@ -46,8 +47,11 @@ python website/scripts/build_leaderboard.py
 Run this after installing the repository package (`pip install -e .`) and before
 the website's static build. The same builder is available as
 `bend2.submissions.build_leaderboard` for other build systems. Arguments
-`--reference`, `--submissions` and `--output` support local previews in separate
-folders. The builder does not download evidence or run model code.
+`--reference`, `--submissions`, `--reviews` and `--output` support separate
+folders. Publication requires every contribution to have a valid matching review.
+Use `--preview` (or `BEND2_PREVIEW_SUBMISSIONS=1` with npm) only for PR previews;
+all community rows and task details are explicitly labelled **Awaiting review**
+in preview mode, even when the PR includes a proposed receipt. The builder does not download evidence or run model code.
 
 The output adds community models, eight task cells per model and evidence
 sources. Missing tasks stay missing. It preserves all paper models,
@@ -69,9 +73,13 @@ arrays in `data/benchmark.json`. Community records extend that shape:
   its own probability interface even when that model also provides embeddings.
 - Each measurement links to its source with `sourceId`; its original value is
   in `sourceValue`. Intervals retain their sampling unit. An unrun endpoint has
-  `value: null` and an explanatory note.
+  `value: null` and an explanatory note. Evaluated community cells carry
+  `verification.status`: `contributor_evaluated`, `reproduced_by_bend`, or
+  `pending_review` in previews. `verification.reviewPath` links to the receipt.
+  Reproduced cells also contain the rerun metric, reviewer, notes and evidence.
+  The CSV export includes the per-task verification status.
 - Its source includes the evidence download `url`, `sha256`, `runIdentity`,
-  `protocolVersion`, and `submissionPath`.
+  `protocolVersion`, `submissionPath` and `reviewPath`.
 
 Show a community label and these source links in model/result details. Do not
 label a community result as "Manuscript Table 1" or link it to the paper's source
@@ -89,7 +97,13 @@ Only the publication branch should deploy the public site. A pull request can
 build a preview with its candidate contribution, but a preview is not an
 accepted public leaderboard result. Require maintainer review for contribution
 PRs and verify their downloaded evidence before merging; see
-[the maintainer procedure](../docs/submitting.md#maintainer-review).
+[the maintainer procedure](../docs/reviewing.md).
+
+PR CI enables preview mode; push builds require matching receipts. Neither
+performs the actual trusted rescoring. Maintainers do that before acceptance.
+Receipt JSON is not authentication: require protected-branch review before
+publishing it. A contributor can create JSON fields but cannot self-grant a
+public status merely by submitting them.
 
 No deployment workflow is assumed or installed here. Connect this build step to
 the website's chosen static hosting workflow when that deployment is configured.

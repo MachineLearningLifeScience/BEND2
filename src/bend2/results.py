@@ -1,4 +1,4 @@
-"""Readable results and a portable, inspectable leaderboard submission."""
+"""Saved scores, analysis tables and optional portable leaderboard evidence."""
 
 from __future__ import annotations
 
@@ -38,7 +38,12 @@ def slug(name):
 
 
 class Run:
-    """A result directory that remains useful without Python or BEND installed."""
+    """Open saved scores and tables without loading a model or rerunning evaluation.
+
+    ``evaluate`` and ``combine`` return a Run. Reopen one with
+    ``Run("results/my-model")`` in a later Python session. Its JSON and Parquet
+    files also remain readable without BEND installed.
+    """
 
     def __init__(self, directory):
         self.directory = Path(directory).expanduser().resolve()
@@ -49,18 +54,57 @@ class Run:
 
     @property
     def scores(self):
+        """Headline values by completed task; units and intervals are in to_dataframe()."""
         return {task: row["metric"]["value"] for task, row in self.data["tasks"].items()}
+
+    @property
+    def tables(self):
+        """Available saved table names by completed task, without reading their contents."""
+        return {
+            task: sorted(_table_paths(task, row)) for task, row in self.data["tasks"].items()
+        }
+
+    def table(self, task, name="predictions", *, columns=None):
+        """Read one saved analysis table as a pandas DataFrame.
+
+        Use ``run.tables`` to discover names such as ``predictions``, ``choices``
+        or ``groups``. ``columns=[...]`` reads only selected columns. The saved
+        file's checksum is checked before reading; this does not recompute its
+        scientific results. No model, data download or inference is involved.
+        """
+        import pandas as pd
+
+        data = self.data
+        if task not in data["tasks"]:
+            available = ", ".join(data["tasks"]) or "none"
+            raise ValueError(f"No saved result for task {task!r}. Available tasks: {available}")
+        row = data["tasks"][task]
+        tables = _table_paths(task, row)
+        if name not in tables:
+            available = ", ".join(sorted(tables)) or "none"
+            raise ValueError(
+                f"No saved table {name!r} for {task}. Available tables: {available}"
+            )
+        relative = tables[name]
+        path = (self.directory / relative).resolve()
+        if not path.is_relative_to(self.directory) or not path.is_file():
+            raise ValueError(f"Missing or unsafe result artifact: {relative}")
+        if digest(path) != row["files"][relative]:
+            raise ValueError(f"Result artifact changed: {relative}")
+        return pd.read_parquet(path, columns=columns)
 
     @property
     def submission(self):
         return self.directory / "submission.json"
 
     def to_dataframe(self):
+        """One row per completed task, with its value, units, direction and any interval."""
         import pandas as pd
 
-        return pd.DataFrame(
-            [{"task": task, **row["metric"]} for task, row in self.data["tasks"].items()]
-        )
+        rows = [{"task": task, **row["metric"]} for task, row in self.data["tasks"].items()]
+        if not rows:
+            return pd.DataFrame(columns=["task", "name", "value", "unit", "direction", "ci95"])
+        return pd.DataFrame(rows)
 
     def prepare_submission(self, evidence_url, output=None, **metadata):
         """Prepare the JSON for a leaderboard PR after hosting :meth:`bundle`."""
@@ -215,3 +259,12 @@ class Run:
                     shutil.copyfileobj(source, dest)
         os.replace(temporary, destination)
         return destination
+
+
+def _table_paths(task, row):
+    """Expose recorded task tables only, never arbitrary paths from a caller."""
+    return {
+        Path(relative).stem: relative
+        for relative in row["files"]
+        if Path(relative).parent == Path(task) and Path(relative).suffix == ".parquet"
+    }

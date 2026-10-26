@@ -5,8 +5,10 @@ command. BEND publishes the evidence and opens a pull request containing
 **one generated JSON file**. You do not need to clone BEND,
 add model code to its repository, upload weights, or run every task.
 
-A pull request is the submission and its review history. Merging it adds the
-row on the next website build. Results remain linked to their exact evidence;
+A pull request is the submission and its review history. Maintainers independently
+rescore every submitted task against trusted benchmark labels, review the model
+setup, and add a review record before merging. The row appears on the next
+website build. Results remain linked to their exact evidence;
 there is no account, separate submission service, or spreadsheet to maintain.
 
 ## The shortest path
@@ -127,7 +129,7 @@ required for notebook runs without a saved adapter and is also useful when
 `model.py` needs supporting files.
 
 This writes `community-<identity>.json` beside your results. The command
-checks the complete frozen cohorts, metric units, scientific protocols and
+checks declared cohort fingerprints, metric units, scientific protocols and
 bundle hashes. The identity follows the checkpoint, representation,
 preprocessing and adapter. Changing the display name, descriptive metadata,
 adapter's file location, batch size or evaluated task subset keeps the same
@@ -191,50 +193,38 @@ retain their explanation. An undefined metric is not replaced by zero and
 cannot be submitted as a completed endpoint. Raw estimates and available
 bootstrap intervals remain in the contribution.
 
-The site displays community rows separately identifiable from the frozen paper
-results. Its optional reference index uses the existing frozen baselines and
+Accepted community results are labelled **Contributor evaluated**. Every submitted
+task has been independently rescored from its predictions against trusted labels.
+Selected tasks that a BEND maintainer also independently reruns are labelled
+**Reproduced by BEND**, with the rerun evidence linked on that task. Other tasks
+keep their contributor-evaluated label. Neither label establishes absence of
+training-data overlap or benchmark contamination.
+
+The site keeps community rows distinguishable from the frozen paper results. Its optional reference index uses the existing frozen baselines and
 reference model, the same display precision, and the same missing-task policy.
 Adding a submission does not recompute the paper's results or change its anchors.
 An embedding result remains a fitted-readout result; a native probability result
 keeps the declared probability interface.
 
-## Maintainer review
+## What review asks of you
 
-1. Check the PR changes only its intended contribution file. Use the trusted
-   benchmark code to validate it:
+Run the frozen benchmark with an immutable checkpoint and the documented model
+interface. Keep your adapter reproducible and disclose known training-data or
+benchmark overlap in the existing model declaration. The CLI includes your
+predictions, decisions, protocol and code in the exported evidence automatically.
+No additional hand-written score table or reviewer receipt is required from you.
 
-   ```bash
-   bend2 validate-submission submissions/community-IDENTITY.json \
-     --bundle /path/to/downloaded/submission.zip
-   ```
+Maintainers check the complete cohorts, labels, decisions, metrics and confidence
+intervals independently. They also review the adapter, pooling, context handling
+and fitting setup. A score can be internally consistent and still come from the
+wrong model or a leaked readout; prediction-only checks cannot establish execution.
+Selected entries may therefore be independently rerun, including leading or
+unusual results and random audits. Be prepared to clarify the setup or help make
+it reproducible. Publication does not wait for every model to enter a BEND compute
+queue.
 
-   Download the evidence URL from the contribution first. Validation reads the
-   ZIP in place and checks its SHA256, recorded run identity, protocol, cohort
-   hashes and every declared evidence artifact. It does not import or execute
-   the submitted adapter. Validation without `--bundle` checks the contribution
-   metadata only; that is useful in a PR check but is not evidence review.
-
-2. Review the checkpoint, adapter, context handling and training-data disclosure.
-   Check prediction-level evidence for the reported endpoints. Recorded hashes
-   establish consistency; they do not prove which weights ran or absence of
-   label leakage. Request corrections in the same PR if needed.
-
-3. Approve and merge. A submission cannot set an `accepted` flag itself. The
-   publication branch's reviewed `submissions/` files define the community rows.
-   Build the website from `website/data/benchmark.paper.json` plus those files; keep
-   the frozen reference data unchanged.
-
-Use a required maintainer review on the publication branch and publish only
-from that branch. A PR preview can include a candidate row for inspection,
-but should not deploy it to the public leaderboard. These are repository
-settings/deployment choices, not a status field provided by the contributor.
-[GitHub protected branch documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
-
-The repository's `benchmark.yml` workflow checks the three contributor workflows
-and builds the website on pull requests. The build validates every contribution's
-metadata and protocol; it does not download external evidence or execute model
-adapters. Evidence review remains the explicit maintainer step above.
-
-The website build is deterministic and additive. Removing a community JSON in
-a reviewed PR removes its row on the next build. Corrections and withdrawals
-therefore remain visible in Git history.
+The [maintainer guide](reviewing.md) describes rescoring, acceptance and selective
+reproduction. The public website builds from reviewed records on the publication
+branch. PR previews mark unreviewed candidates explicitly; they are not accepted
+leaderboard entries. Corrections require a new matching review record. Withdrawals
+remove the submission and its review in a reviewed PR, preserving their history.

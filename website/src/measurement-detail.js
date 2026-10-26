@@ -65,7 +65,7 @@ function resultMarkup(task, cell, repeats) {
       ? (cell.notes?.[0] || "Not evaluated in this submission") : "Result not available in this snapshot";
   const uncertainty = measured && cell.uncertainty;
   const repeatValues = measured ? (repeats?.repeatValues || []).filter(finite) : [];
-  return `<div class="measurement-result${measured ? "" : " is-missing"}"><span class="measurement-value">${escape(cell?.displayValue || "—")}</span><div class="measurement-metric"><span>${escape(metrics[task.id] || task.metric)}</span><small>${measured ? `${task.direction === "lower" ? "Lower" : "Higher"} is better` : escape(status)}</small></div></div>${uncertainty ? `<p class="measurement-uncertainty"><span>${format(100 * uncertainty.level, 0)}% interval</span> <strong>${format(uncertainty.low, task.precision)}–${format(uncertainty.high, task.precision)}</strong></p>` : ""}${repeatValues.length ? `<div class="measurement-repeats"><dl>${repeatValues.map((value, index) => `<div><dt>RNA measurement ${index + 1}</dt><dd>${format(value, task.precision)}</dd></div>`).join("")}</dl><p>Repeat measurements, not confidence intervals.</p></div>` : ""}`;
+  return `${cell?.verification ? `<p class="measurement-verification">${escape(cell.verification.label)}</p>` : ""}<div class="measurement-result${measured ? "" : " is-missing"}"><span class="measurement-value">${escape(cell?.displayValue || "—")}</span><div class="measurement-metric"><span>${escape(metrics[task.id] || task.metric)}</span><small>${measured ? `${task.direction === "lower" ? "Lower" : "Higher"} is better` : escape(status)}</small></div></div>${uncertainty ? `<p class="measurement-uncertainty"><span>${format(100 * uncertainty.level, 0)}% interval</span> <strong>${format(uncertainty.low, task.precision)}–${format(uncertainty.high, task.precision)}</strong></p>` : ""}${repeatValues.length ? `<div class="measurement-repeats"><dl>${repeatValues.map((value, index) => `<div><dt>RNA measurement ${index + 1}</dt><dd>${format(value, task.precision)}</dd></div>`).join("")}</dl><p>Repeat measurements, not confidence intervals.</p></div>` : ""}`;
 }
 
 function sourceMarkup(data, cell, task) {
@@ -75,7 +75,22 @@ function sourceMarkup(data, cell, task) {
     try { if (new URL(contribution.url).protocol === "https:") evidenceURL = contribution.url; } catch {}
     const recordURL = /^submissions\/community-[a-z0-9-]+\.json$/.test(contribution.submissionPath)
       ? `https://github.com/yhsure/genomic-bending/blob/benchmark/${contribution.submissionPath}` : "";
-    return `<div class="measurement-source"><p>Community submission<br>Protocol <code>${escape(contribution.protocolVersion)}</code>${cell?.sourceRecordId ? ` · <code>${escape(cell.sourceRecordId)}</code>` : ""}</p>${finite(cell?.sourceValue) ? `<p>Source estimate: <code>${escape(cell.sourceValue)}</code>. Display and ranking use the same precision as the paper rows.</p>` : ""}<p>${evidenceURL ? `<a href="${escape(evidenceURL)}" target="_blank" rel="noopener noreferrer">Download evaluation evidence ↓</a>` : ""}${recordURL ? ` · <a href="${escape(recordURL)}" target="_blank" rel="noopener noreferrer">Submission record ↗</a>` : ""}</p><p>Evidence SHA256: <code>${escape(contribution.sha256)}</code></p></div>`;
+    const reviewURL = /^reviews\/community-[a-z0-9-]+\.json$/.test(contribution.reviewPath || "")
+      ? `https://github.com/yhsure/genomic-bending/blob/benchmark/${contribution.reviewPath}` : "";
+    const audit = cell?.verification?.reproduction;
+    let rerunURL = "";
+    try { if (new URL(audit?.evidence?.url).protocol === "https:") rerunURL = audit.evidence.url; } catch {}
+    const missing = cell?.status === "not_evaluated";
+    const label = missing ? "Not evaluated" : (cell?.verification?.label || "Community submission");
+    const explanation = missing
+      ? "No score was submitted for this task. The linked evidence covers this model's evaluated tasks."
+      : cell?.verification?.rescored
+      ? "Predictions, decisions and scores were independently checked against the frozen benchmark labels."
+      : "This is an unreviewed preview. It has not been accepted for the public leaderboard.";
+    const reproduction = audit
+      ? `<p>Independently rerun by ${escape(audit.reviewer)}. Rerun estimate: <code>${escape(audit.metric.value)}</code>. ${escape(audit.notes)}${rerunURL ? ` <a href="${escape(rerunURL)}" target="_blank" rel="noopener noreferrer">Rerun evidence ↗</a>` : ""}</p>`
+      : (cell?.verification?.rescored ? "<p>Model execution has not been independently reproduced for this task.</p>" : "");
+    return `<div class="measurement-source"><p>${escape(label)}</p><p>${explanation}</p>${reproduction}${reviewURL ? `<p><a href="${escape(reviewURL)}" target="_blank" rel="noopener noreferrer">Review record ↗</a></p>` : ""}<p>Protocol <code>${escape(contribution.protocolVersion)}</code>${cell?.sourceRecordId ? ` · <code>${escape(cell.sourceRecordId)}</code>` : ""}</p>${finite(cell?.sourceValue) ? `<p>Source estimate: <code>${escape(cell.sourceValue)}</code>. Display and ranking use the same precision as the paper rows.</p>` : ""}<p>${evidenceURL ? `<a href="${escape(evidenceURL)}" target="_blank" rel="noopener noreferrer">Download evaluation evidence ↓</a>` : ""}${recordURL ? ` · <a href="${escape(recordURL)}" target="_blank" rel="noopener noreferrer">Submission record ↗</a>` : ""}</p><p>Evidence SHA256: <code>${escape(contribution.sha256)}</code></p></div>`;
   }
   const source = data.sources?.find((item) => item.id === "table-1-records");
   const path = /^provenance\/[a-z0-9_./-]+$/i.test(source?.snapshotPath || "")

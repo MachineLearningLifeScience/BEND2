@@ -136,7 +136,7 @@ def main(argv=None):
     show.add_argument("directory", type=Path)
     show.add_argument("--json", action="store_true", help="Print the saved result JSON")
     combine = commands.add_parser(
-        "combine", help="Combine compatible task runs into one submission"
+        "combine", help="Combine compatible task runs into one result directory"
     )
     combine.add_argument("directories", nargs="+", type=Path)
     combine.add_argument("--output", required=True, type=Path)
@@ -189,6 +189,36 @@ def main(argv=None):
     validate = commands.add_parser("validate-submission", help="Validate a contribution as data")
     validate.add_argument("path", type=Path)
     validate.add_argument("--bundle", type=Path, help="Also check a downloaded evidence ZIP")
+    rescore = commands.add_parser(
+        "rescore-submission",
+        help="Maintainers: independently score evidence against trusted labels",
+    )
+    rescore.add_argument("path", type=Path)
+    rescore.add_argument("--bundle", required=True, type=Path)
+    rescore.add_argument("--output", required=True, type=Path, help="New reviews/<model-id>.json")
+    rescore.add_argument("--cache-dir", type=Path)
+    reproduce = commands.add_parser(
+        "record-reproduction", help="Maintainers: record independently rerun tasks"
+    )
+    reproduce.add_argument("path", type=Path, help="Original submission JSON")
+    reproduce.add_argument("--review", required=True, type=Path, help="Review receipt to update")
+    reproduce.add_argument(
+        "--run", required=True, type=Path, help="Fresh independent result directory"
+    )
+    reproduce.add_argument("--tasks", required=True, help="Comma-separated tasks actually rerun")
+    reproduce.add_argument(
+        "--evidence-url", required=True, help="Hosted ZIP of the independent run"
+    )
+    reproduce.add_argument("--reviewer", required=True)
+    reproduce.add_argument(
+        "--notes", required=True, help="Environment, setup and observed differences"
+    )
+    reproduce.add_argument(
+        "--attest-independent",
+        action="store_true",
+        help="Attest that you ran the model with a fresh inference cache",
+    )
+    reproduce.add_argument("--cache-dir", type=Path)
     leaderboard = commands.add_parser(
         "build-leaderboard", help="Combine reviewed submissions with frozen paper results"
     )
@@ -196,6 +226,10 @@ def main(argv=None):
         "--reference", type=Path, default=Path("website/data/benchmark.paper.json")
     )
     leaderboard.add_argument("--submissions", type=Path, default=Path("submissions"))
+    leaderboard.add_argument("--reviews", type=Path, default=Path("reviews"))
+    leaderboard.add_argument(
+        "--preview", action="store_true", help="Include clearly marked unreviewed candidates"
+    )
     leaderboard.add_argument("--output", type=Path, default=Path("website/data/benchmark.json"))
     args = parser.parse_args(argv)
     try:
@@ -235,7 +269,6 @@ def main(argv=None):
 
             result = combine(args.directories, output=args.output)
             _show(result)
-            print(f"Submit: bend2 submit {shlex.quote(str(result.directory))} --github OWNER/REPO")
             return 0
         if args.command == "export":
             result = Run(args.directory)
@@ -293,15 +326,53 @@ def main(argv=None):
             record = validate_submission(args.path, bundle=args.bundle)
             print(f"Valid: {record['model']['name']}")
             print(
-                "Evidence bundle verified."
+                "Evidence integrity checked; predictions have not been independently rescored."
                 if args.bundle
                 else "Metadata/protocol checked; evidence bundle not checked."
             )
             return 0
+        if args.command == "rescore-submission":
+            from bend2.reviews import rescore_submission
+
+            record = rescore_submission(
+                args.path,
+                args.bundle,
+                output=args.output,
+                cache_dir=args.cache_dir,
+                progress=lambda message: print(message, file=sys.stderr, flush=True),
+            )
+            print(f"Rescored {len(record['rescoring']['tasks'])} tasks: {args.output}")
+            print(
+                "Predictions and decisions checked against trusted labels; model execution is not established."
+            )
+            return 0
+        if args.command == "record-reproduction":
+            from bend2.reviews import record_reproduction
+
+            record_reproduction(
+                args.path,
+                args.review,
+                args.run,
+                tasks=args.tasks,
+                evidence_url=args.evidence_url,
+                reviewer=args.reviewer,
+                notes=args.notes,
+                attest_independent=args.attest_independent,
+                cache_dir=args.cache_dir,
+                progress=lambda message: print(message, file=sys.stderr, flush=True),
+            )
+            print(f"Recorded independently reproduced tasks in {args.review}")
+            return 0
         if args.command == "build-leaderboard":
             from bend2.submissions import build_leaderboard
 
-            data = build_leaderboard(args.reference, args.submissions, args.output)
+            data = build_leaderboard(
+                args.reference,
+                args.submissions,
+                args.output,
+                reviews=args.reviews,
+                preview=args.preview,
+            )
             count = sum(model.get("origin") == "community" for model in data["models"])
             print(f"Built {args.output}: {count} community models; frozen paper rows retained")
             return 0
@@ -341,13 +412,7 @@ def main(argv=None):
         )
         print()
         _show(result)
-        submission = json.loads(result.submission.read_text())
-        if submission["missing_metadata"]:
-            print(f"Before submitting, declare: {', '.join(submission['missing_metadata'])}")
-        print(f"Submit: bend2 submit {shlex.quote(str(result.directory))} --github OWNER/REPO")
-        print(
-            f"Manual hosting: bend2 export {shlex.quote(str(result.directory))}; see bend2 submit --help."
-        )
+        print(f"View later: bend2 show {shlex.quote(str(result.directory))}")
         return 0
     except KeyboardInterrupt:
         print(

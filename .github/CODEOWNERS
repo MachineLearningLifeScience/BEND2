@@ -1,0 +1,7 @@
+# Require code-owner approval on the publication branch before public launch.
+# CODEOWNERS alone does not enable branch protection or approve a submission.
+/submissions/ @yhsure
+/reviews/ @yhsure
+/src/bend2/ @yhsure
+/website/scripts/ @yhsure
+/.github/ @yhsure

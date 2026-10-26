@@ -64,6 +64,8 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
     target, other = np.zeros(len(choices)), np.zeros(len(choices))
     for cell, off in (("hepg2", "k562"), ("k562", "hepg2")):
         use = choices.target_cell.eq(cell) & choices.ID.notna()
+        if not use.any():
+            continue
         target[use] = choices.loc[use, "ID"].map(measured[f"truth_{cell}"])
         other[use] = choices.loc[use, "ID"].map(measured[f"truth_{off}"]).abs()
     evaluated["target"] = evaluated.weight * target

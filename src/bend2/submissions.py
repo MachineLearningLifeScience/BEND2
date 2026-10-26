@@ -1,8 +1,8 @@
 """A small, reviewable contribution file and an additive leaderboard build.
 
-The JSON in ``submissions/`` is the source of truth for community rows. Merging
-its pull request is the acceptance decision; no field in the file grants that
-status. Evidence is read as data, never extracted or executed.
+The JSON in ``submissions/`` records contributor results. Publication also
+requires a matching maintainer-reviewed rescoring receipt in ``reviews/``.
+Evidence is read as data, never extracted or executed.
 """
 
 from __future__ import annotations
@@ -504,6 +504,13 @@ def _verify_bundle(data, bundle):
         )
     with zipfile.ZipFile(bundle) as archive:
         names = archive.namelist()
+        members = archive.infolist()
+        if (
+            len(members) > 2048
+            or sum(item.file_size for item in members) > 1_500_000_000
+            or any(item.file_size > 256_000_000 for item in members)
+        ):
+            raise ValueError("Evidence ZIP exceeds the supported artifact size limits")
         if len(names) != len(set(names)):
             raise ValueError("Duplicate paths in evidence bundle")
         for name in names:
@@ -543,11 +550,13 @@ def _verify_bundle(data, bundle):
                 raise ValueError(f"Evidence file hash mismatch: {name}")
 
 
-def build_leaderboard(base, submissions, output=None):
+def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=False):
     """Add reviewed community rows without modifying paper scores or anchors.
 
     Build from the publication branch's ``submissions/`` after review and merge.
-    A PR checkout can use the same function for a local preview. The base should
+    Each contribution needs a matching reviewed rescoring receipt. A PR can set
+    ``preview=True`` to inspect unreviewed rows explicitly marked as pending.
+    The base should
     be the frozen ``website/data/benchmark.paper.json``, never a previously built file.
     """
     result = copy.deepcopy(base) if isinstance(base, dict) else _read_json(Path(base))
@@ -555,12 +564,26 @@ def build_leaderboard(base, submissions, output=None):
     if any(model.get("origin") == "community" for model in result["models"]):
         raise ValueError("Build from the frozen reference JSON, not a previous community build")
     directory = Path(submissions)
+    review_directory = Path(reviews) if reviews is not None else directory.parent / "reviews"
     if not directory.is_dir():
         raise ValueError(f"Submission directory does not exist: {directory}")
     paths = sorted(directory.glob("*.json"))
     scientific_models = {}
     for path in paths:
         data = validate_submission(path)
+        from bend2.reviews import validate_review
+
+        review_path = review_directory / path.name
+        review = validate_review(review_path, data) if review_path.is_file() else None
+        if review is None and not preview:
+            raise ValueError(
+                f"Missing trusted rescoring review for {path.name}; run bend2 rescore-submission "
+                "before publication, or use --preview for an unreviewed local preview"
+            )
+        if preview:
+            # A PR may itself propose review JSON. It must not be able to grant
+            # official labels in its preview, even if those fields look valid.
+            review = None
         model, evidence = data["model"], data["evidence"]
         model_id = model["id"]
         if path.name != f"{model_id}.json":
@@ -595,6 +618,8 @@ def build_leaderboard(base, submissions, output=None):
                 "origin": "community",
                 "url": model["url"],
                 "submissionPath": f"submissions/{path.name}",
+                "reviewPath": f"reviews/{path.name}" if review else None,
+                "reviewStatus": "reviewed" if review else "pending",
                 "declarations": identity,
             }
         )
@@ -607,6 +632,7 @@ def build_leaderboard(base, submissions, output=None):
                 "submissionPath": f"submissions/{path.name}",
                 "runIdentity": evidence["run_identity"],
                 "protocolVersion": PROTOCOL_VERSION,
+                "reviewPath": f"reviews/{path.name}" if review else None,
             }
         )
         for task in CATALOG:
@@ -632,11 +658,33 @@ def build_leaderboard(base, submissions, output=None):
                 else None,
                 "sourceId": source_id,
                 "sourceRecordId": f"{model_id}/{task}",
-                "notes": ["Community submission; see linked evidence."]
+                "notes": [
+                    "Contributor evaluated; independently rescored against trusted labels."
+                    if review
+                    else "Unreviewed preview; not accepted for publication."
+                ]
                 if row
                 else [data["coverage"][task]["reason"]],
                 "uncertainty": None,
             }
+            if row:
+                audit = review["reproductions"].get(task) if review else None
+                item["verification"] = {
+                    "status": "reproduced_by_bend"
+                    if audit
+                    else "contributor_evaluated"
+                    if review
+                    else "pending_review",
+                    "label": "Reproduced by BEND"
+                    if audit
+                    else "Contributor evaluated"
+                    if review
+                    else "Awaiting review",
+                    "rescored": bool(review),
+                    "reviewPath": f"reviews/{path.name}" if review else None,
+                }
+                if audit:
+                    item["verification"]["reproduction"] = audit
             if row and task == "atlas_profile":
                 item["replicateValues"] = row["protocol"]["replicate_values"]
             if row and row["metric"].get("ci95"):

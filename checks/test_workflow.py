@@ -10,7 +10,8 @@ import pytest
 import bend2
 from bend2.model import composition
 from bend2.results import digest
-from bend2.submissions import validate_submission
+from bend2.reviews import rescore_submission, validate_review
+from bend2.submissions import build_leaderboard, validate_submission
 
 
 def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
@@ -41,6 +42,34 @@ def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
     record = validate_submission(contribution, bundle=result.directory / "submission.zip")
     assert record["coverage"]["atlas_profile"]["status"] == "evaluated"
     assert len(record["coverage"]) == 8
+    assert result.tables["atlas_profile"] == ["choices", "predictions", "requests", "validation"]
+    assert len(result.table("atlas_profile", columns=["id"])) == 2411
+    receipt = rescore_submission(contribution, result.directory / "submission.zip")
+    assert (
+        receipt["rescoring"]["tasks"]["atlas_profile"]["metric"]
+        == record["tasks"]["atlas_profile"]["metric"]
+    )
+    altered = json.loads(contribution.read_text())
+    altered["model"]["family"] = "Changed after review"
+    with pytest.raises(ValueError, match="stale"):
+        validate_review(receipt, altered)
+    submissions = tmp_path / "submissions"
+    submissions.mkdir()
+    (submissions / contribution.name).write_text(contribution.read_text())
+    reference = {
+        "models": [],
+        "measurements": [],
+        "tasks": [{"id": row["id"], "precision": 3} for row in bend2.tasks()],
+    }
+    with pytest.raises(ValueError, match="Missing trusted rescoring"):
+        build_leaderboard(reference, submissions)
+    preview = build_leaderboard(reference, submissions, preview=True)
+    assert preview["measurements"][-1]["verification"]["status"] == "pending_review"
+    reviews = tmp_path / "reviews"
+    reviews.mkdir()
+    (reviews / contribution.name).write_text(json.dumps(receipt))
+    accepted = build_leaderboard(reference, submissions)
+    assert accepted["measurements"][-1]["verification"]["status"] == "contributor_evaluated"
     changed = result.data
     changed["tasks"]["atlas_profile"]["metric"]["value"] = 100.0
     (result.directory / "result.json").write_text(json.dumps(changed))

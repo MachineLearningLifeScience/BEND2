@@ -23,9 +23,6 @@ model = Model(
     "My encoder",
     embed=embed,
     revision="checkpoint-v1",
-    training_data="Describe pretraining and subsequent training data",
-    representation="Describe the layer and feature transformation",
-    pooling="Describe token pooling and strand handling",
 )
 result = evaluate(model, tasks="atlas_profile", output="results/my-model")
 ```
@@ -76,9 +73,11 @@ Keep these declarations with your adapter:
 | `inference_config` | JSON object of numerical/preprocessing options such as precision, device and windowing |
 | `unsupported_tasks` | Optional mapping of task IDs to reasons, for example a known context-length limit |
 
-Only a name and one callable are needed for local exploration. Missing
-checkpoint or training declarations mark the submission incomplete; fill
-them in before producing results for review.
+Only a name and one callable are needed for local exploration. A stable
+checkpoint revision makes longer experiments easier to manage. Recording the
+representation, pooling and training data also makes your results useful to
+you later, even when you never submit them to the leaderboard. These
+declarations are required when sharing a result for review.
 
 Examples: `revision="e8c1effa8673814e257e627d2e1eda9ea5a373f6"`
 for a pinned repository checkpoint, or `revision="sha256:..."` for your own

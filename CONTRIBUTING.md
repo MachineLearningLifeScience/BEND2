@@ -1,7 +1,9 @@
 # Contributing to BEND 2.0
 
-The main contribution is a benchmark result. Implement the model interface,
-run the tasks, and submit one generated JSON file in a pull request. An issue
+BEND is a package for evaluating DNA models and inspecting their results.
+Improvements to installation, model adapters, local evaluation and analysis are
+welcome. Sharing a leaderboard result is optional: submit one generated JSON
+file in a pull request. An issue
 form is available if you prefer maintainer help. Neither route requires adding
 your model implementation to this repository. See [the submission guide](docs/submitting.md).
 
@@ -24,7 +26,7 @@ adapters or examples. The default installation should not require a deep
 learning framework, model weights, cluster tooling, or private storage.
 Examples must run from an installed package and avoid developer-machine paths.
 
-Keep automated checks few and focused on the contributor workflow. For a
+Keep automated checks few and focused on core evaluation and evidence integrity. For a
 behavior change, exercise the affected path with a compact example; do not
 grow a fixture hierarchy or test matrix. Build and install the wheel when
 changing package contents. Documentation changes should be checked against
@@ -51,7 +53,8 @@ review branch.
 - `src/bend2/`: the installable package and task implementations.
 - `examples/`: small, complete examples people can adapt.
 - `docs/`: model, task, and submission guidance.
-- `submissions/`: reviewed community result records.
+- `submissions/`: contributor result records.
+- `reviews/`: maintainer-reviewed rescoring and per-task reproduction records.
 - `website/`: static site and additive leaderboard build.
 
 Generated runs, model checkpoints, personal job scripts, manuscripts, figures,
