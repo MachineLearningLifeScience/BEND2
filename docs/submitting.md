@@ -1,19 +1,81 @@
 # Add your model to the leaderboard
 
-Evaluate any supported subset of the eight tasks, publish the evidence bundle,
-and open a pull request containing **one generated JSON file**. You do not need
-to add model code to BEND, upload weights to this repository, or run every task.
+Evaluate any supported subset of the eight tasks, then submit it with one
+command. BEND publishes the evidence in a repository you choose and opens a pull
+request containing **one generated JSON file**. You do not need to clone BEND,
+add model code to its repository, upload weights, or run every task.
 
 A pull request is the submission and its review history. Merging it adds the
 row on the next website build. Results remain linked to their exact evidence;
 there is no account, separate submission service, or spreadsheet to maintain.
 
-## 1. Evaluate and export
+## The shortest path
+
+Install [GitHub CLI](https://cli.github.com/) and authenticate once with
+`gh auth login`. Choose an existing **public repository you can write to** for
+the evidence, normally your model's repository or a separate results repository.
 
 ```bash
 bend2 run my_model.py --tasks atlas_profile --output results/my-model
-bend2 export results/my-model
+bend2 submit results/my-model --github your-lab/your-model \
+  --model-url https://huggingface.co/your-lab/your-model
 ```
+
+The second command is an explicit publishing action. It validates your run,
+exports its evidence, uploads it as a GitHub release asset in `your-lab/your-model`,
+then creates a fork, contribution branch and pull request against BEND's
+`benchmark` branch. It prints the PR URL. The release is marked as a prerelease
+and does not replace your repository's latest release. Repository visibility
+and default branches are never changed.
+
+No additional BEND account or access token is needed; GitHub CLI manages its
+own authentication. The command creates only a release in the repository you
+name and a JSON contribution in your fork. Repository owners submitting their
+own results use a new contribution branch in BEND instead of a fork.
+
+If an upload or network request is interrupted, rerun the same command. Release
+names include the complete evidence SHA256; existing assets are verified and
+never replaced. The PR branch derives from the generated contribution's bytes,
+so an unchanged submission reuses the same PR. Progress and links are also saved
+in `results/my-model/github-submission.json`. A closed PR is returned for you to
+review, rather than silently opened again.
+
+For notebook runs:
+
+```python
+from bend2.github import publish_submission
+
+submission = publish_submission(
+    result,
+    "your-lab/your-model",
+    model_url="https://huggingface.co/your-lab/your-model",
+    adapter_url="https://github.com/your-lab/your-model/tree/COMMIT/benchmark",
+)
+print(submission["url"])
+```
+
+The GitHub helper is optional. Evaluation, export and the manual submission
+workflow below work without GitHub CLI and do not publish anything.
+
+### Evaluated on separate machines?
+
+Bring the result directories together and combine them before submitting:
+
+```bash
+bend2 combine results/my-model-atlas results/my-model-prior \
+  --output results/my-model
+bend2 submit results/my-model --github your-lab/your-model \
+  --model-url https://huggingface.co/your-lab/your-model
+```
+
+Both runs must use the same checkpoint, representation, preprocessing and
+adapter. Combining copies the completed task evidence without running your
+model again. The bundle keeps each original run's environment, source code and
+provenance. Conflicting results for an overlapping task require resolution;
+BEND does not choose a score. The Python equivalent is
+`result = bend2.combine([atlas_result, prior_result], output="results/my-model")`.
+
+## What to declare and share
 
 The model declaration must identify the exact checkpoint revision, training
 data, representation and pooling. Prior results also need the probability
@@ -29,7 +91,13 @@ Inspect the files and the [source-data terms](data.md) before sharing them.
 New runs also include the small installed benchmark implementation and its
 hashes, so a development-version result retains the exact evaluation code.
 
-## 2. Publish the evidence and generate the contribution
+## Manual submission or other evidence hosting
+
+Export a completed run:
+
+```bash
+bend2 export results/my-model
+```
 
 Upload `submission.zip` to a durable public download location, such as a
 versioned Zenodo record, a Hugging Face repository revision, or a GitHub release
@@ -49,10 +117,12 @@ omitted when the model's `source` declaration contains it. `--adapter-url` is
 required for notebook runs without a saved adapter and is also useful when
 `model.py` needs supporting files.
 
-This writes `community-<model>-<identity>.json` beside your results. The command
+This writes `community-<identity>.json` beside your results. The command
 checks the complete frozen cohorts, metric units, scientific protocols and
-bundle hashes. The identity is based on the model declaration and adapter,
-not a run's date, machine, batch size or task subset.
+bundle hashes. The identity follows the checkpoint, representation,
+preprocessing and adapter. Changing the display name, descriptive metadata,
+adapter's file location, batch size or evaluated task subset keeps the same
+contribution filename.
 
 You can do the same from Python:
 
@@ -67,10 +137,10 @@ path = prepare_submission(
 )
 ```
 
-Publishing the evidence is an explicit step. BEND does not upload anything or
-open a pull request on your behalf.
+Without `--github`, this command writes a local contribution file only. It does
+not upload anything or open a pull request.
 
-## 3. Open the pull request
+### Open the pull request
 
 Add the generated file under [`submissions/`](../submissions/) and open a pull
 request targeting `benchmark`. Change only that file for an ordinary model
@@ -88,6 +158,11 @@ bundle, and replace the same contribution file in a new PR. A different
 checkpoint, representation, pooling method or adapter produces a distinct ID.
 This keeps different evaluated model interfaces from silently replacing each
 other.
+
+With `--github`, rerun the submission command after evaluation finishes. The new
+bundle gets a new release and the new PR updates the same model's JSON file.
+Review or close an earlier pending PR before submitting a replacement, so there
+is one current proposal for that model.
 
 ### Prefer an issue?
 
@@ -120,7 +195,7 @@ keeps the declared probability interface.
    benchmark code to validate it:
 
    ```bash
-   bend2 validate-submission submissions/community-MODEL-IDENTITY.json \
+   bend2 validate-submission submissions/community-IDENTITY.json \
      --bundle /path/to/downloaded/submission.zip
    ```
 

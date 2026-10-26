@@ -212,6 +212,37 @@ def _number(value, label, low=None, high=None):
 
 
 def _model_id(identity):
+    """A model/interface stays the same when its label or source location changes.
+
+    New runs record an inference-specific adapter fingerprint, excluding display
+    metadata and unrelated source edits. Older runs use their complete source
+    digest conservatively; no inference equivalence can be invented retrospectively.
+    """
+    definition = {
+        key: identity.get(key, "")
+        for key in ("revision", "representation", "pooling", "probability_interface")
+    }
+    definition["inference_config"] = identity.get("inference_config", {})
+    definition["adapter"] = {}
+    for capability in sorted(identity.get("capabilities", [])):
+        adapter = identity["adapter"][capability]
+        if adapter.get("inference_sha256"):
+            fingerprint = {"inference_sha256": adapter["inference_sha256"]}
+        else:
+            callable_name = re.sub(
+                r"^_bend2_model_[0-9a-f]+\.", "user_model.", adapter.get("callable", "")
+            )
+            fingerprint = {
+                "callable": callable_name,
+                "source_sha256": adapter["source_sha256"],
+            }
+        definition["adapter"][capability] = fingerprint
+    fingerprint = hashlib.sha256(json.dumps(definition, sort_keys=True).encode()).hexdigest()
+    return f"community-{fingerprint[:16]}"
+
+
+def _legacy_model_id(identity):
+    """Recognize unchanged schema-2 records prepared before stable model IDs."""
     fingerprint = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
     return f"community-{slug(identity['name'])[:60]}-{fingerprint[:12]}"
 
@@ -348,7 +379,10 @@ def _validate(data):
         raise ValueError("Acceptance comes from maintainer review and merge, not a JSON flag")
     model = data["model"]
     identity = model["identity"]
-    if model["id"] != _model_id(identity) or model["name"] != identity["name"]:
+    if (
+        model["id"] not in {_model_id(identity), _legacy_model_id(identity)}
+        or model["name"] != identity["name"]
+    ):
         raise ValueError("Model ID and name must match the evaluated model identity")
     for field in ("name", "revision", "training_data"):
         _text(identity[field], f"model {field}")
@@ -387,6 +421,8 @@ def _validate(data):
             raise ValueError(f"Model declares {task} unsupported but supplies a result for it")
     for capability in capabilities:
         _sha(identity["adapter"][capability]["source_sha256"], f"{capability} adapter")
+        if "inference_sha256" in identity["adapter"][capability]:
+            _sha(identity["adapter"][capability]["inference_sha256"], f"{capability} inference")
     if identity["revision"].strip().lower() in {"main", "master", "latest", "head", "default"}:
         raise ValueError("Use an immutable checkpoint revision or weight hash, not a moving branch")
     if any(task != "prior" for task in tasks):
@@ -522,6 +558,7 @@ def build_leaderboard(base, submissions, output=None):
     if not directory.is_dir():
         raise ValueError(f"Submission directory does not exist: {directory}")
     paths = sorted(directory.glob("*.json"))
+    scientific_models = {}
     for path in paths:
         data = validate_submission(path)
         model, evidence = data["model"], data["evidence"]
@@ -532,6 +569,13 @@ def build_leaderboard(base, submissions, output=None):
             raise ValueError(f"Duplicate or reserved leaderboard model ID: {model_id}")
         existing.add(model_id)
         identity = model["identity"]
+        canonical_id = _model_id(identity)
+        if canonical_id in scientific_models:
+            raise ValueError(
+                f"The same model/interface is submitted in {scientific_models[canonical_id]} "
+                f"and {path.name}; combine its tasks into one contribution"
+            )
+        scientific_models[canonical_id] = path.name
         source_id = f"submission-{model_id}"
         capabilities = set(identity.get("capabilities", []))
         interface = "fitted" if "embed" in capabilities else "native"

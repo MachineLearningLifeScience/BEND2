@@ -143,8 +143,13 @@ model = huggingface_model(
 result = evaluate(model, tasks="atlas_profile", output="results/hyenadna")
 ```
 
-The same example is available as
-[`examples/huggingface_model.py`](../examples/huggingface_model.py) for CLI use.
+Generate the same editable example directly from the installed package:
+
+```bash
+bend2 init hyenadna.py --template huggingface
+bend2 run hyenadna.py --tasks atlas_profile --output results/hyenadna
+```
+
 Weights download on first use. HyenaDNA requires custom Python from the pinned
 checkpoint, which the explicit `trust_remote_code=True` enables. Use
 `device="cuda:0"` for an NVIDIA GPU.

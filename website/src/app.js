@@ -457,8 +457,18 @@ function submissionDialog() {
   return dialogFrame(
     "Add your model",
     "Leaderboard contribution",
-    `<p class="dialog-lede">Evaluate your checkpoint and submit one generated file. Any subset of tasks is welcome.</p><h3>1. Run BEND 2.0</h3><p>Connect your model with a small Python adapter. The package prepares the data, fits the fixed readouts and records the full evaluation protocol.</p><pre><code>bend2 run my_model.py --tasks atlas_profile --output results/my-model
-bend2 export results/my-model</code></pre><h3>2. Publish the evidence</h3><p>Upload the exported ZIP to a stable public download location. It contains predictions and protocol details, without weights or embedding caches. <code>bend2 submit</code> then creates a compact JSON record linked to that exact bundle.</p><h3>3. Open a one-file pull request</h3><p>Add the generated JSON under <code>submissions/</code>. A maintainer reviews the model declaration and evidence; merging the PR adds the model on the next website build. Unrun tasks stay missing.</p><div class="participate-actions"><a class="dark-button" style="color:var(--paper)" href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer">Submission guide ↗</a><a href="https://github.com/yhsure/genomic-bending/tree/benchmark/submissions" target="_blank" rel="noopener noreferrer">Add your result ↗</a></div><p>Prefer not to open a PR? <a href="https://github.com/yhsure/genomic-bending/issues/new?template=model.yml" target="_blank" rel="noopener noreferrer">Send the generated file in a submission issue</a> and a maintainer can help.</p>`,
+    `<p class="dialog-lede">Connect your DNA model, evaluate a task, and submit the result for review. Any subset of tasks is welcome.</p>
+    <h3>1. Evaluate your model</h3>
+    <p>Follow the <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/quickstart.md" target="_blank" rel="noopener noreferrer">quickstart</a> to install BEND and create your adapter. Start with Atlas: its short sequences and frozen data are included.</p>
+    <pre><code>bend2 plan my_model.py --tasks atlas_profile
+bend2 run my_model.py --tasks atlas_profile --output results/my-model
+bend2 show results/my-model</code></pre>
+    <h3>2. Submit for review</h3>
+    <p>With GitHub CLI installed and authenticated, choose a public model or results repository you can write to:</p>
+    <pre><code>bend2 submit results/my-model --github your-lab/your-model</code></pre>
+    <p>This publishes an evidence ZIP as a release asset in your repository and opens a pull request containing one generated JSON file in BEND. The evidence includes predictions and protocol details; model weights and embedding caches remain local. A maintainer reviews the model declaration and evidence. Merging the PR adds your row on the next website build; unrun tasks stay missing.</p>
+    <div class="participate-actions"><a class="dark-button" style="color:var(--paper)" href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer">Submission guide ↗</a><a href="https://github.com/yhsure/genomic-bending/tree/benchmark/submissions" target="_blank" rel="noopener noreferrer">Reviewed submissions ↗</a></div>
+    <p>Other hosting works too: export the evidence, then use <code>bend2 submit --evidence-url</code> and open the one-file PR manually. Or <a href="https://github.com/yhsure/genomic-bending/issues/new?template=model.yml" target="_blank" rel="noopener noreferrer">send the generated JSON and evidence link in a submission issue</a> for maintainer help.</p>`,
   );
 }
 function toast(message) {

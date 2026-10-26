@@ -6,6 +6,7 @@ import hashlib
 import inspect
 import json
 import marshal
+import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -126,9 +127,13 @@ class Model:
                     if hasattr(function, "__code__")
                     else repr(target).encode()
                 )
+            module = re.sub(r"^_bend2_model_[0-9a-f]+$", "user_model", getattr(target, "__module__", ""))
             result["adapter"][name] = {
-                "callable": f"{getattr(target, '__module__', '')}.{getattr(target, '__qualname__', '')}",
+                "callable": f"{module}.{getattr(target, '__qualname__', '')}",
                 "source_sha256": hashlib.sha256(source).hexdigest(),
+                "inference_sha256": hashlib.sha256(
+                    json.dumps(self.inference_identity(name), sort_keys=True).encode()
+                ).hexdigest(),
             }
         if self._source_file is not None:
             result["adapter"]["file"] = hashlib.sha256(self._source_file.read_bytes()).hexdigest()

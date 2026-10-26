@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
-import importlib.util
 import itertools
 import json
 import platform
@@ -19,6 +18,7 @@ from bend2 import datasets
 from bend2.cache import Embeddings, Probabilities
 from bend2.catalog import CATALOG
 from bend2.model import Model
+from bend2.planning import plan
 from bend2.results import Run, digest, slug, write_json
 from bend2._tasks import run as score
 
@@ -122,27 +122,14 @@ def evaluate(
         raise TypeError("Pass a bend2.Model, for example Model('mine', embed=encode)")
     if type(batch_size) is not int or batch_size < 1:
         raise ValueError("batch_size must be a positive integer")
-    all_tasks = tasks == "all" if isinstance(tasks, str) else False
-    requested = (
-        list(CATALOG) if all_tasks else tasks.split(",") if isinstance(tasks, str) else list(tasks)
-    )
-    requested = list(dict.fromkeys(task.strip() for task in requested))
-    if not requested or any(task not in CATALOG for task in requested):
-        raise ValueError(f"Choose task IDs from: {', '.join(CATALOG)}")
-    skipped = {
-        task: model.unsupported_tasks.get(task, f"Model does not provide {CATALOG[task][1]}")
-        for task in requested
-        if getattr(model, CATALOG[task][1]) is None or task in model.unsupported_tasks
-    }
-    if skipped and not all_tasks:
+    proposal = plan(model, tasks=tasks, cache_dir=cache_dir)
+    requested = proposal["requested_tasks"]
+    skipped = proposal["skipped"]
+    selected = proposal["selected_tasks"]
+    if skipped and not proposal["allow_skips"]:
         raise ValueError("; ".join(f"{task}: {reason}" for task, reason in skipped.items()))
-    selected = [task for task in requested if task not in skipped]
     if not selected:
         raise ValueError("No selected task is supported by this model")
-    if "tissue_identification" in selected and importlib.util.find_spec("py2bit") is None:
-        raise ImportError(
-            "Tissue identification needs py2bit. Install bend2[genome] or choose another task before starting this run."
-        )
     notify = progress or (lambda message: None)
     timestamp = datetime.now(UTC)
     output = (
@@ -180,9 +167,17 @@ def evaluate(
     with FileLock(output / ".run.lock", timeout=0):
         if (output / "result.json").exists():
             result = run.validate()
+            if result.get("combined_from"):
+                raise ValueError(
+                    "This directory combines finished task evidence and cannot be resumed. "
+                    "Evaluate into a source run, then combine the updated runs into a new directory."
+                )
             previous = result["identity_spec"]
             if (
-                previous.get("inference") != inference_ids
+                not previous.get("inference")
+                or any(
+                    inference_ids.get(key) != value for key, value in previous["inference"].items()
+                )
                 or previous.get("protocol") != identity_spec["protocol"]
             ):
                 raise ValueError(
@@ -190,9 +185,16 @@ def evaluate(
                     "Choose a new output directory; compatible cached inference is reused. "
                     "Declare revision= to enable resume."
                 )
-            result.update(identity=identity, identity_spec=identity_spec, model=model.metadata())
+            result.update(
+                identity=identity,
+                identity_spec=identity_spec,
+                model=model.metadata(),
+                inference_specs=inference_specs,
+            )
             result["requested_tasks"] = list(dict.fromkeys(result["requested_tasks"] + requested))
             result["skipped"].update(skipped)
+            for task in selected:
+                result["skipped"].pop(task, None)
         else:
             if any(path.name != ".run.lock" for path in output.iterdir()):
                 raise ValueError(
@@ -212,6 +214,18 @@ def evaluate(
                 "skipped": skipped,
                 "tasks": {},
             }
+        pending_tasks = [task for task in selected if task not in result["tasks"]]
+        if pending_tasks:
+            pending_plan = plan(model, tasks=pending_tasks, cache_dir=cache_dir)
+            if pending_plan["missing_extras"]:
+                extras = ",".join(pending_plan["missing_extras"])
+                raise ImportError(
+                    f"Missing optional dependencies: bend2[{extras}]. "
+                    "Install the matching runtime before starting this run."
+                )
+            if pending_plan["problems"]:
+                raise ValueError("; ".join(pending_plan["problems"]))
+        if "implementation_files" not in result:
             # Preserve the small installed implementation, including bundled adapters.
             # A development version string or source digest alone is not recoverable code.
             root = Path(__file__).parent
@@ -242,9 +256,12 @@ def evaluate(
         shared["scratch_dir"].mkdir(parents=True, exist_ok=True)
         data_cache = {}
         try:
-            if any(task != "prior" for task in selected):
+            if any(task != "prior" for task in pending_tasks):
                 store = Embeddings(cache_root / "embeddings" / f"{inference_ids['embed']}.sqlite")
             for task in selected:
+                if task in result["tasks"]:
+                    notify(f"{task}: using verified completed result")
+                    continue
                 notify(f"{task}: {CATALOG[task][2]}")
                 started = time.monotonic()
                 # All four Siraj endpoints use one cached input set and two shared fits.
@@ -254,20 +271,10 @@ def evaluate(
                     else task
                 )
                 if family not in data_cache:
+                    notify(f"{task}: preparing and verifying the frozen dataset")
                     data_cache[family] = datasets.load(family, cache_dir)
                 data = data_cache[family]
                 receipt = _receipt(data)
-                if task in result["tasks"]:
-                    if result["tasks"][task]["data"] != receipt:
-                        raise ValueError(
-                            f"Data identity changed for {task}; use a new output directory"
-                        )
-                    notify(f"{task}: using verified completed result")
-                    if family != "cell_selective":
-                        closed = data_cache.pop(family)
-                        if hasattr(closed.get("sequences"), "close"):
-                            closed["sequences"].close()
-                    continue
                 probabilities = None
                 inference = {}
                 if task == "prior":

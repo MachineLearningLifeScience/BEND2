@@ -4,7 +4,7 @@ from bend2.catalog import tasks
 from bend2.model import Model
 
 __version__ = "0.2.0.dev0"
-__all__ = ["Model", "Run", "evaluate", "tasks"]
+__all__ = ["Model", "Run", "evaluate", "plan", "combine", "tasks"]
 
 
 def evaluate(
@@ -23,9 +23,20 @@ def evaluate(
     )
 
 
+def combine(runs, output):
+    """Combine compatible task evidence into a new inspectable, submittable run."""
+    from bend2._combine import combine as merge
+
+    return merge(runs, output)
+
+
 def __getattr__(name):
     if name == "Run":
         from bend2.results import Run
 
         return Run
+    if name == "plan":
+        from bend2.planning import plan
+
+        return plan
     raise AttributeError(name)

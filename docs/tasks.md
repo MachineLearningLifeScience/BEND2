@@ -21,6 +21,39 @@ visible in the saved results and are never treated as failed models or zeros.
 
 ## Plan a run
 
+Inspect your adapter before starting a long run:
+
+```bash
+bend2 plan my_model.py --tasks siraj
+bend2 run my_model.py --tasks siraj --output results/my-model
+```
+
+`siraj` selects the four related regulatory tasks together: `context`,
+`background`, `repair_percentile` and `cell_selective`. Use individual task IDs,
+a comma-separated list, or `all`. The default remains the small, included
+`atlas_profile` task. `all` records incompatible tasks as skipped; an explicitly
+requested incompatible task stops the run before any data downloads.
+
+The same plan is available in Python:
+
+```python
+from bend2 import plan
+
+preview = plan(model, tasks="all", cache_dir="/scratch/bend2")
+print(preview["selected_tasks"])
+print(preview["skipped"])
+print(preview["additional_download_bytes"])
+```
+
+Planning lists complete input lengths, declared model limitations, missing
+optional dependencies and additional benchmark-data downloads. The four Siraj
+tasks count their shared download once. Existing prepared datasets, downloaded
+assets and `BEND2_ASSET_DIR` mirrors reduce that estimate. Files are checked only
+for location and size at this stage; evaluation verifies their contents. The
+plan does not run inference, download files or inspect existing inference caches.
+Custom adapter files are imported by the CLI, so load weights lazily if you want
+planning to avoid model initialization too.
+
 The core package and statistical readouts run on CPU. Your encoder determines
 whether inference needs a GPU. Runtime depends strongly on model size, feature
 dimension, context length, and hardware; the counts below are more useful than
@@ -39,7 +72,9 @@ an unmeasured wall-clock estimate.
 
 Assay rows and unique DNA sequences are different counts. Reference sequences
 repeat across interventions; BEND embeds each unique sequence once within a
-shared dataset. Request the four Siraj tasks together to share that work.
+shared dataset. The frozen Siraj cohort has 169,912 distinct sequences of
+189–200 bases; OpenSplice has 590,703 distinct sequences of 77–245 bases.
+Request the four Siraj tasks together to share that work.
 Allow additional disk space for preparation and embeddings. A float32 matrix
 alone costs `number_of_sequences × feature_dimension × 4` bytes; preparation
 files and resumable shards add overhead.

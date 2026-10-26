@@ -2,40 +2,33 @@
 
 **Bring a DNA model. Measure what it can predict—and what it can help design.**
 
-BEND 2.0 evaluates genomic models across sequence priors, mutation effects,
-biological context, genetic interactions, and sequence design. It prepares
-the data, runs your model, fits the prescribed readouts, and returns scores
-you can submit to the leaderboard.
+BEND 2.0 evaluates DNA models across eight tasks covering sequence priors,
+mutation effects, biological context, genetic interactions, and sequence design.
+It prepares the data, runs your model, fits the fixed readouts, and produces
+results ready for leaderboard review.
 
 One Python function connects your model. No fork, model-registry patch, or
 cluster-specific environment is required.
 
-## Start with a real task
+## Evaluate your model
 
 Python 3.11 or later. Install into your model's environment:
 
 ```bash
 python -m pip install "bend2 @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-bend2 run composition --tasks atlas_profile --output results/first-run
 ```
 
-The command prints a score table and saves the results as JSON. It evaluates
-a CPU base-composition baseline on the actual Atlas task: 7,657 short sequences
-and sixteen design requests. The data are included; no model weights are needed.
+The repository currently requires GitHub access. **The package is not yet
+published on PyPI**; `pip install bend2` is the intended public release command.
 
-This development repository currently requires GitHub access. **A PyPI
-release has not been published yet.** The intended public release install
-is `pip install bend2`.
-
-## Connect your model
+Create an adapter for your model:
 
 ```bash
 bend2 init my_model.py
 ```
 
-The generated file contains a `model` descriptor and an embedding function.
-Replace the function with your encoder and fill in its checkpoint and
-preprocessing details. The interface is:
+Replace the generated embedding function with your encoder and describe its
+checkpoint and preprocessing. The interface is one function:
 
 ```python
 def embed(sequences: list[str]) -> np.ndarray:
@@ -43,13 +36,25 @@ def embed(sequences: list[str]) -> np.ndarray:
     return your_encoder(sequences)
 ```
 
-Then run:
+Inspect the requirements, evaluate, and return to the saved scores:
 
 ```bash
-bend2 run my_model.py --tasks atlas_profile --output results/my-model
+bend2 plan my_model.py --tasks siraj
+bend2 run my_model.py --tasks siraj --output results/my-model
+bend2 show results/my-model
 ```
 
-Or use the same model from a notebook:
+`siraj` evaluates four related regulatory tasks with one shared 93 MB download.
+The plan lists full sequence lengths, declared limitations, missing dependencies
+and additional data downloads before inference. The run prints a score table
+and saves JSON and Parquet files. Repeat the run command to resume; completed
+inference batches survive interruptions and changes to batch size.
+
+For a smaller first run, choose `--tasks atlas_profile`: 7,657 short sequences
+and sixteen design requests, with data included. To try it before connecting
+your encoder, run `bend2 run composition --tasks atlas_profile` on CPU.
+
+The same interface works from Python:
 
 ```python
 from bend2 import evaluate
@@ -60,10 +65,23 @@ result.to_dataframe()
 ```
 
 Already have an encoder in memory? Pass it directly to
-[`Model`](docs/quickstart.md#use-python-directly); no adapter file is needed.
-For a pretrained DNA model, use the [pinned DNABERT-2 embedding or NTv3
-native-prior adapters](docs/reference-models.md). A [generic Hugging Face
-integration](docs/models.md#hugging-face-models) is also available.
+[`Model`](docs/quickstart.md#use-python-directly). No adapter file is needed.
+
+## Start from a released DNA model
+
+Generate a complete, editable adapter for the pinned DNABERT-2 checkpoint:
+
+```bash
+python -m pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+bend2 init dnabert2.py --template dnabert2
+bend2 plan dnabert2.py --tasks atlas_profile
+bend2 run dnabert2.py --tasks atlas_profile --output results/dnabert2
+```
+
+The adapter defaults to CPU; edit its device setting to use your GPU. Weights
+load on the first inference batch. Templates also cover NTv3's sequence prior
+and a generic Hugging Face encoder. See [reference models](docs/reference-models.md)
+for checkpoint access, precision and the evaluated interfaces.
 
 ## Choose what to evaluate
 
@@ -81,33 +99,32 @@ reports missing tasks without inventing scores or an overall ranking.
 
 ```bash
 bend2 tasks
-bend2 run my_model.py --tasks context,background,repair_percentile,cell_selective \
-  --output results/my-model-siraj
+bend2 plan my_model.py --tasks all
 ```
 
-The Siraj tasks share data, embeddings, and fitted readouts. Repeating a
-command with the same model and output directory continues verified work.
-`--tasks all` selects every compatible task, including the large OpenSplice
-assay and long-context GTEx inputs. Read [task sizes and requirements](docs/tasks.md)
-before that run; tissue identification requires the `genome` extra.
+`--tasks all` selects tasks allowed by your adapter's declared interfaces and
+limitations, including the large OpenSplice assay and long-context GTEx inputs.
+Read [task sizes and requirements](docs/tasks.md) before that run; tissue
+identification requires the `genome` extra.
 
 ## Submit to the leaderboard
 
+Any completed subset of tasks is welcome. With [GitHub CLI](https://cli.github.com/)
+installed and authenticated, choose a public repository you can write to:
+
 ```bash
-bend2 export results/my-model
-# Upload submission.zip to a versioned public download location, then:
-bend2 submit results/my-model --evidence-url https://your-host/submission.zip
+bend2 submit results/my-model --github your-lab/your-model
 ```
 
-The second command prepares one small JSON file. Add it under `submissions/`
-in a pull request targeting `benchmark`. Review and merge adds the model to
-our next website build; weights and prediction archives stay outside Git.
-You can also send the JSON and evidence link through the model-submission issue
-form, and a maintainer can open the PR. See the [submission guide](docs/submitting.md)
-for model/source declarations, evidence hosting and review.
+This command publishes the evidence as a release asset in that repository and
+opens a pull request containing one generated JSON file in BEND. It uses the
+checkpoint/source declarations in your adapter; `--model-url` can supply a
+missing model link. A maintainer reviews the evidence and model declaration.
+Once the PR is merged, the model appears on the next website build.
 
-The same steps work in Python with `result.bundle()` and
-`result.prepare_submission(evidence_url=...)`. Evaluation never uploads results.
+The [submission guide](docs/submitting.md) covers authentication, evidence contents,
+updates, and the manual `--evidence-url` route for other hosting. An issue-form
+route is available for contributors who prefer maintainer help with the PR.
 
 **[Quickstart](docs/quickstart.md)** · **[Model interface](docs/models.md)** ·
 **[Tasks and compute](docs/tasks.md)** · **[Submission guide](docs/submitting.md)** ·
@@ -115,7 +132,7 @@ The same steps work in Python with `result.bundle()` and
 
 ## Contribute
 
-This repository contains the benchmark package, runnable examples, user
-documentation, reviewed contribution files, and the website in `website/`. See [CONTRIBUTING.md](CONTRIBUTING.md) for package changes
-and [CITATION.cff](CITATION.cff) for citation metadata. Dataset terms are
-separate from the software license.
+This repository contains the package, examples, documentation, reviewed
+contributions, and the website in `website/`. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for package changes and [CITATION.cff](CITATION.cff) for citation metadata.
+Dataset terms are separate from the software license.

@@ -12,7 +12,7 @@ body:
     id: contribution
     attributes:
       label: Generated contribution JSON
-      description: Attach the community-<model>-<identity>.json from bend2 submit, or link to it. GitHub may require renaming an attachment to .json.txt.
+      description: Attach the community-<identity>.json from bend2 submit, or link to it. GitHub may require renaming an attachment to .json.txt.
     validations:
       required: true
   - type: input

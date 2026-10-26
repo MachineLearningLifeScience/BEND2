@@ -6,9 +6,16 @@ the first batch. Inference sees sequences and hidden target positions only.
 
 ```bash
 pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
-bend2 run examples/reference_dnabert2.py --tasks atlas_profile --batch-size 16
-bend2 run examples/reference_ntv3_prior.py --tasks prior --batch-size 8
+bend2 init dnabert2.py --template dnabert2
+bend2 run dnabert2.py --tasks atlas_profile --batch-size 16 --output results/dnabert2
+bend2 init ntv3.py --template ntv3-prior
+bend2 run ntv3.py --tasks prior --batch-size 8 --output results/ntv3-paper-prior
 ```
+
+Both starter adapters ship with the installed package. Creating them does not
+download weights and never overwrites an existing file. Edit the generated file
+to select a GPU or another supported precision before running it. NTv3 may
+require acceptance of its checkpoint terms, as described below.
 
 Use the same adapters directly in Python:
 
@@ -141,6 +148,6 @@ row: checkpoint, representation, precision, assay context and probability readou
 must also match. In particular, NTv3's Atlas paper row used human functional
 tracks and verified reporter flanks, not a generic mean embedding.
 
-For a new model, start with [examples/model.py](../examples/model.py). Keep its
+For a new model, create an editable starter with `bend2 init my_model.py`. Keep its
 training-data declaration and representation details with the adapter so that
 reviewers can assess the submitted result.
