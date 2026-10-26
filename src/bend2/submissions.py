@@ -17,7 +17,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 from bend2.catalog import CATALOG
-from bend2.datasets import COHORTS, FINGERPRINT_VERSION, MANIFEST, _TASK_ASSETS
+from bend2.datasets import task_identity
 from bend2.results import Run, digest, slug, write_json
 
 SCHEMA_VERSION = 2
@@ -467,33 +467,7 @@ def _validate(data):
 
 
 def _validate_data(task, data):
-    if task in _TASK_ASSETS:
-        assets = list(_TASK_ASSETS[task].values())
-        cohorts = []
-    elif task == "opensplice":
-        assets, cohorts = ["opensplice.tsv.gz"], ["opensplice"]
-    else:
-        assets = ["siraj.zip", "siraj-numeric-reference.npz"]
-        cohorts = ["context"] if task == "context" else ["siraj"]
-        if task == "cell_selective":
-            assets.append("siraj_selective.parquet")
-            cohorts.append("context")
-    for name in assets:
-        expected = {
-            key: value
-            for key, value in MANIFEST["files"][name].items()
-            if key in {"sha256", "md5", "bytes"}
-        }
-        _subset(expected, data["assets"].get(name), f"{task}.assets.{name}")
-    for name in cohorts:
-        spec = COHORTS[name]
-        expected = {
-            "semantic_sha256": spec["sha256"],
-            "rows": spec["rows"],
-            "groups": spec["groups"],
-            "fingerprint_version": FINGERPRINT_VERSION,
-        }
-        _subset(expected, data["cohorts"].get(name), f"{task}.cohorts.{name}")
+    _subset(task_identity(task), data, f"{task}.data")
 
 
 def _verify_bundle(data, bundle):

@@ -139,6 +139,7 @@ can be read independently of BEND. For example,
 the request table directly. `result.data` exposes the full saved manifest,
 including the model declaration, per-task protocol, data provenance and run
 status. `result.validate()` checks the manifest and recorded file hashes.
+Evaluation and combining save these results without creating submission files.
 
 ### Compare model runs
 
@@ -164,9 +165,9 @@ A blank cell means that model has no result for that task.
 ## Continue a run
 
 Repeat the same command to continue in the same output directory. BEND
-checks model identity, inputs, and implementation before reusing completed
-work. Changing the checkpoint or preprocessing means a new model revision
-and a new output directory.
+checks model identity and each requested task's scientific version, pinned data
+and numeric libraries before reusing completed work. Changing the checkpoint or
+preprocessing means a new model revision and a new output directory.
 
 If your encoder runs out of memory, lower `--batch-size` and repeat the command
 with the same output directory. Completed embedding and native-prior batches
@@ -174,9 +175,14 @@ remain cached. Descriptive model metadata can be corrected without repeating
 inference. Callbacks must produce the same representation independently of
 batch size; declare numerical settings in `inference_config`.
 
-Changing a scientific readout requires a new output directory, but reuses
-compatible inference. Changes to command-line presentation, submission handling
-or documentation do not invalidate it.
+Benchmark refactors, comments and changes to unrelated tasks do not invalidate
+completed work. Adding a task preserves existing results and their provenance.
+If a requested task's science, data or numeric runtime changed, BEND names the
+difference and asks for a new output directory; compatible inference is reused.
+Each task retains the exact benchmark source that produced it.
+
+Older development runs that lack per-task compatibility records remain readable
+and exportable. Use a new output directory to continue those evaluations.
 
 Data are shared through `~/.cache/bend2`, configurable with `--cache-dir` or
 `BEND2_CACHE`. Keep inference caches to continue a run; the result directory

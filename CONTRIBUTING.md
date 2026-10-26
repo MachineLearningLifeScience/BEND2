@@ -46,6 +46,12 @@ Define each task's scoring in its task module, shared by evaluation and evidence
 review. Review code independently validates the cohort, labels and submitted
 evidence before accepting the shared scorer's result.
 
+Increment the affected entries in `TASK_VERSIONS` in `src/bend2/catalog.py` when
+changing a task's inputs, splits, readout, selection rules or scores. A shared
+readout change needs an increment for every affected task. Formatting, comments
+and refactors that preserve results keep the same version. Resume checks these
+versions, pinned data and numeric libraries; exact source hashes record provenance.
+
 Keep labels out of model adapters. Keep candidate measurements separate from
 selection. Record checkpoint and training-data declarations, and retain the
 source attribution for included data. Report missing tasks as missing.

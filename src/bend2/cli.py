@@ -9,6 +9,7 @@ import json
 import shlex
 import sys
 import time
+import traceback
 from pathlib import Path
 
 from bend2 import __version__, evaluate
@@ -116,6 +117,7 @@ def main(argv=None):
         prog="bend2", description="BEND 2.0 — benchmark the capabilities needed to design DNA"
     )
     parser.add_argument("--version", action="version", version=f"bend2 {__version__}")
+    parser.add_argument("--debug", action="store_true", help="Show the full traceback on errors")
     commands = parser.add_subparsers(dest="command", required=True)
     init = commands.add_parser("init", help="Create a working one-file model adapter")
     init.add_argument("path", nargs="?", default="model.py")
@@ -424,7 +426,12 @@ def main(argv=None):
         )
         return 130
     except Exception as error:
-        print(f"bend2: {error}", file=sys.stderr)
+        if args.debug:
+            traceback.print_exc()
+        else:
+            print(f"bend2: {error}", file=sys.stderr)
+            for note in getattr(error, "__notes__", ()):
+                print(note, file=sys.stderr)
         return 1
 
 

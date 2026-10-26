@@ -31,6 +31,18 @@ CATALOG = {
     "atlas_profile": ("Enhancer profiles", "embed", "7,657 × 145 bp; included", "higher"),
 }
 
+# Bump affected tasks when their inputs, readout or scoring change.
+TASK_VERSIONS = {
+    "prior": 1,
+    "opensplice": 1,
+    "tissue_identification": 1,
+    "context": 1,
+    "background": 1,
+    "repair_percentile": 1,
+    "cell_selective": 1,
+    "atlas_profile": 1,
+}
+
 
 def tasks():
     """Return task names, required model capabilities and practical data sizes."""

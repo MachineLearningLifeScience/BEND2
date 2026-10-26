@@ -122,8 +122,7 @@ def combine(runs, output) -> Run:
         rows, owners, origins = {}, {}, []
         for run, result in zip(sources, results, strict=True):
             source_result_hash = digest(run.directory / "result.json")
-            # Bind the complete source manifest, not only its model/protocol identity:
-            # the latter intentionally does not change as more tasks finish.
+            # Model and protocol identity alone does not identify a particular execution.
             origin_key = source_result_hash
             origin = {
                 "run_identity": result["identity"],
@@ -152,6 +151,7 @@ def combine(runs, output) -> Run:
                     rows[task]["origins"].append(copy.deepcopy(origin))
                 else:
                     rows[task] = copy.deepcopy(row)
+                    rows[task].pop("invocation", None)  # Resolved in each original manifest below.
                     rows[task]["origins"] = [copy.deepcopy(origin)]
                     owners[task] = run
         if not rows:
@@ -217,7 +217,7 @@ def combine(runs, output) -> Run:
                     data["adapter_file"] = result["adapter_file"]
                     break
             write_json(destination / "result.json", data)
-            return Run(destination).write_submission()
+            return Run(destination)
         except BaseException:
             shutil.rmtree(destination)
             raise

@@ -38,6 +38,10 @@ Convert framework tensors to CPU NumPy arrays before returning. Load your
 checkpoint once, either when creating the adapter or on the first call. Use
 evaluation mode and disable gradients.
 
+If an adapter fails, BEND reports the task and batch. Invalid outputs include
+the returned type, shape or dtype and the expected format. Use
+`bend2 --debug run my_model.py --tasks atlas_profile` for the full Python traceback.
+
 Only sequence strings reach the function. BEND computes the task-specific
 features, fits the fixed readout on allowed training labels, and evaluates
 held-out examples. The embedding model remains frozen throughout the run.

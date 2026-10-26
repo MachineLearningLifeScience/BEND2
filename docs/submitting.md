@@ -99,16 +99,19 @@ tables and the entry-point `model.py` when supplied. It excludes weights,
 embedding caches and raw input sequences. If your adapter imports local helper
 modules, publish those alongside it and provide the implementation URL below.
 Inspect the files and the [source-data terms](data.md) before sharing them.
-New runs also include the small installed benchmark implementation and its
-hashes, so a development-version result retains the exact evaluation code.
+Runs retain the exact benchmark source for each task, including tasks added
+after a compatible package update. The export includes those source snapshots.
 
 ## Manual submission or other evidence hosting
 
-Export a completed run:
+Export a completed run to create `submission.json` and `submission.zip`:
 
 ```bash
 bend2 export results/my-model
 ```
+
+The Python equivalent is `result.bundle()`. `submit --github` also exports
+automatically.
 
 Upload `submission.zip` to a durable public download location, such as a
 versioned Zenodo record, a Hugging Face repository revision, or a GitHub release

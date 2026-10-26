@@ -99,6 +99,39 @@ _TASK_ASSETS = {
 }
 
 
+def task_identity(task):
+    """Pinned data used by a task, without downloading or opening the data."""
+    if task in _TASK_ASSETS:
+        assets, cohorts = list(_TASK_ASSETS[task].values()), []
+    elif task == "opensplice":
+        assets, cohorts = ["opensplice.tsv.gz"], ["opensplice"]
+    else:
+        assets = ["siraj.zip", "siraj-numeric-reference.npz"]
+        cohorts = ["context"] if task == "context" else ["siraj"]
+        if task == "cell_selective":
+            assets.append("siraj_selective.parquet")
+            cohorts.append("context")
+    return {
+        "assets": {
+            name: {
+                key: value
+                for key, value in MANIFEST["files"][name].items()
+                if key in {"sha256", "md5", "bytes"}
+            }
+            for name in assets
+        },
+        "cohorts": {
+            name: {
+                "semantic_sha256": COHORTS[name]["sha256"],
+                "rows": COHORTS[name]["rows"],
+                "groups": COHORTS[name]["groups"],
+                "fingerprint_version": FINGERPRINT_VERSION,
+            }
+            for name in cohorts
+        },
+    }
+
+
 def cache_root(cache_dir=None) -> Path:
     """Use an explicit cache, BEND2_CACHE, or the standard user cache directory."""
     if cache_dir is not None:

@@ -15,16 +15,28 @@ def key(sequence):
 
 
 def validate(value, rows, width=None):
-    if not isinstance(value, np.ndarray) or value.ndim != 2 or value.shape[0] != rows:
-        raise ValueError("embed must return a NumPy array [batch, features]; pool tokens first")
+    if not isinstance(value, np.ndarray):
+        raise ValueError(
+            f"embed returned {type(value).__name__}; return a CPU NumPy array "
+            f"with shape ({rows}, features)."
+        )
+    if value.ndim != 2 or value.shape[0] != rows:
+        raise ValueError(
+            f"embed returned shape {value.shape}; expected ({rows}, features). "
+            "Return one vector per sequence; pool token embeddings first."
+        )
     if value.shape[1] == 0 or (width is not None and value.shape[1] != width):
-        raise ValueError("Embedding dimension must be nonzero and fixed across batches")
+        raise ValueError(
+            f"embed returned {value.shape[1]} features; expected "
+            f"{width if width is not None else 'at least one'}. "
+            "Use the same feature dimension for every batch."
+        )
     if value.dtype.kind not in "fiu":
-        raise ValueError("Embeddings must be real numbers")
+        raise ValueError(f"embed returned dtype {value.dtype}; return real numeric values.")
     with np.errstate(over="ignore", invalid="ignore"):
         value = np.asarray(value, dtype="<f4")
     if not np.isfinite(value).all():
-        raise ValueError("Embeddings must be finite and fit in float32")
+        raise ValueError("embed returned NaN, infinity or values outside the float32 range.")
     return value
 
 
@@ -68,7 +80,15 @@ class Embeddings(Mapping):
 
         def flush():
             nonlocal count
-            values = validate(embed(batch), len(batch), self.width)
+            try:
+                values = validate(embed(batch), len(batch), self.width)
+            except Exception as error:
+                lengths = [len(sequence) for sequence in batch]
+                error.add_note(
+                    f"embed batch {count // batch_size + 1}: {len(batch)} sequences, "
+                    f"input lengths {min(lengths)}–{max(lengths)} bp."
+                )
+                raise
             self.width = values.shape[1]
             rows = []
             for sequence, vector in zip(batch, values, strict=True):
@@ -135,8 +155,16 @@ class Probabilities:
             shape = self._validate(values[index][None, ...], 1, shape)
         for start in range(0, len(missing), batch_size):
             indices = missing[start : start + batch_size]
-            batch = callback([sequences[i] for i in indices], [positions[i] for i in indices])
-            shape = self._validate(batch, len(indices), shape)
+            try:
+                batch = callback([sequences[i] for i in indices], [positions[i] for i in indices])
+                shape = self._validate(batch, len(indices), shape)
+            except Exception as error:
+                lengths = [len(sequences[i]) for i in indices]
+                error.add_note(
+                    f"probabilities batch {start // batch_size + 1}: {len(indices)} windows, "
+                    f"input lengths {min(lengths)}–{max(lengths)} bp."
+                )
+                raise
             batch = np.asarray(batch, dtype="<f8")
             rows = []
             for index, value in zip(indices, batch, strict=True):
@@ -155,23 +183,39 @@ class Probabilities:
 
     @staticmethod
     def _validate(values, rows, shape):
+        if not isinstance(values, np.ndarray):
+            raise ValueError(
+                f"probabilities returned {type(values).__name__}; return a CPU NumPy array "
+                f"with shape ({rows}, 4) or ({rows}, queries, 4) in A/C/G/T order."
+            )
         if (
-            not isinstance(values, np.ndarray)
-            or values.ndim not in (2, 3)
+            values.ndim not in (2, 3)
             or values.shape[0] != rows
             or values.shape[-1] != 4
             or (values.ndim == 3 and values.shape[1] < 1)
-            or values.dtype.kind not in "fiu"
         ):
-            raise ValueError("probabilities must return NumPy [batch, 4] or [batch, queries, 4]")
+            raise ValueError(
+                f"probabilities returned shape {values.shape}; expected ({rows}, 4) or "
+                f"({rows}, queries, 4), with at least one query and bases in A/C/G/T order."
+            )
+        if values.dtype.kind not in "fiu":
+            raise ValueError(
+                f"probabilities returned dtype {values.dtype}; return real numeric values."
+            )
         if shape is not None and values.shape[1:] != shape:
-            raise ValueError("Probability query shape must stay fixed across batches")
+            raise ValueError(
+                f"probabilities returned per-window shape {values.shape[1:]}; expected {shape}. "
+                "Use the same number of queries for every window."
+            )
         if (
             not np.isfinite(values).all()
             or ((values < 0) | (values > 1)).any()
             or not np.allclose(values.sum(-1), 1, atol=1e-7, rtol=0)
         ):
-            raise ValueError("Probabilities must be finite, in [0, 1], and sum to one")
+            raise ValueError(
+                "probabilities must be finite values in [0, 1] that sum to one across A/C/G/T. "
+                "Convert logits or log probabilities before returning them."
+            )
         return values.shape[1:]
 
     def close(self):

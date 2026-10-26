@@ -14,9 +14,9 @@ from pathlib import Path
 
 from filelock import FileLock
 
-from bend2 import datasets
+from bend2 import __version__, datasets
 from bend2.cache import Embeddings, Probabilities
-from bend2.catalog import CATALOG
+from bend2.catalog import CATALOG, TASK_VERSIONS
 from bend2.model import Model
 from bend2.planning import plan
 from bend2.results import Run, digest, slug, write_json
@@ -59,28 +59,21 @@ def _hash(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
-def protocol_identity(runtime):
-    """Only scientific code and numeric libraries invalidate completed scores."""
-    root = Path(__file__).parent
-    files = [
-        *root.glob("_tasks/*.py"),
-        root / "readouts.py",
-        root / "datasets.py",
-        root / "assets.json",
-        root / "catalog.py",
-        root / "runner.py",
-    ]
-    if (root / "_linear.py").exists():
-        files.append(root / "_linear.py")
-    return _hash(
-        {
-            "sources": {str(path.relative_to(root)): digest(path) for path in sorted(files)},
-            "numeric_runtime": {
-                key: runtime.get(key)
-                for key in ("numpy", "scipy", "scikit-learn", "pandas", "py2bit")
-            },
-        }
-    )
+def task_protocol(task, runtime):
+    """Resume compatibility, independent of source formatting and other tasks."""
+    packages = ["numpy", "pandas"]
+    if task != "prior":
+        packages += ["scipy", "scikit-learn"]
+    if task == "tissue_identification":
+        packages.append("py2bit")
+    data = datasets.task_identity(task)
+    if task == "tissue_identification":
+        data["test_exclusions"] = datasets.MANIFEST["gtex_common_test_exclusions"]
+    return {
+        "version": TASK_VERSIONS[task],
+        "data": data,
+        "numeric_runtime": {key: runtime.get(key) for key in packages},
+    }
 
 
 def _inputs(task, data):
@@ -114,9 +107,9 @@ def evaluate(
     ``tasks='all'`` selects every supported capability, recording others as
     skipped. Explicitly requested unsupported tasks fail before data downloads.
     Reusing an output directory resumes completed tasks; a revision is required
-    for resume. Batch size and descriptive metadata may change. Weights, adapter
-    inference settings and the scientific protocol must match. Inference caches
-    are independent of command-line, documentation and result-format changes.
+    for resume. Batch size and descriptive metadata may change. Model inference
+    must match; completed tasks requested again must have the same scientific
+    version, data and numeric libraries. Source-only refactors preserve resume.
     """
     if not isinstance(model, Model):
         raise TypeError("Pass a bend2.Model, for example Model('mine', embed=encode)")
@@ -159,9 +152,8 @@ def evaluate(
     identity_spec = {
         "model": model.identity(),
         "inference": inference_ids,
-        "protocol": protocol_identity(runtime),
+        "protocols": {task: task_protocol(task, runtime) for task in selected},
     }
-    identity = _hash(identity_spec)
     run = Run(output)
     # OS-backed locking is released after a crash and works on Windows, Linux and macOS.
     with FileLock(output / ".run.lock", timeout=0):
@@ -173,20 +165,44 @@ def evaluate(
                     "Evaluate into a source run, then combine the updated runs into a new directory."
                 )
             previous = result["identity_spec"]
-            if (
-                not previous.get("inference")
-                or any(
-                    inference_ids.get(key) != value for key, value in previous["inference"].items()
-                )
-                or previous.get("protocol") != identity_spec["protocol"]
-            ):
+            if "protocols" not in previous:
                 raise ValueError(
-                    "This output uses different weights, inference settings or a scientific protocol. "
-                    "Choose a new output directory; compatible cached inference is reused. "
-                    "Declare revision= to enable resume."
+                    "This run predates per-task resume. Its saved results can still be read and "
+                    "exported. Use a new output directory to continue; compatible inference is reused."
                 )
+            if not model.revision:
+                raise ValueError(
+                    "Declare revision= before starting a resumable run. "
+                    "This run has no fixed model revision; choose a new output directory."
+                )
+            for capability, old_id in previous["inference"].items():
+                if inference_ids.get(capability) != old_id:
+                    raise ValueError(
+                        f"Cannot resume: {capability} weights, adapter, settings or runtime changed. "
+                        "Choose a new output directory."
+                    )
+            for task in selected:
+                if task not in result["tasks"]:
+                    continue
+                old, new = previous["protocols"][task], identity_spec["protocols"][task]
+                changed = []
+                if old["version"] != new["version"]:
+                    changed.append(f"scientific version {old['version']} → {new['version']}")
+                if old["data"] != new["data"]:
+                    changed.append("benchmark data changed")
+                changed.extend(
+                    f"{package} {old['numeric_runtime'][package]} → {version}"
+                    for package, version in new["numeric_runtime"].items()
+                    if old["numeric_runtime"][package] != version
+                )
+                if changed:
+                    raise ValueError(
+                        f"Cannot resume {task}: {', '.join(changed)}. "
+                        "Choose a new output directory; compatible inference is reused."
+                    )
+            identity_spec["protocols"] = {**previous["protocols"], **identity_spec["protocols"]}
             result.update(
-                identity=identity,
+                identity=_hash(identity_spec),
                 identity_spec=identity_spec,
                 model=model.metadata(),
                 inference_specs=inference_specs,
@@ -203,8 +219,8 @@ def evaluate(
             result = {
                 "schema_version": 1,
                 "benchmark": "BEND 2.0",
-                "version": "0.2.0.dev0",
-                "identity": identity,
+                "version": __version__,
+                "identity": _hash(identity_spec),
                 "identity_spec": identity_spec,
                 "model": model.metadata(),
                 "environment": runtime,
@@ -225,17 +241,18 @@ def evaluate(
                 )
             if pending_plan["problems"]:
                 raise ValueError("; ".join(pending_plan["problems"]))
-        if "implementation_files" not in result:
-            # Preserve the small installed implementation, including bundled adapters.
-            # A development version string or source digest alone is not recoverable code.
-            root = Path(__file__).parent
-            result["implementation_files"] = {}
-            for source in sorted([*root.rglob("*.py"), *root.rglob("*.json")]):
-                relative = Path("implementation/bend2") / source.relative_to(root)
+        source_id = implementation()
+        root = Path(__file__).parent
+        source_files = result.setdefault("implementation_files", {})
+        for source in sorted([*root.rglob("*.py"), *root.rglob("*.json")]):
+            relative = (
+                Path("implementation") / source_id / "bend2" / source.relative_to(root)
+            ).as_posix()
+            if relative not in source_files:
                 destination = output / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 destination.write_bytes(source.read_bytes())
-                result["implementation_files"][relative.as_posix()] = digest(destination)
+                source_files[relative] = digest(destination)
         if model._source_file:
             (output / "model.py").write_bytes(model._source_file.read_bytes())
             result["adapter_file"] = digest(output / "model.py")
@@ -244,7 +261,8 @@ def evaluate(
                 "started_at": timestamp.isoformat(),
                 "batch_size": batch_size,
                 "environment": runtime,
-                "implementation": implementation(),
+                "implementation": source_id,
+                "version": __version__,
             }
         )
         result["status"] = "running"
@@ -256,8 +274,6 @@ def evaluate(
         shared["scratch_dir"].mkdir(parents=True, exist_ok=True)
         data_cache = {}
         try:
-            if any(task != "prior" for task in pending_tasks):
-                store = Embeddings(cache_root / "embeddings" / f"{inference_ids['embed']}.sqlite")
             for task in selected:
                 if task in result["tasks"]:
                     notify(f"{task}: using verified completed result")
@@ -291,6 +307,10 @@ def evaluate(
                         masked, positions, model.probabilities, batch_size, notify
                     )
                 else:
+                    if store is None:
+                        store = Embeddings(
+                            cache_root / "embeddings" / f"{inference_ids['embed']}.sqlite"
+                        )
                     inference = store.fill(_inputs(task, data), model.embed, batch_size, notify)
                 notify(f"{task}: fitting and scoring the fixed protocol")
                 scored = score(task, data, store, probabilities, shared=shared)
@@ -312,10 +332,10 @@ def evaluate(
                     "data": receipt,
                     "inference": inference,
                     "seconds": time.monotonic() - started,
+                    "invocation": len(result["invocations"]) - 1,
                     "files": artifacts,
                 }
                 write_json(output / "result.json", result)
-                run.write_submission()
                 notify(f"{task}: {scored.metric['value']} {scored.metric['unit']}")
                 if family not in {"cell_selective"}:
                     closed = data_cache.pop(family)
@@ -324,10 +344,10 @@ def evaluate(
             pending = set(result["requested_tasks"]) - set(result["tasks"]) - set(result["skipped"])
             result["status"] = "incomplete" if pending else "complete"
         except BaseException as error:
+            error.add_note(f"Task: {task}")
             result["status"] = "interrupted"
-            result["error"] = f"{type(error).__name__}: {error}"
+            result["error"] = "\n".join([f"{type(error).__name__}: {error}", *error.__notes__])
             write_json(output / "result.json", result)
-            run.write_submission()
             raise
         finally:
             if store is not None:
@@ -338,4 +358,4 @@ def evaluate(
                 if hasattr(data.get("sequences"), "close"):
                     data["sequences"].close()
         write_json(output / "result.json", result)
-        return run.write_submission()
+        return run

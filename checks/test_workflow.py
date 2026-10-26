@@ -22,6 +22,7 @@ def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
     result = bend2.evaluate(composition(), output=tmp_path / "run", cache_dir=tmp_path / "cache")
     assert result.scores["atlas_profile"] == pytest.approx(-0.7378073152527498, abs=1e-12)
     assert len(bend2.tasks()) == 8
+    assert not result.submission.exists()
     with zipfile.ZipFile(result.bundle()) as archive:
         assert {
             "result.json",
@@ -77,7 +78,7 @@ def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
         result.bundle()
 
 
-def test_interrupted_inference_resumes_completed_batches(tmp_path):
+def test_interrupted_inference_resumes_completed_batches(tmp_path, monkeypatch):
     class Encoder:
         calls = 0
         successful = 0
@@ -100,10 +101,14 @@ def test_interrupted_inference_resumes_completed_batches(tmp_path):
     result = bend2.evaluate(model, **options)
     assert encoder.successful == 7657
     assert result.scores["atlas_profile"] == pytest.approx(-0.7378073152527498, abs=1e-12)
-    assert not json.loads(result.submission.read_text())["ready_for_review"]
+    assert not result.submission.exists()
     calls = encoder.calls
+    monkeypatch.setitem(bend2.catalog.TASK_VERSIONS, "prior", 2)
     bend2.evaluate(model, **options)
     assert encoder.calls == calls
+    monkeypatch.setitem(bend2.catalog.TASK_VERSIONS, "atlas_profile", 2)
+    with pytest.raises(ValueError, match="atlas_profile: scientific version 1 → 2"):
+        bend2.evaluate(model, **options)
 
 
 def test_prior_exposes_only_hidden_targets(tmp_path):

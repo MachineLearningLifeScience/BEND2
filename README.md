@@ -74,8 +74,9 @@ predictions = result.table("atlas_profile")
 requests = result.table("atlas_profile", "requests")
 ```
 
-Results are ordinary JSON and Parquet files. The [quickstart](docs/quickstart.md)
-covers adding tasks, resuming, comparing models and combining cluster jobs.
+Results are ordinary JSON and Parquet files; submission files are created when
+you export. The [quickstart](docs/quickstart.md) covers adding tasks, resuming,
+comparing models and combining cluster jobs.
 Use `bend2 tasks` to explore the eight tasks and `bend2 plan my_model.py --tasks all`
 to check requirements before a larger run. See [tasks and compute](docs/tasks.md)
 for input sizes and the separate probability interface used by the prior task.
