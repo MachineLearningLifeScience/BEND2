@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"""Combine the frozen paper snapshot and reviewed contribution files."""
+
+import argparse
+from pathlib import Path
+
+from bend2.submissions import build_leaderboard
+
+
+def main():
+    root = Path(__file__).resolve().parents[2]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--reference", type=Path, default=root / "website/data/benchmark.paper.json"
+    )
+    parser.add_argument("--submissions", type=Path, default=root / "submissions")
+    parser.add_argument("--output", type=Path, default=root / "website/data/benchmark.json")
+    args = parser.parse_args()
+    data = build_leaderboard(args.reference, args.submissions, args.output)
+    count = sum(row.get("origin") == "community" for row in data["models"])
+    print(f"Built {args.output}: {count} community models; frozen paper rows retained")
+
+
+if __name__ == "__main__":
+    main()

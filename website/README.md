@@ -1,0 +1,80 @@
+# Website data integration
+
+The leaderboard is built from two reviewable inputs:
+
+- `data/benchmark.paper.json`: the frozen paper snapshot.
+- `../submissions/*.json`: community contributions accepted by maintainer review
+  and merge into the publication branch.
+
+Generate the frontend's combined `data/benchmark.json`:
+
+```bash
+python website/scripts/build_leaderboard.py
+```
+
+Run this after installing the repository package (`pip install -e .`) and before
+the website's static build. The same builder is available as
+`bend2.submissions.build_leaderboard` for other build systems. Arguments
+`--reference`, `--submissions` and `--output` support local previews in separate
+folders. The builder does not download evidence or run model code.
+
+The output adds community models, eight task cells per model and evidence
+sources. Missing tasks stay missing. It preserves all paper models,
+measurements, references and normalization anchors. For consistency with the
+site's existing rank contract, community `value` and `displayValue` use each
+task's stated display precision; `sourceValue` and the submission retain the
+exact result. Build from the paper snapshot each time, not a previous combined
+file. An empty submissions directory reproduces the paper data unchanged.
+
+## Frontend contract
+
+The current website already consumes the `models`, `measurements`, and `sources`
+arrays in `data/benchmark.json`. Community records extend that shape:
+
+- A model has `origin: "community"`, a public `url`, `submissionPath`, and its
+  evaluated model `declarations`. Its model kind is `foundation`, so it belongs
+  with models rather than scientific baselines. Embedding readouts use the
+  `fitted` interface; probability-only entries use `native`. A prior cell retains
+  its own probability interface even when that model also provides embeddings.
+- Each measurement links to its source with `sourceId`; its original value is
+  in `sourceValue`. Intervals retain their sampling unit. An unrun endpoint has
+  `value: null` and an explanatory note.
+- Its source includes the evidence download `url`, `sha256`, `runIdentity`,
+  `protocolVersion`, and `submissionPath`.
+
+Show a community label and these source links in model/result details. Do not
+label a community result as "Manuscript Table 1" or link it to the paper's source
+CSV. Keep the existing fixed-reference scoring logic. The frontend must escape
+model names and other contributor text as it does existing data.
+
+`submissionPath` is repository-relative; link it to the repository publication
+branch or copy those compact files into the static build. The evidence `url` is
+a direct external link. The frozen snapshot's `counts` describe paper data;
+derive current displayed model counts from the combined arrays.
+
+## Publication and review
+
+Only the publication branch should deploy the public site. A pull request can
+build a preview with its candidate contribution, but a preview is not an
+accepted public leaderboard result. Require maintainer review for contribution
+PRs and verify their downloaded evidence before merging; see
+[the maintainer procedure](../docs/submitting.md#maintainer-review).
+
+No deployment workflow is assumed or installed here. Connect this build step to
+the website's chosen static hosting workflow when that deployment is configured.
+Do not execute a submitted adapter during a site build or privileged PR check.
+
+## Snapshot provenance
+
+The paper snapshot was copied byte-for-byte from the committed website source:
+
+- Repository: `genomic-bending-leaderboard`
+- Producing commit: `509a14056b6102258a2df1c83eefe0ee76140e32`
+- Path: `data/benchmark.json`
+- Manuscript revision recorded inside the snapshot:
+  `1abee7c638616c578b2fea497e63b59e68752c01`
+
+The separate website checkout also had unfinished visual edits. This integration
+uses its committed benchmark data and does not copy or modify those edits.
+Changes to the frozen paper snapshot need an explicit scientific update, rather
+than being a side effect of a community model submission.

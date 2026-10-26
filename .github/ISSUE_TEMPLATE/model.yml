@@ -1,43 +1,36 @@
-name: Submit a model
-description: Add your model to the BEND 2.0 leaderboard.
+name: Submit a model without a pull request
+description: A maintainer can make the one-file leaderboard PR for you.
 title: "[Model] "
 body:
   - type: markdown
     attributes:
       value: |
-        Run your model, then use `bend2 export results/my-model` to create a submission bundle.
-        The bundle contains scores, model declarations, protocols and predictions. Review its contents before sharing.
-        Partial task coverage is welcome. A maintainer will review your results before adding them to the leaderboard.
+        The usual submission is one generated JSON file in a pull request. This form is the no-Git alternative.
+        Follow docs/submitting.md: evaluate, export, publish the evidence ZIP, then run `bend2 submit` with its URL.
+        Partial task coverage is welcome. Please do not paste scores manually.
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Generated contribution JSON
+      description: Attach the community-<model>-<identity>.json from bend2 submit, or link to it. GitHub may require renaming an attachment to .json.txt.
+    validations:
+      required: true
   - type: input
-    id: model
+    id: evidence
     attributes:
-      label: Model name and checkpoint
-      description: Link to the model and an immutable revision or weight hash.
-    validations:
-      required: true
-  - type: textarea
-    id: bundle
-    attributes:
-      label: Submission bundle
-      description: Attach submission.zip or link to a persistent public download.
-    validations:
-      required: true
-  - type: textarea
-    id: reproduce
-    attributes:
-      label: Reproduce this run
-      description: Link to your adapter and environment instructions. Include the exact command used.
-    validations:
-      required: true
-  - type: textarea
-    id: training
-    attributes:
-      label: Training data and benchmark exposure
-      description: Describe training data and any possible exposure to these sequences or assay labels.
+      label: Evidence download URL
+      description: The stable public submission.zip URL recorded in the JSON. No weights or embedding caches are needed.
     validations:
       required: true
   - type: textarea
     id: notes
     attributes:
-      label: Additional notes
-      description: Optional limitations, model paper, context-length handling or task-specific details.
+      label: Review notes
+      description: Explain known benchmark exposure, context limitations or other details a reviewer should know. The JSON already includes the model declaration and scores.
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like a maintainer to open a leaderboard submission PR using this file.
+          required: true

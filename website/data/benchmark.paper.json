@@ -1,0 +1,4140 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "draft-table-1",
+  "title": "Benchmarking the Capabilities Needed to Design DNA",
+  "shortName": "DRAFT",
+  "expandedName": "DNA Design Readiness Across Functional Tasks",
+  "version": "manuscript-1abee7c6",
+  "status": "frozen-manuscript-snapshot",
+  "description": "Eight reported endpoints across five capability categories. Read the raw endpoints alongside a transparent, exploratory reference index.",
+  "source": {
+    "label": "Current manuscript Table 1",
+    "commit": "1abee7c638616c578b2fea497e63b59e68752c01",
+    "workingTreeClean": true,
+    "tablePath": "tables/bend2-reference-main.tex",
+    "tableSha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471",
+    "recordsSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
+    "snapshotPath": "provenance/table-1.tex",
+    "extractedOn": "2026-10-22",
+    "precision": "Transcribed manuscript display precision. Canonical value and displayValue exactly match Table 1; sourceValue preserves the precise source-linked CSV estimate.",
+    "verification": "All displayed values and missing cells checked against the matching current source CSV; underlying experimental arrays were not rerun.",
+    "paperUrl": null,
+    "paperUrlStatus": "No verified public DRAFT paper URL was provided in the manuscript. arXiv:2610.11761 belongs to RAGenome and is deliberately excluded.",
+    "codeUrl": "https://anonymous.4open.science/r/draft-5709",
+    "codeUrlStatus": "Resource link recorded in the manuscript; availability not independently tested.",
+    "researchRepository": "https://github.com/yhsure/genomic-bending"
+  },
+  "categories": [
+    {
+      "id": "priors",
+      "label": "Sequence priors",
+      "color": "#9C7524",
+      "description": "Reconstruct a hidden nucleotide from its sequence context."
+    },
+    {
+      "id": "prediction",
+      "label": "Functional prediction",
+      "color": "#2463A6",
+      "description": "Predict the experimental effect of a DNA change."
+    },
+    {
+      "id": "context",
+      "label": "Biological context",
+      "color": "#19836E",
+      "description": "Distinguish effects across cell types and expression profiles across tissues."
+    },
+    {
+      "id": "interactions",
+      "label": "Genetic interactions",
+      "color": "#7956A5",
+      "description": "Predict how a mutation’s effect changes with its genetic background."
+    },
+    {
+      "id": "design",
+      "label": "Genomic design",
+      "color": "#BE4D35",
+      "description": "Choose measured edits or sequences that satisfy a requested response."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "prior",
+      "label": "Prior loss",
+      "shortLabel": "Prior loss",
+      "categoryId": "priors",
+      "description": "Predict the hidden central base of 512 human reference-genome windows. Lower loss means better calibrated conditional probabilities.",
+      "metric": "Hidden-base conditional log loss",
+      "unit": "bits/base",
+      "direction": "lower",
+      "precision": 3,
+      "datasetId": "grch38",
+      "cohort": "512 windows of 1,200 bp from separate 1-Mb genomic blocks; central base hidden.",
+      "figure": "Figure 1A",
+      "baseline": {
+        "value": 1.974,
+        "label": "Base composition",
+        "kind": "empirical",
+        "rationale": "The reported base-composition loss is 1.974 bits/base. This is an empirical baseline on the frozen panel, not the 2-bit uniform prior."
+      },
+      "cautions": [
+        "Interface-sensitive: NTv3 uses 12% additional masking and averages the individual losses of two queries; GENERATORv2 uses temperature-scaled probabilities.",
+        "Only rows with a comparable nucleotide-probability interface report this task. Missing prior scores are omitted from the combined score, never imputed."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": null
+    },
+    {
+      "id": "opensplice",
+      "label": "Splicing effects",
+      "shortLabel": "Splicing",
+      "categoryId": "prediction",
+      "description": "Predict mutation-induced changes in alternative splicing; correlate within each held-out gene, then average genes equally.",
+      "metric": "Macro-gene Spearman correlation",
+      "unit": "ρ",
+      "direction": "higher",
+      "precision": 3,
+      "datasetId": "opensplice",
+      "cohort": "590,104 interventions in 466 genes; five folds hold out complete genes for fitted readouts.",
+      "figure": "Figure 2A",
+      "baseline": {
+        "value": 0,
+        "label": "Uninformative rank ordering",
+        "kind": "theoretical-null",
+        "rationale": "Zero is the expected correlation for an independent random ordering. A constant predictor has undefined Spearman correlation, so zero is a normalization anchor rather than a measured constant baseline."
+      },
+      "cautions": [
+        "Native splice heads retain historical supervision; fitted readouts are trained on the benchmark’s source folds.",
+        "OpenSplice is the full gene-held-out endpoint, not a cross-assay transfer score."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 0.809,
+        "label": "Experimental reference",
+        "caveat": "WT PSI is shared across repeat-specific effects. This is a conditional experimental repeat reference, not a fully independent effect-replicate estimate or ceiling."
+      }
+    },
+    {
+      "id": "context",
+      "label": "Cell contrast",
+      "shortLabel": "Cell contrast",
+      "categoryId": "context",
+      "description": "Predict the HepG2-minus-K562 difference in a mutation’s reporter effect, then correlate within regulatory elements and average elements equally.",
+      "metric": "Macro-element Spearman correlation",
+      "unit": "ρ",
+      "direction": "higher",
+      "precision": 3,
+      "datasetId": "siraj",
+      "cohort": "170,292 substitutions across 128 elements; complete elements and related allelic backgrounds remain together during fitting and evaluation.",
+      "figure": "Figure 3B",
+      "baseline": {
+        "value": 0,
+        "label": "Uninformative rank ordering",
+        "kind": "theoretical-null",
+        "rationale": "Zero is the expected correlation for an independent random ordering; it is not an evaluated constant predictor."
+      },
+      "cautions": [
+        "The experimental reference has physical counts for 127 of 128 elements and uses repeat subsets; model values use the pooled posterior effects."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 0.594,
+        "label": "Experimental reference",
+        "caveat": "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. 127/128 loci; one lacks physical counts. Direct-m0 sensitivity: 0.559."
+      }
+    },
+    {
+      "id": "tissue_identification",
+      "label": "Tissue identification",
+      "shortLabel": "Tissue ID",
+      "categoryId": "context",
+      "description": "Match a predicted expression profile across held-out genes to the correct measured tissue among 51 candidates.",
+      "metric": "Top-1 tissue identification accuracy",
+      "unit": "%",
+      "direction": "higher",
+      "precision": 1,
+      "datasetId": "gtex",
+      "cohort": "5,782 held-out genes and 51 represented tissues; 12,146 training and 1,350 validation genes.",
+      "figure": "Appendix tissue figure B",
+      "baseline": {
+        "value": 1.9607843137254901,
+        "label": "Uniform choice among 51 tissues",
+        "kind": "exact-expectation",
+        "rationale": "The exact chance anchor is 100/51 = 1.960784…%, displayed as 2.0%. Tissue classes receive equal weight."
+      },
+      "cautions": [
+        "This holds out genes within represented tissues; it does not test transfer to unseen tissues.",
+        "The 99.0% experimental reference averages both donor-half directions; no one-direction interval is transferred to it."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 99.0,
+        "label": "Experimental reference",
+        "caveat": "Same 5782 genes and 51 tissues; mean of both directions under the saved donor partition. Reproducibility reference, not a ceiling. Previous one-direction confidence interval not transferred to reciprocal metric."
+      }
+    },
+    {
+      "id": "background",
+      "label": "Background interaction",
+      "shortLabel": "Interaction",
+      "categoryId": "interactions",
+      "description": "Predict how the same mutation’s effect differs across two parental genetic backgrounds, isolating background dependence.",
+      "metric": "Macro-element Spearman correlation",
+      "unit": "ρ",
+      "direction": "higher",
+      "precision": 3,
+      "datasetId": "siraj",
+      "cohort": "68,026 paired mutations in 114 elements; paired backgrounds remain together.",
+      "figure": "Figure 4A",
+      "baseline": {
+        "value": 0,
+        "label": "Uninformative rank ordering",
+        "kind": "theoretical-null",
+        "rationale": "Zero is the expected correlation for an independent random ordering; it is not an evaluated constant predictor."
+      },
+      "cautions": [
+        "The current experimental reference is HepG2–K562 transfer (0.421), not the superseded replicate-subset background value.",
+        "Transfer across cells is an experimental comparison, not a noise ceiling."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 0.421,
+        "label": "Experimental reference",
+        "caveat": "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval."
+      }
+    },
+    {
+      "id": "repair_percentile",
+      "label": "Single-edit rank",
+      "shortLabel": "Edit rank",
+      "categoryId": "design",
+      "description": "Choose an alternative single-base edit that matches the effect of a reference edit. Score the first nomination by its measured residual’s rank among eligible candidates.",
+      "metric": "Mean measured residual midrank percentile",
+      "unit": "percentile",
+      "direction": "lower",
+      "precision": 1,
+      "datasetId": "siraj",
+      "cohort": "331 response targets in 110 elements; 578–597 eligible substitutions per element; direct reversion is excluded.",
+      "figure": "Figure 5A",
+      "baseline": {
+        "value": 50,
+        "label": "Uniform candidate selection",
+        "kind": "exact-expectation",
+        "rationale": "Uniform selection has mean measured midrank percentile 50. Lower is better. This is a measured residual rank, not a success percentage."
+      },
+      "cautions": [
+        "All candidate measurements are withheld until evaluation; predictions rank proximity to the model’s own predicted reference-edit effect."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 11.8,
+        "label": "Experimental reference",
+        "caveat": "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. All 331 requests/110 loci; reciprocal selection; entire candidate sets retained."
+      }
+    },
+    {
+      "id": "cell_selective",
+      "label": "Cell selectivity",
+      "shortLabel": "Cell selectivity",
+      "categoryId": "design",
+      "description": "Select one substitution or no edit to increase activity in the target cell while penalizing the absolute effect in the other cell: U = target − |other|.",
+      "metric": "Mean cell-selective utility",
+      "unit": "log₂ utility",
+      "direction": "higher",
+      "precision": 3,
+      "datasetId": "siraj",
+      "cohort": "167,958 substitutions, 280 parental backgrounds and 127 loci; both cells serve as targets; loci receive equal weight.",
+      "figure": "Figure 5C",
+      "baseline": {
+        "value": 0,
+        "label": "No edit",
+        "kind": "defined-control",
+        "rationale": "The protocol defines U(no edit)=0 exactly. The primary penalty is λ=1. Negative measured utility can occur despite predicted abstention because predictions can be wrong."
+      },
+      "cautions": [
+        "Native outputs use held-locus, nonnegative per-cell calibration slopes; they are not zero-shot in this task.",
+        "Model utilities use all five RNA repeats; experimental selection uses reciprocal disjoint repeat subsets.",
+        "Original confirmatory tests concern within-model controls; a sorted point estimate is not a significance claim."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 0.962,
+        "label": "Experimental reference",
+        "caveat": "No-edit utility is zero. Reciprocal held-out RNA subsets; model entries use pooled RNA. Not an identical measurement aggregation or a ceiling."
+      }
+    },
+    {
+      "id": "atlas_profile",
+      "label": "Multi-cell gain",
+      "shortLabel": "Multi-cell gain",
+      "categoryId": "design",
+      "description": "Select ten enhancers for each multi-cell ON/OFF program. Utility rewards the weakest requested activity and penalizes the strongest unwanted activity; report gain over intent-matched random selection.",
+      "metric": "Mean utility gain over intent-matched random selection",
+      "unit": "log₂ gain",
+      "direction": "higher",
+      "precision": 3,
+      "datasetId": "atlas",
+      "cohort": "2,411 measured 145-nt candidates, 16 overlapping programs and 12 cell types; select 10 per request. Fit on 5,246 separate source constructs after excluding candidate families.",
+      "figure": "Figure 6A",
+      "baseline": {
+        "value": 0,
+        "label": "Intent-matched random selection",
+        "kind": "defined-control",
+        "rationale": "The reported endpoint subtracts the exact expected utility of uniform selection in each program’s author-intended target cohort. Therefore random gain is exactly zero; absolute utility is a different quantity."
+      },
+      "cautions": [
+        "The native rows and Enformer fit linear heads to native functional outputs on source constructs.",
+        "The two RNA-repeat markers are descriptive repeat measurements, not confidence intervals or independent program replications.",
+        "Positive gain does not imply positive absolute utility; AlphaGenome fitted has 0.833 gain but −0.096 absolute utility."
+      ],
+      "sourceIds": [
+        "table-1",
+        "table-1-records",
+        "methods"
+      ],
+      "reference": {
+        "value": 1.602,
+        "label": "Experimental reference",
+        "caveat": "Same16programs,10nominations,reciprocalRNArepeats; gain over intent-matched random."
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "markov0",
+      "label": "Base composition",
+      "shortLabel": "Base composition",
+      "family": "Composition",
+      "kind": "baseline",
+      "interface": "sequence",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Empirical base-composition predictor; no assay labels.",
+      "sortOrder": 0
+    },
+    {
+      "id": "evo2_20b",
+      "label": "Evo2 20B",
+      "shortLabel": "Evo2 20B",
+      "family": "Evo2",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "20B",
+      "description": "Causal genomic language model; frozen representation readouts on functional tasks.",
+      "sortOrder": 1
+    },
+    {
+      "id": "ceno_1b_1m",
+      "label": "CENO 1B",
+      "shortLabel": "CENO 1B",
+      "family": "CENO",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "1B",
+      "description": "Genomic sequence model; frozen 1,024-dimensional mean embeddings for fitted tasks.",
+      "sortOrder": 2
+    },
+    {
+      "id": "generator_v2_3b",
+      "label": "GENERATORv2",
+      "shortLabel": "GENERATORv2",
+      "family": "GENERATORv2",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "3B",
+      "description": "Eukaryote-base causal model with sixmer tokens and nucleotide-factorized predictions.",
+      "sortOrder": 3
+    },
+    {
+      "id": "dnabert2",
+      "label": "DNABERT-2",
+      "shortLabel": "DNABERT-2",
+      "family": "DNABERT",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "117M",
+      "description": "Masked genomic language model with BPE tokens and frozen representation readouts.",
+      "sortOrder": 4
+    },
+    {
+      "id": "ntv3_100m_pre",
+      "label": "NTv3 100M pre",
+      "shortLabel": "NTv3 100M pre",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "100M",
+      "description": "Sequence-pretrained NTv3 checkpoint; frozen representation readouts.",
+      "sortOrder": 5
+    },
+    {
+      "id": "ntv3_100m_post",
+      "label": "NTv3 100M post",
+      "shortLabel": "NTv3 100M post",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "100M",
+      "description": "Functionally post-trained NTv3 checkpoint; frozen hidden representation readouts.",
+      "sortOrder": 6
+    },
+    {
+      "id": "ntv3_100m_native",
+      "label": "NTv3 100M post · native",
+      "shortLabel": "NTv3 100M native",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "native",
+      "parentModelId": "ntv3_100m_post",
+      "parameterLabel": "100M",
+      "description": "Same post-trained checkpoint using its native functional outputs; multi-cell still fits a linear head to those outputs.",
+      "sortOrder": 7
+    },
+    {
+      "id": "ntv3_650m_pre",
+      "label": "NTv3 650M pre",
+      "shortLabel": "NTv3 650M pre",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "650M",
+      "description": "Sequence-pretrained NTv3 checkpoint; frozen representation readouts.",
+      "sortOrder": 8
+    },
+    {
+      "id": "ntv3_650m_post",
+      "label": "NTv3 650M post",
+      "shortLabel": "NTv3 650M post",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": "650M",
+      "description": "Functionally post-trained NTv3 checkpoint; frozen hidden representation readouts. Fixed 100-point anchor for the exploratory index.",
+      "sortOrder": 9
+    },
+    {
+      "id": "ntv3_650m_native",
+      "label": "NTv3 650M post · native",
+      "shortLabel": "NTv3 650M native",
+      "family": "NTv3",
+      "kind": "foundation",
+      "interface": "native",
+      "parentModelId": "ntv3_650m_post",
+      "parameterLabel": "650M",
+      "description": "Same post-trained checkpoint using its native functional outputs; multi-cell still fits a linear head to those outputs.",
+      "sortOrder": 10
+    },
+    {
+      "id": "alphagenome_fitted",
+      "label": "AlphaGenome",
+      "shortLabel": "AlphaGenome",
+      "family": "AlphaGenome",
+      "kind": "foundation",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Functionally supervised sequence model using fitted linear heads on frozen hidden representations.",
+      "sortOrder": 11
+    },
+    {
+      "id": "alphagenome",
+      "label": "AlphaGenome · native",
+      "shortLabel": "AlphaGenome native",
+      "family": "AlphaGenome",
+      "kind": "foundation",
+      "interface": "native",
+      "parentModelId": "alphagenome_fitted",
+      "parameterLabel": null,
+      "description": "Native functional outputs; cell-selective slopes and multi-cell native-output readout are fitted on source data.",
+      "sortOrder": 12
+    },
+    {
+      "id": "enformer",
+      "label": "Enformer",
+      "shortLabel": "Enformer",
+      "family": "Enformer",
+      "kind": "foundation",
+      "interface": "native",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Native sequence-to-function outputs; multi-cell uses a fitted linear head on native functional features.",
+      "sortOrder": 13
+    },
+    {
+      "id": "kmer_3_6",
+      "label": "k-mer ridge",
+      "shortLabel": "k-mer ridge",
+      "family": "k-mer",
+      "kind": "baseline",
+      "interface": "fitted",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Ridge regression on 3–6-mer features; multi-cell uses strand-invariant 1–6-mer frequencies.",
+      "sortOrder": 14
+    },
+    {
+      "id": "onehot_resnet",
+      "label": "Task-trained ResNet",
+      "shortLabel": "ResNet",
+      "family": "ResNet",
+      "kind": "baseline",
+      "interface": "task-trained",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Supervised one-hot network trained on the task source data; multi-cell uses a three-seed ensemble.",
+      "sortOrder": 15
+    },
+    {
+      "id": "spliceai",
+      "label": "SpliceAI",
+      "shortLabel": "SpliceAI",
+      "family": "SpliceAI",
+      "kind": "specialist",
+      "interface": "native",
+      "parentModelId": null,
+      "parameterLabel": null,
+      "description": "Specialist splice predictor, evaluated using its published minigene score; historical supervision differs from fitted benchmark readouts.",
+      "sortOrder": 16
+    }
+  ],
+  "measurements": [
+    {
+      "modelId": "markov0",
+      "taskId": "prior",
+      "value": 1.974,
+      "displayValue": "1.974",
+      "status": "evaluated",
+      "interface": "native; 1 queries; other-position mask rate 0.0",
+      "sourceValue": 1.9744053548886615,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.9530576068780299,
+        "high": 1.9967583599809648,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "opensplice",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/opensplice",
+      "notes": [
+        "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "context",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "tissue_identification",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/tissue_identification",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "background",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "repair_percentile",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/repair_percentile",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "cell_selective",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/cell_selective",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "atlas_profile",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "markov0/atlas_profile",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "prior",
+      "value": 1.388,
+      "displayValue": "1.388",
+      "status": "evaluated",
+      "interface": "native; 1 queries; other-position mask rate 0.0",
+      "sourceValue": 1.3876257126643874,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.2498418346050229,
+        "high": 1.5376494604471054,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "opensplice",
+      "value": 0.367,
+      "displayValue": "0.367",
+      "status": "evaluated",
+      "interface": "frozen-representation fitted readout",
+      "sourceValue": 0.3667282401028527,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.35215691419807943,
+        "high": 0.3812480803014129,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "context",
+      "value": 0.041,
+      "displayValue": "0.041",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.0408859101489466,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.0219322345988192,
+        "high": 0.0603709624235975,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "tissue_identification",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/tissue_identification",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "background",
+      "value": 0.05,
+      "displayValue": "0.050",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.05002827879530649,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.034167087225010453,
+        "high": 0.06576466007365578,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "repair_percentile",
+      "value": 43.5,
+      "displayValue": "43.5",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 43.5447413260353,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 39.5343568427543,
+        "high": 47.47643784175484,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "cell_selective",
+      "value": -0.35,
+      "displayValue": "-0.350",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.3500543707285904,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/cell_selective",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.4183947346639236,
+        "high": -0.2855335601651783,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "atlas_profile",
+      "value": 0.275,
+      "displayValue": "0.275",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.2745767447929687,
+      "sourceId": "table-1",
+      "sourceRecordId": "evo2_20b/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "prior",
+      "value": 1.549,
+      "displayValue": "1.549",
+      "status": "evaluated",
+      "interface": "native; 1 queries; other-position mask rate 0.0",
+      "sourceValue": 1.548726503070408,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.3848975957560896,
+        "high": 1.7360729767331837,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "opensplice",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/opensplice",
+      "notes": [
+        "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "context",
+      "value": 0.036,
+      "displayValue": "0.036",
+      "status": "evaluated",
+      "interface": "frozen 1024-dimensional mean embeddings + paired-response ridge",
+      "sourceValue": 0.0356386997088576,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/context",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.0182474419071388,
+        "high": 0.0529378199353923,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "tissue_identification",
+      "value": 9.8,
+      "displayValue": "9.8",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 9.80392156862745,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "background",
+      "value": 0.01,
+      "displayValue": "0.010",
+      "status": "evaluated",
+      "interface": "fitted mean-effect frozen readout; paired backgrounds",
+      "sourceValue": 0.0100908337947297,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/background",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.0073462810463968,
+        "high": 0.0272147551454775,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "repair_percentile",
+      "value": 48.9,
+      "displayValue": "48.9",
+      "status": "evaluated",
+      "interface": "fitted frozen readout; whole-locus OOF; rank fraction (multiply by100 for table)",
+      "sourceValue": 48.8559753317775,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/repair_percentile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 44.872684835068846,
+        "high": 52.69490833117898,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "cell_selective",
+      "value": -0.318,
+      "displayValue": "-0.318",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.3182551000994145,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/cell_selective",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.3923549620430436,
+        "high": -0.2484480266321445,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "atlas_profile",
+      "value": -0.581,
+      "displayValue": "-0.581",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": -0.581495968622555,
+      "sourceId": "table-1",
+      "sourceRecordId": "ceno_1b_1m/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "prior",
+      "value": 1.711,
+      "displayValue": "1.711",
+      "status": "evaluated",
+      "interface": "Temperature-scaled native conditional probabilities",
+      "sourceValue": 1.7114884266131933,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.6518856399072959,
+        "high": 1.774712041432719,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "opensplice",
+      "value": 0.388,
+      "displayValue": "0.388",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.388096180972446,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.373739563390649,
+        "high": 0.4021376584878464,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "context",
+      "value": 0.066,
+      "displayValue": "0.066",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.06642642407560108,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.050235505888559545,
+        "high": 0.08292127442263753,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "tissue_identification",
+      "value": 17.6,
+      "displayValue": "17.6",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 17.64705882352941,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Fixed centered 98,298-bp crop; 16,384-token limit including BOS."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "background",
+      "value": 0.046,
+      "displayValue": "0.046",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.04578286189430206,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.03043472220980968,
+        "high": 0.06165299685548288,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "repair_percentile",
+      "value": 44.7,
+      "displayValue": "44.7",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 44.70248556452466,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 40.86696598240759,
+        "high": 48.53537264105221,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "cell_selective",
+      "value": -0.256,
+      "displayValue": "-0.256",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.2563913486763549,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/cell_selective",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.3260562618114235,
+        "high": -0.1900645318874209,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "generator_v2_3b",
+      "taskId": "atlas_profile",
+      "value": 0.234,
+      "displayValue": "0.234",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.2344857975720761,
+      "sourceId": "table-1",
+      "sourceRecordId": "generator_v2_3b/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "opensplice",
+      "value": 0.198,
+      "displayValue": "0.198",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.1981902308981018,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1875703889427766,
+        "high": 0.2097891470967729,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "context",
+      "value": 0.076,
+      "displayValue": "0.076",
+      "status": "evaluated",
+      "interface": "frozen 768-dimensional mean embeddings + paired-response ridge",
+      "sourceValue": 0.0761897168480282,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/context",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.0655674881071053,
+        "high": 0.0866062326246656,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "tissue_identification",
+      "value": 5.9,
+      "displayValue": "5.9",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 5.88235294117647,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "background",
+      "value": 0.02,
+      "displayValue": "0.020",
+      "status": "evaluated",
+      "interface": "frozen 768-dimensional mean embeddings + ridge",
+      "sourceValue": 0.0197275780667494,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/background",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.0073320822009257,
+        "high": 0.0321235628360173,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "repair_percentile",
+      "value": 48.6,
+      "displayValue": "48.6",
+      "status": "evaluated",
+      "interface": "frozen 768-dimensional mean embeddings + ridge",
+      "sourceValue": 48.55974077076406,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/repair_percentile",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 44.99529018373341,
+        "high": 52.24416780360783,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "cell_selective",
+      "value": -0.302,
+      "displayValue": "-0.302",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.3018458156636018,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/cell_selective",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.3774399515069673,
+        "high": -0.2300589702969386,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "atlas_profile",
+      "value": 0.233,
+      "displayValue": "0.233",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.2328719532775636,
+      "sourceId": "table-1",
+      "sourceRecordId": "dnabert2/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "prior",
+      "value": 1.537,
+      "displayValue": "1.537",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.537171017457747,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.453831449879011,
+        "high": 1.6202512118874777,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "opensplice",
+      "value": 0.349,
+      "displayValue": "0.349",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.3490793743190476,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.334962566678737,
+        "high": 0.3632066159269334,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "context",
+      "value": 0.076,
+      "displayValue": "0.076",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.07602431417082979,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.06254040669021495,
+        "high": 0.08948517254946839,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "tissue_identification",
+      "value": 7.8,
+      "displayValue": "7.8",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 7.8431372549019605,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "background",
+      "value": 0.01,
+      "displayValue": "0.010",
+      "status": "evaluated",
+      "interface": "frozen mean embeddings + 512-dimensional SRHT + ridge",
+      "sourceValue": 0.0101713052936839,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/background",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.0003871016379826,
+        "high": 0.0205973859159844,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "repair_percentile",
+      "value": 47.3,
+      "displayValue": "47.3",
+      "status": "evaluated",
+      "interface": "frozen mean embeddings + 512-dimensional SRHT + ridge",
+      "sourceValue": 47.26204943355816,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/repair_percentile",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 43.77074567142887,
+        "high": 50.80598748052813,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "cell_selective",
+      "value": -0.207,
+      "displayValue": "-0.207",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.2072906378917048,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/cell_selective",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.2649251232963834,
+        "high": -0.1514757646934401,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_pre",
+      "taskId": "atlas_profile",
+      "value": 0.339,
+      "displayValue": "0.339",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.3391168926403413,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_pre/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "prior",
+      "value": 1.492,
+      "displayValue": "1.492",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.492461935201394,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.3927389998597406,
+        "high": 1.5916175825667722,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "opensplice",
+      "value": 0.502,
+      "displayValue": "0.502",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.5021724547333987,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.4877427406119896,
+        "high": 0.5160748744142409,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "context",
+      "value": 0.244,
+      "displayValue": "0.244",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.24415434895768506,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.21488583455283577,
+        "high": 0.2733822431961442,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "tissue_identification",
+      "value": 51.0,
+      "displayValue": "51.0",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 50.98039215686274,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "background",
+      "value": 0.139,
+      "displayValue": "0.139",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.1390996911117981,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.11000098933347734,
+        "high": 0.16842399530305707,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "repair_percentile",
+      "value": 30.3,
+      "displayValue": "30.3",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 30.26982345573195,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 25.935172116779516,
+        "high": 34.77778045880539,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "cell_selective",
+      "value": 0.211,
+      "displayValue": "0.211",
+      "status": "evaluated",
+      "interface": "held-locus common-effect plus cell-contrast readouts",
+      "sourceValue": 0.21063830067077918,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.12386243944096922,
+        "high": 0.2989373349286535,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_post",
+      "taskId": "atlas_profile",
+      "value": 0.144,
+      "displayValue": "0.144",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.1441415194506628,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_post/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "opensplice",
+      "value": 0.168,
+      "displayValue": "0.168",
+      "status": "evaluated",
+      "interface": "native annotation proxy",
+      "sourceValue": 0.1677968926004857,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1507282603184317,
+        "high": 0.1850513435652891,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "context",
+      "value": 0.203,
+      "displayValue": "0.203",
+      "status": "evaluated",
+      "interface": "501-bp DNase log-coverage difference",
+      "sourceValue": 0.202911072445496,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1680826996446145,
+        "high": 0.2372679551386709,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "tissue_identification",
+      "value": 27.5,
+      "displayValue": "27.5",
+      "status": "evaluated",
+      "interface": "native RNA outputs",
+      "sourceValue": 27.450980392156865,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "background",
+      "value": 0.152,
+      "displayValue": "0.152",
+      "status": "evaluated",
+      "interface": "501-bp DNase log-coverage difference",
+      "sourceValue": 0.1524855604512107,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1230533546930774,
+        "high": 0.181944188703588,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "repair_percentile",
+      "value": 32.0,
+      "displayValue": "32.0",
+      "status": "evaluated",
+      "interface": "native DNase log coverage, 501bp, frozen primary interface",
+      "sourceValue": 32.012600499400534,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/repair_percentile",
+      "notes": [
+        "331 response targets in 110 loci; lower percentile is better; independently replayed all candidate nominations and ranks"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 27.857347018276496,
+        "high": 36.23977632283227,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "cell_selective",
+      "value": 0.2,
+      "displayValue": "0.200",
+      "status": "evaluated",
+      "interface": "native DNase501 log with held-locus nonnegative per-cell slopes",
+      "sourceValue": 0.2002167361440046,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/cell_selective",
+      "notes": [
+        "Current Fig.5C: 127 loci, 280 backgrounds, 167958 edits, lambda=1 and no-edit option; 50000 locus bootstrap; new rows retrospective pointwise95, not original24-contrast confirmatory family"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1011433223221313,
+        "high": 0.3017024088346101,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_100m_native",
+      "taskId": "atlas_profile",
+      "value": 0.344,
+      "displayValue": "0.344",
+      "status": "evaluated",
+      "interface": "source-fitted native functional features",
+      "sourceValue": 0.3436364187186611,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_100m_native/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates.",
+        "Table 1 ‡: a linear head is fitted to native functional outputs; this endpoint is not a direct zero-shot native prediction."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "prior",
+      "value": 1.447,
+      "displayValue": "1.447",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.4470830685902811,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.3524182621796532,
+        "high": 1.5393008696158936,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "opensplice",
+      "value": 0.187,
+      "displayValue": "0.187",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.1869695847355324,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.174298808838127,
+        "high": 0.1994965981503923,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "context",
+      "value": 0.01,
+      "displayValue": "0.010",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.010274162383920291,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.0013820938742742962,
+        "high": 0.022521688893341232,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "tissue_identification",
+      "value": 7.8,
+      "displayValue": "7.8",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 7.8431372549019605,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "background",
+      "value": 0.009,
+      "displayValue": "0.009",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.008672778395027,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.0038545004400160694,
+        "high": 0.021358373991477397,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "repair_percentile",
+      "value": 50.4,
+      "displayValue": "50.4",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 50.44972088666388,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 47.05829930681474,
+        "high": 53.86714612200989,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "cell_selective",
+      "value": -0.061,
+      "displayValue": "-0.061",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": -0.0614350486039921,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/cell_selective",
+      "notes": [
+        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.0944439042024492,
+        "high": -0.0340523391328295,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_pre",
+      "taskId": "atlas_profile",
+      "value": 0.368,
+      "displayValue": "0.368",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.3679799614366345,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_pre/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "prior",
+      "value": 1.375,
+      "displayValue": "1.375",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.3745521953833992,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.274789743100344,
+        "high": 1.47500625212311,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "opensplice",
+      "value": 0.564,
+      "displayValue": "0.564",
+      "status": "evaluated",
+      "interface": "gene-held-out fitted readout",
+      "sourceValue": 0.5643109042285411,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.5499994852502554,
+        "high": 0.5784303144690341,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "context",
+      "value": 0.256,
+      "displayValue": "0.256",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.2559890462602803,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.22877624701877824,
+        "high": 0.2833694522417906,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "tissue_identification",
+      "value": 56.9,
+      "displayValue": "56.9",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 56.86274509803921,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/tissue_identification",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "background",
+      "value": 0.187,
+      "displayValue": "0.187",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.18701246956946582,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.15459263193225128,
+        "high": 0.21975255139994365,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "repair_percentile",
+      "value": 30.0,
+      "displayValue": "30.0",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 30.04843645057621,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 25.76013630232495,
+        "high": 34.549587462636005,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "cell_selective",
+      "value": 0.287,
+      "displayValue": "0.287",
+      "status": "evaluated",
+      "interface": "held-locus common-effect plus cell-contrast readouts",
+      "sourceValue": 0.28730864470401507,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.19782432693585955,
+        "high": 0.37734504266748736,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_post",
+      "taskId": "atlas_profile",
+      "value": 0.568,
+      "displayValue": "0.568",
+      "status": "evaluated",
+      "interface": "source-fitted frozen hidden representation",
+      "sourceValue": 0.5684901276910762,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_post/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "opensplice",
+      "value": 0.461,
+      "displayValue": "0.461",
+      "status": "evaluated",
+      "interface": "native annotation proxy",
+      "sourceValue": 0.4613678400264601,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.4453194331063385,
+        "high": 0.4773536878840134,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "context",
+      "value": 0.239,
+      "displayValue": "0.239",
+      "status": "evaluated",
+      "interface": "501-bp DNase log-coverage difference",
+      "sourceValue": 0.2394553535716708,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.2073213297522291,
+        "high": 0.2711241643711061,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "tissue_identification",
+      "value": 45.1,
+      "displayValue": "45.1",
+      "status": "evaluated",
+      "interface": "native RNA outputs",
+      "sourceValue": 45.09803921568628,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "background",
+      "value": 0.17,
+      "displayValue": "0.170",
+      "status": "evaluated",
+      "interface": "501-bp DNase log-coverage difference",
+      "sourceValue": 0.1698682962800696,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.138192262168277,
+        "high": 0.200875785992956,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "repair_percentile",
+      "value": 29.3,
+      "displayValue": "29.3",
+      "status": "evaluated",
+      "interface": "native DNase log coverage, 501bp, frozen primary interface",
+      "sourceValue": 29.31304047963624,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/repair_percentile",
+      "notes": [
+        "331 response targets in 110 loci; lower percentile is better; independently replayed all candidate nominations and ranks"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 25.52074138048832,
+        "high": 33.272651059675,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "cell_selective",
+      "value": 0.25,
+      "displayValue": "0.250",
+      "status": "evaluated",
+      "interface": "native DNase501 log with held-locus nonnegative per-cell slopes",
+      "sourceValue": 0.2503545904194044,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/cell_selective",
+      "notes": [
+        "Current Fig.5C: 127 loci, 280 backgrounds, 167958 edits, lambda=1 and no-edit option; 50000 locus bootstrap; new rows retrospective pointwise95, not original24-contrast confirmatory family"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.1623620369881065,
+        "high": 0.341042496773598,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "taskId": "atlas_profile",
+      "value": 0.482,
+      "displayValue": "0.482",
+      "status": "evaluated",
+      "interface": "source-fitted native functional features",
+      "sourceValue": 0.4820916958518555,
+      "sourceId": "table-1",
+      "sourceRecordId": "ntv3_650m_native/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates.",
+        "Table 1 ‡: a linear head is fitted to native functional outputs; this endpoint is not a direct zero-shot native prediction."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/prior",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "opensplice",
+      "value": 0.65,
+      "displayValue": "0.650",
+      "status": "evaluated",
+      "interface": "frozen hidden-representation fitted linear readout",
+      "sourceValue": 0.6498792466499858,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A.",
+        "Interface resolved from the Table 1 caption because the CSV interface field is blank."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.6343857827907978,
+        "high": 0.6650260674824582,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "context",
+      "value": 0.402,
+      "displayValue": "0.402",
+      "status": "evaluated",
+      "interface": "matched assay insert hidden-representation ridge readout",
+      "sourceValue": 0.4021855551043893,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/context",
+      "notes": [
+        "Matched held-out identities, truth and biological units audited against NTv3; 10000 whole-unit bootstrap replicates; strict transfer has 88 target genes, 86 correlation-eligible genes for all models"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.37140027981142143,
+        "high": 0.43348611534948495,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "tissue_identification",
+      "value": 64.7,
+      "displayValue": "64.7",
+      "status": "evaluated",
+      "interface": "GTEx-fitted genomic hidden-representation ridge readout",
+      "sourceValue": 64.70588235294117,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/tissue_identification",
+      "notes": [
+        "5782 common held-out genes and 51 tissues; independent rank replay and bootstrap validation passed"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "background",
+      "value": 0.269,
+      "displayValue": "0.269",
+      "status": "evaluated",
+      "interface": "matched assay insert hidden-representation ridge readout",
+      "sourceValue": 0.26862234598973245,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/background",
+      "notes": [
+        "Matched held-out identities, truth and biological units audited against NTv3; 10000 whole-unit bootstrap replicates; strict transfer has 88 target genes, 86 correlation-eligible genes for all models"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.23246584867660344,
+        "high": 0.30428710025153033,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "repair_percentile",
+      "value": 25.7,
+      "displayValue": "25.7",
+      "status": "evaluated",
+      "interface": "matched insert hidden-feature OOF ridge",
+      "sourceValue": 25.72362904837996,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/repair_percentile",
+      "notes": [
+        "331 response targets in 110 loci; lower percentile is better; independently replayed all candidate nominations and ranks"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 21.290894142129094,
+        "high": 30.25276124764517,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "cell_selective",
+      "value": 0.515,
+      "displayValue": "0.515",
+      "status": "evaluated",
+      "interface": "fitted common+contrast, whole-locus OOF",
+      "sourceValue": 0.5147185900778193,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/cell_selective",
+      "notes": [
+        "Current Fig.5C: 127 loci, 280 backgrounds, 167958 edits, lambda=1 and no-edit option; 50000 locus bootstrap; new rows retrospective pointwise95, not original24-contrast confirmatory family"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.42155293765502505,
+        "high": 0.6117450218744611,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "atlas_profile",
+      "value": 0.833,
+      "displayValue": "0.833",
+      "status": "evaluated",
+      "interface": "source-family-held-out ridge on 1536-dimensional frozen hidden representations",
+      "sourceValue": 0.8329312309424242,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome_fitted/atlas_profile",
+      "notes": [
+        "Current Fig.6A: 2411 candidates,16 overlapping programs,top10; mean gain over intent-matched random; repeat1=0.827058248061848;repeat2=0.8388042138230003; no independent-program confidence interval; distinct from native functional-output features"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "opensplice",
+      "value": 0.621,
+      "displayValue": "0.621",
+      "status": "evaluated",
+      "interface": "published minigene score",
+      "sourceValue": 0.6205920024993516,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.6048729281151268,
+        "high": 0.6365323275300002,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "context",
+      "value": 0.398,
+      "displayValue": "0.398",
+      "status": "evaluated",
+      "interface": "Native accessibility output",
+      "sourceValue": 0.3979143979814734,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.3657660158913222,
+        "high": 0.4311824782669762,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "tissue_identification",
+      "value": 68.6,
+      "displayValue": "68.6",
+      "status": "evaluated",
+      "interface": "native RNA outputs",
+      "sourceValue": 68.62745098039215,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "background",
+      "value": 0.26,
+      "displayValue": "0.260",
+      "status": "evaluated",
+      "interface": "Native accessibility output",
+      "sourceValue": 0.2595833829724495,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.21923266239249647,
+        "high": 0.2993448513833979,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "repair_percentile",
+      "value": 24.3,
+      "displayValue": "24.3",
+      "status": "evaluated",
+      "interface": "native assay-matched outputs",
+      "sourceValue": 24.33125909263845,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 20.474510192588795,
+        "high": 28.25128235491262,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "cell_selective",
+      "value": 0.384,
+      "displayValue": "0.384",
+      "status": "evaluated",
+      "interface": "native outputs with one held-locus nonnegative slope per cell",
+      "sourceValue": 0.3844643285391621,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.28837056320631366,
+        "high": 0.483381753986141,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "atlas_profile",
+      "value": 0.707,
+      "displayValue": "0.707",
+      "status": "evaluated",
+      "interface": "source-family-held-out ridge on frozen functional features",
+      "sourceValue": 0.7073047054037112,
+      "sourceId": "table-1",
+      "sourceRecordId": "alphagenome/atlas_profile",
+      "notes": [
+        "16 overlapping programs in 12 cells; mean utility gain over intent-matched random of top10 candidates; mean over two measurement repeats; U=minON-max(0,maxOFF); no independent-program confidence interval; two-repeat range is descriptive; Enformer uses corrected TensorFlow-gamma extraction and refitting",
+        "Table 1 ‡: a linear head is fitted to native functional outputs; this endpoint is not a direct zero-shot native prediction."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "opensplice",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/opensplice",
+      "notes": [
+        "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "context",
+      "value": 0.282,
+      "displayValue": "0.282",
+      "status": "evaluated",
+      "interface": "Native accessibility output",
+      "sourceValue": 0.2817834625224349,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.2423146232563836,
+        "high": 0.3212672337418212,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "tissue_identification",
+      "value": 31.4,
+      "displayValue": "31.4",
+      "status": "evaluated",
+      "interface": "native RNA outputs",
+      "sourceValue": 31.372549019607842,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "background",
+      "value": 0.181,
+      "displayValue": "0.181",
+      "status": "evaluated",
+      "interface": "Native accessibility output",
+      "sourceValue": 0.1811050695712191,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.14146192745254052,
+        "high": 0.2202278305871842,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "repair_percentile",
+      "value": 31.5,
+      "displayValue": "31.5",
+      "status": "evaluated",
+      "interface": "native assay-matched outputs",
+      "sourceValue": 31.520239012563213,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 27.445455234719134,
+        "high": 35.664422498636306,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "cell_selective",
+      "value": 0.29,
+      "displayValue": "0.290",
+      "status": "evaluated",
+      "interface": "native outputs with one held-locus nonnegative slope per cell",
+      "sourceValue": 0.29029819492545156,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.19281936676828326,
+        "high": 0.39092928522050263,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "atlas_profile",
+      "value": 0.7,
+      "displayValue": "0.700",
+      "status": "evaluated",
+      "interface": "source-family-held-out ridge on frozen functional features",
+      "sourceValue": 0.7004804914893465,
+      "sourceId": "table-1",
+      "sourceRecordId": "enformer/atlas_profile",
+      "notes": [
+        "16 overlapping programs in 12 cells; mean utility gain over intent-matched random of top10 candidates; mean over two measurement repeats; U=minON-max(0,maxOFF); no independent-program confidence interval; two-repeat range is descriptive; Enformer uses corrected TensorFlow-gamma extraction and refitting",
+        "Table 1 ‡: a linear head is fitted to native functional outputs; this endpoint is not a direct zero-shot native prediction."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "opensplice",
+      "value": 0.318,
+      "displayValue": "0.318",
+      "status": "evaluated",
+      "interface": "five-fold gene-held-out fitted baseline",
+      "sourceValue": 0.3180393809274463,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.3074340852813261,
+        "high": 0.3287768090495574,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "context",
+      "value": 0.211,
+      "displayValue": "0.211",
+      "status": "evaluated",
+      "interface": "Frozen representation + fitted contextual ridge",
+      "sourceValue": 0.21093389788501,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.19380220340453383,
+        "high": 0.22801207849532015,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "tissue_identification",
+      "value": 7.8,
+      "displayValue": "7.8",
+      "status": "evaluated",
+      "interface": "GTEx-fitted expression predictor",
+      "sourceValue": 7.8431372549019605,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "background",
+      "value": 0.032,
+      "displayValue": "0.032",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": 0.03182186128452004,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.014554926805208018,
+        "high": 0.04897608297045951,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "repair_percentile",
+      "value": 45.0,
+      "displayValue": "45.0",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 45.02521078854849,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 41.19417197413674,
+        "high": 48.8681319634679,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "cell_selective",
+      "value": -0.097,
+      "displayValue": "-0.097",
+      "status": "evaluated",
+      "interface": "held-locus common-effect plus cell-contrast readouts",
+      "sourceValue": -0.09680867262629177,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.18535923854235864,
+        "high": -0.008595072157463723,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "atlas_profile",
+      "value": 0.394,
+      "displayValue": "0.394",
+      "status": "evaluated",
+      "interface": "source-family-held-out ridge on 1–6-mer counts (other tasks use 3–6-mers)",
+      "sourceValue": 0.3935998909529128,
+      "sourceId": "table-1",
+      "sourceRecordId": "kmer_3_6/atlas_profile",
+      "notes": [
+        "16 overlapping programs in 12 cells; mean utility gain over intent-matched random of top10 candidates; mean over two measurement repeats; U=minON-max(0,maxOFF); no independent-program confidence interval; two-repeat range is descriptive; Enformer uses corrected TensorFlow-gamma extraction and refitting"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "opensplice",
+      "value": 0.488,
+      "displayValue": "0.488",
+      "status": "evaluated",
+      "interface": "task-trained network",
+      "sourceValue": 0.487845703900743,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.4772237432998575,
+        "high": 0.4984307156832414,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "context",
+      "value": 0.02,
+      "displayValue": "0.020",
+      "status": "evaluated",
+      "interface": "Supervised one-hot network",
+      "sourceValue": 0.0199759228826184,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.0113984396904629,
+        "high": 0.0286244884830086,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "tissue_identification",
+      "value": 2.0,
+      "displayValue": "2.0",
+      "status": "evaluated",
+      "interface": "GTEx-fitted expression predictor",
+      "sourceValue": 1.9607843137254901,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/tissue_identification",
+      "notes": [
+        "51 represented tissues; 5782 common held-out genes; paired whole-gene bootstrap with reranking; fixed tissue set; no unseen-tissue transfer; chance 100/51 percent"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "background",
+      "value": -0.001,
+      "displayValue": "-0.001",
+      "status": "evaluated",
+      "interface": "Fitted out-of-fold effect differences",
+      "sourceValue": -0.0006640598742617343,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.011759041618238118,
+        "high": 0.010724985030734295,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "repair_percentile",
+      "value": 47.0,
+      "displayValue": "47.0",
+      "status": "evaluated",
+      "interface": "held-element response readout",
+      "sourceValue": 47.03393621243292,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/repair_percentile",
+      "notes": [
+        "331 response targets in 110 elements; measured residual midrank scaled to [0,100], lower better; first nomination minimizes model-space distance to its predicted direct-swap effect; no direct reversion"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 43.51234436073968,
+        "high": 50.60427147544018,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "cell_selective",
+      "value": -0.215,
+      "displayValue": "-0.215",
+      "status": "evaluated",
+      "interface": "held-locus common-effect plus cell-contrast readouts",
+      "sourceValue": -0.21505675586458345,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/cell_selective",
+      "notes": [
+        "127 equal-weight loci; both cell requests and parental backgrounds averaged within locus; U=target minus absolute other-cell effect, lambda=1; no edit available; pointwise and original 24-contrast simultaneous intervals retained"
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": -0.28127899406432055,
+        "high": -0.1554593701741226,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "locus",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "atlas_profile",
+      "value": 0.347,
+      "displayValue": "0.347",
+      "status": "evaluated",
+      "interface": "source-only task-trained canonical ResNet, 3-seed ensemble",
+      "sourceValue": 0.3467009489179127,
+      "sourceId": "table-1",
+      "sourceRecordId": "onehot_resnet/atlas_profile",
+      "notes": [
+        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family. Mean of two RNA-repeat gains over the same 16 requests; repeats are descriptive, not independent uncertainty estimates."
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "prior",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/prior",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "opensplice",
+      "value": 0.674,
+      "displayValue": "0.674",
+      "status": "evaluated",
+      "interface": "published minigene score",
+      "sourceValue": 0.674271297612631,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/opensplice",
+      "notes": [
+        "590104 interventions;466 genes; five-fold complete-gene readouts or separately identified native output, as Figure2A."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.659436215234018,
+        "high": 0.6892202784900087,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      }
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "context",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/context",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "tissue_identification",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/tissue_identification",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "background",
+      "value": null,
+      "displayValue": "—",
+      "status": "unsupported",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/background",
+      "notes": [
+        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+      ],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "repair_percentile",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/repair_percentile",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "cell_selective",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/cell_selective",
+      "notes": [],
+      "uncertainty": null
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "atlas_profile",
+      "value": null,
+      "displayValue": "—",
+      "status": "unevaluated",
+      "interface": null,
+      "sourceValue": null,
+      "sourceId": "table-1",
+      "sourceRecordId": "spliceai/atlas_profile",
+      "notes": [],
+      "uncertainty": null
+    }
+  ],
+  "references": [
+    {
+      "modelId": "experimental_reference",
+      "taskId": "opensplice",
+      "value": 0.809,
+      "displayValue": "0.809",
+      "status": "evaluated",
+      "interface": "experimental measurements; separate RNA repeats or subsets",
+      "sourceValue": 0.808985189061741,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/opensplice",
+      "notes": [
+        "WT PSI is shared across repeat-specific effects. This is a conditional experimental repeat reference, not a fully independent effect-replicate estimate or ceiling."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.7922585862716931,
+        "high": 0.8250545878178283,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "label": "Experimental reference",
+      "caveat": "WT PSI is shared across repeat-specific effects. This is a conditional experimental repeat reference, not a fully independent effect-replicate estimate or ceiling.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "context",
+      "value": 0.594,
+      "displayValue": "0.594",
+      "status": "evaluated",
+      "interface": "experimental repeat subsets",
+      "sourceValue": 0.5937138334206234,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/context",
+      "notes": [
+        "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. 127/128 loci; one lacks physical counts. Direct-m0 sensitivity: 0.559."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.5673471867312959,
+        "high": 0.6198775811463886,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "label": "Experimental reference",
+      "caveat": "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. 127/128 loci; one lacks physical counts. Direct-m0 sensitivity: 0.559.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "tissue_identification",
+      "value": 99.0,
+      "displayValue": "99.0",
+      "status": "evaluated",
+      "interface": "reciprocal donor halves A to B and B to A",
+      "sourceValue": 99.01960784313725,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/tissue_identification",
+      "notes": [
+        "Same 5782 genes and 51 tissues; mean of both directions under the saved donor partition. Reproducibility reference, not a ceiling. Previous one-direction confidence interval not transferred to reciprocal metric."
+      ],
+      "uncertainty": null,
+      "label": "Experimental reference",
+      "caveat": "Same 5782 genes and 51 tissues; mean of both directions under the saved donor partition. Reproducibility reference, not a ceiling. Previous one-direction confidence interval not transferred to reciprocal metric.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "background",
+      "value": 0.421,
+      "displayValue": "0.421",
+      "status": "evaluated",
+      "interface": "HepG2–K562 transfer",
+      "sourceValue": 0.42100136296415547,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/background",
+      "notes": [
+        "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.3808536037135168,
+        "high": 0.4619047739097034,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "label": "Experimental reference",
+      "caveat": "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "repair_percentile",
+      "value": 11.8,
+      "displayValue": "11.8",
+      "status": "evaluated",
+      "interface": "experimental repeat subsets",
+      "sourceValue": 11.809549140954672,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/repair_percentile",
+      "notes": [
+        "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. All 331 requests/110 loci; reciprocal selection; entire candidate sets retained."
+      ],
+      "uncertainty": {
+        "level": 0.95,
+        "low": 9.650983610747527,
+        "high": 14.037834975873858,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "element",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "label": "Experimental reference",
+      "caveat": "Disjoint RNA/DNA subsets 1–2 and 3–5; fixed cohort; trimmed count reconstruction. Published model endpoints use pooled posterior effects; reference is not a ceiling. All 331 requests/110 loci; reciprocal selection; entire candidate sets retained.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "cell_selective",
+      "value": 0.962,
+      "displayValue": "0.962",
+      "status": "evaluated",
+      "interface": "experimental measurements; separate RNA repeats or subsets",
+      "sourceValue": 0.9619172437002861,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/cell_selective",
+      "notes": [
+        "No-edit utility is zero. Reciprocal held-out RNA subsets; model entries use pooled RNA. Not an identical measurement aggregation or a ceiling."
+      ],
+      "uncertainty": null,
+      "label": "Experimental reference",
+      "caveat": "No-edit utility is zero. Reciprocal held-out RNA subsets; model entries use pooled RNA. Not an identical measurement aggregation or a ceiling.",
+      "isCeiling": false
+    },
+    {
+      "modelId": "experimental_reference",
+      "taskId": "atlas_profile",
+      "value": 1.602,
+      "displayValue": "1.602",
+      "status": "evaluated",
+      "interface": "experimental measurements; separate RNA repeats or subsets",
+      "sourceValue": 1.6020480673343154,
+      "sourceId": "table-1",
+      "sourceRecordId": "experimental_reference/atlas_profile",
+      "notes": [
+        "Same16programs,10nominations,reciprocalRNArepeats; gain over intent-matched random."
+      ],
+      "uncertainty": null,
+      "label": "Experimental reference",
+      "caveat": "Same16programs,10nominations,reciprocalRNArepeats; gain over intent-matched random.",
+      "isCeiling": false
+    }
+  ],
+  "datasets": [
+    {
+      "id": "grch38",
+      "label": "Human reference genome",
+      "shortLabel": "GRCh38",
+      "kind": "reference genome",
+      "description": "512 separate genomic blocks provide the hidden-base sequence prior panel.",
+      "taskIds": [
+        "prior"
+      ]
+    },
+    {
+      "id": "opensplice",
+      "label": "OpenSplice",
+      "shortLabel": "OpenSplice",
+      "kind": "experimental assay",
+      "description": "Large-scale mutation measurements of human alternative splicing.",
+      "taskIds": [
+        "opensplice"
+      ],
+      "citation": "Quarantani et al., OpenSplice (2026)",
+      "url": "https://doi.org/10.6084/m9.figshare.32337414.v5",
+      "linkVerification": "manuscript bibliography"
+    },
+    {
+      "id": "siraj",
+      "label": "Siraj saturation mutagenesis",
+      "shortLabel": "Siraj MPRA",
+      "kind": "experimental assay",
+      "description": "Reporter effects in HepG2 and K562 support distinct context, interaction and selection protocols; their cohorts differ.",
+      "taskIds": [
+        "context",
+        "background",
+        "repair_percentile",
+        "cell_selective"
+      ],
+      "citation": "Siraj et al., Functional dissection of complex trait variants at single-nucleotide resolution, Nature (2026)",
+      "url": "https://doi.org/10.1038/s41586-026-10121-6",
+      "linkVerification": "manuscript bibliography"
+    },
+    {
+      "id": "gtex",
+      "label": "GTEx tissue expression",
+      "shortLabel": "GTEx",
+      "kind": "experimental expression atlas",
+      "description": "Expression profiles across 51 represented tissues; evaluations hold out genes.",
+      "taskIds": [
+        "tissue_identification"
+      ],
+      "citation": "GTEx Consortium, Science (2020)",
+      "url": "https://doi.org/10.1126/science.aaz1776",
+      "linkVerification": "manuscript bibliography"
+    },
+    {
+      "id": "atlas",
+      "label": "Atlas of AI-designed enhancers",
+      "shortLabel": "Enhancer Atlas",
+      "kind": "experimental reporter atlas",
+      "description": "2,411 candidate enhancers evaluated for 16 multi-cell expression requests using 12 cell types.",
+      "taskIds": [
+        "atlas_profile"
+      ],
+      "citation": "Castillo-Hair et al. (2025), dataset version 0.2",
+      "url": "https://zenodo.org/records/17410822",
+      "linkVerification": "manuscript methods and bibliography"
+    }
+  ],
+  "sources": [
+    {
+      "id": "table-1",
+      "title": "Table 1 — current displayed manuscript table",
+      "manuscriptPath": "tables/bend2-reference-main.tex",
+      "snapshotPath": "provenance/table-1.tex",
+      "sha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471"
+    },
+    {
+      "id": "table-1-records",
+      "title": "Source-linked estimates behind Table 1",
+      "manuscriptPath": "tables/bend2-main-benchmark.csv",
+      "snapshotPath": "provenance/table-1-source-records.csv",
+      "sha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28"
+    },
+    {
+      "id": "capability-style",
+      "title": "Official capability labels and colors",
+      "manuscriptPath": "capability-style.tex",
+      "snapshotPath": "provenance/capability-style.tex",
+      "sha256": "126b52a55ec956e95ab5ff21f051b88bdede0f68bd4512b132cec874b7f5c5a9"
+    },
+    {
+      "id": "methods",
+      "title": "Current main-text definitions",
+      "manuscriptPath": "body.tex",
+      "snapshotPath": "provenance/main-text-definitions.tex",
+      "sha256": "6e7ab5a1561e2d64bda30ce08d2d57f7cd8db9bf586c9afaf26f63bfe483ebe2"
+    },
+    {
+      "id": "cell-selective-methods",
+      "title": "Cell-selective selection protocol",
+      "manuscriptPath": "sections/cell-selective-design.tex",
+      "snapshotPath": "provenance/cell-selective-methods.tex",
+      "sha256": "a4e0c471d98e9d61d1c193ee11e0fb189671d89f16d6c8e304395c56e8e65bdb"
+    },
+    {
+      "id": "multicell-methods",
+      "title": "Multi-cell selection protocol",
+      "manuscriptPath": "sections/multicell-programming.tex",
+      "snapshotPath": "provenance/multicell-methods.tex",
+      "sha256": "11c1122db6331eb68816ad4924789ff7f3b2fe24a6e707ec94d8765d20f56dda"
+    },
+    {
+      "id": "model-overview",
+      "title": "Main model overview",
+      "manuscriptPath": "tables/model-overview.tex",
+      "snapshotPath": "provenance/model-overview.tex",
+      "sha256": "af788c0a59174aeb1b607b53340f4c52848e71df060720d60c1b521f726a7ac2"
+    },
+    {
+      "id": "splits",
+      "title": "Dataset split overview",
+      "manuscriptPath": "tables/data_splits_overview.tex",
+      "snapshotPath": "provenance/data-splits.tex",
+      "sha256": "eae44b39998461b64c5310db9d1d3d71c4c2af468e7255b3cc0fbd0866fab992"
+    },
+    {
+      "id": "references",
+      "title": "Manuscript bibliography",
+      "manuscriptPath": "references.bib",
+      "snapshotPath": "provenance/references.bib",
+      "sha256": "e89dcdca12027299d91f41a52297070cf74986e7b32d376d80638957e8ae0cf5"
+    },
+    {
+      "id": "repair-summary",
+      "title": "Companion response-matching endpoint records",
+      "manuscriptPath": "provenance/design-layout-20260921/fig5/inputs/siraj_compensatory_repair.summary.csv",
+      "snapshotPath": "provenance/repair-summary.csv",
+      "sha256": "433befcbc4b8c0d5d7b3779c2a2aa1c15257bd5a4cd28aaeb35ae0ccbd1ca5a7"
+    },
+    {
+      "id": "repair-budgets",
+      "title": "Response-matching budget curve records",
+      "manuscriptPath": "provenance/design-layout-20260921/fig5/inputs/siraj_compensatory_repair.budgets.csv",
+      "snapshotPath": "provenance/repair-budgets.csv",
+      "sha256": "de09860245b5207ab694d6ba6ebdcd26b9d2b956ab3b1c112c2ca208face4a03"
+    },
+    {
+      "id": "atlas-frontier",
+      "title": "Native-output multi-cell repeat records",
+      "manuscriptPath": "provenance/revision-20260921/atlas/figures/frontier_plot_data.csv",
+      "snapshotPath": "provenance/atlas-frontier.csv",
+      "sha256": "aaca65313920ce54a843ea80e44c7ccbb527a69d3fb919f8fcf6e44ec8a214e3"
+    },
+    {
+      "id": "repair-budget-reference",
+      "title": "Experimental response-matching budget reference",
+      "manuscriptPath": "provenance/experimental-reference-figures-20260923/summary.csv",
+      "snapshotPath": "provenance/repair-budget-reference.csv",
+      "sha256": "6f2cb289cfebfd538e946193fb49730a88316687740a952f35d6b6d93f979d60"
+    }
+  ],
+  "scoring": {
+    "id": "reference-index-v2",
+    "label": "Reference index",
+    "status": "exploratory-not-a-paper-metric",
+    "referenceModelId": "ntv3_650m_post",
+    "defaultTaskIds": [
+      "prior",
+      "opensplice",
+      "context",
+      "tissue_identification",
+      "background",
+      "repair_percentile",
+      "cell_selective",
+      "atlas_profile"
+    ],
+    "fullTaskIds": [
+      "prior",
+      "opensplice",
+      "context",
+      "tissue_identification",
+      "background",
+      "repair_percentile",
+      "cell_selective",
+      "atlas_profile"
+    ],
+    "defaultCategoryIds": [
+      "priors",
+      "prediction",
+      "context",
+      "interactions",
+      "design"
+    ],
+    "normalization": "100 * (value - baseline) / (referenceValue - baseline)",
+    "normalizationNote": "The same algebra works for lower-is-better tasks because their denominator is negative. It yields 0 at the task baseline and 100 at the fixed NTv3 650M post reference. Prior loss uses the base-composition baseline of 1.974 bits/base and reference loss of 1.375 bits/base.",
+    "aggregation": "Compute the mean of available normalized task scores within each category, then average available categories equally.",
+    "missingPolicy": "Missing tasks are omitted, never zero. Categories with no available tasks are omitted. Task and category coverage are retained in score tooltips and CSV exports. No available results means no score.",
+    "clamp": false,
+    "weighting": "Equal available categories; equal available endpoints within each category.",
+    "uncertainty": null,
+    "cautions": [
+      "This index is a site exploration aid; it is not a published manuscript endpoint, biological percentage or statistical significance measure.",
+      "Scores may be below 0 or above 100. The fixed model reference is not an upper bound.",
+      "The 8-endpoint index includes sequence priors as one of five equally weighted available categories. Prior loss is interface-sensitive; rows without nucleotide probabilities receive no imputed prior score.",
+      "Category weighting is explicit but does not make overlapping assays statistically independent.",
+      "Experimental references are context, not normalization anchors or ceilings.",
+      "Ranking uses canonical Table 1 precision; ties at that precision are retained."
+    ]
+  },
+  "supplementary": {
+    "repairBudgets": {
+      "label": "Response matching by testing budget",
+      "sourceId": "repair-budgets",
+      "status": "source-archived-curve-matched-current-endpoint",
+      "note": "Separate success-rate endpoint underlying the response-matching budget figure; a subset of the current model roster plus uniform selection. Each model’s companion residual-rank endpoint matches the current Table 1 precise value. It does not replace the Table 1 residual-rank endpoint.",
+      "series": [
+        {
+          "modelId": "evo2_20b",
+          "label": "Evo2 20B",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.11893939393939393,
+              "ciLow": 0.07878787878787878,
+              "ciHigh": 0.16439393939393937
+            },
+            {
+              "budget": 5,
+              "successRate": 0.3310606060606061,
+              "ciLow": 0.26590909090909093,
+              "ciHigh": 0.396969696969697
+            },
+            {
+              "budget": 10,
+              "successRate": 0.475,
+              "ciLow": 0.4083333333333333,
+              "ciHigh": 0.543939393939394
+            },
+            {
+              "budget": 25,
+              "successRate": 0.6234848484848484,
+              "ciLow": 0.5606060606060606,
+              "ciHigh": 0.6863636363636364
+            }
+          ]
+        },
+        {
+          "modelId": "enformer",
+          "label": "Enformer",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.18939393939393942,
+              "ciLow": 0.14166666666666666,
+              "ciHigh": 0.24166666666666667
+            },
+            {
+              "budget": 5,
+              "successRate": 0.5075757575757576,
+              "ciLow": 0.4431818181818182,
+              "ciHigh": 0.5712121212121212
+            },
+            {
+              "budget": 10,
+              "successRate": 0.6333333333333332,
+              "ciLow": 0.568939393939394,
+              "ciHigh": 0.6962121212121212
+            },
+            {
+              "budget": 25,
+              "successRate": 0.743939393939394,
+              "ciLow": 0.6848484848484848,
+              "ciHigh": 0.8022727272727272
+            }
+          ]
+        },
+        {
+          "modelId": "alphagenome",
+          "label": "AlphaGenome · native",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.23712121212121212,
+              "ciLow": 0.18333333333333332,
+              "ciHigh": 0.2939393939393939
+            },
+            {
+              "budget": 5,
+              "successRate": 0.5106060606060606,
+              "ciLow": 0.44848484848484843,
+              "ciHigh": 0.5734848484848485
+            },
+            {
+              "budget": 10,
+              "successRate": 0.6227272727272727,
+              "ciLow": 0.5613636363636364,
+              "ciHigh": 0.6818371212121211
+            },
+            {
+              "budget": 25,
+              "successRate": 0.7840909090909091,
+              "ciLow": 0.7295454545454545,
+              "ciHigh": 0.8363636363636363
+            }
+          ]
+        },
+        {
+          "modelId": "ntv3_650m_post",
+          "label": "NTv3 650M post",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.2121212121212121,
+              "ciLow": 0.1621212121212121,
+              "ciHigh": 0.2636363636363636
+            },
+            {
+              "budget": 5,
+              "successRate": 0.4772727272727273,
+              "ciLow": 0.41212121212121217,
+              "ciHigh": 0.5424242424242425
+            },
+            {
+              "budget": 10,
+              "successRate": 0.587121212121212,
+              "ciLow": 0.5272537878787878,
+              "ciHigh": 0.6484848484848486
+            },
+            {
+              "budget": 25,
+              "successRate": 0.7234848484848484,
+              "ciLow": 0.6651515151515152,
+              "ciHigh": 0.7825757575757575
+            }
+          ]
+        },
+        {
+          "modelId": "ntv3_100m_post",
+          "label": "NTv3 100M post",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.18181818181818182,
+              "ciLow": 0.13484848484848486,
+              "ciHigh": 0.23106060606060605
+            },
+            {
+              "budget": 5,
+              "successRate": 0.4318181818181818,
+              "ciLow": 0.36818181818181817,
+              "ciHigh": 0.49696969696969695
+            },
+            {
+              "budget": 10,
+              "successRate": 0.578030303030303,
+              "ciLow": 0.509090909090909,
+              "ciHigh": 0.6446969696969698
+            },
+            {
+              "budget": 25,
+              "successRate": 0.6878787878787878,
+              "ciLow": 0.6257575757575758,
+              "ciHigh": 0.7469886363636363
+            }
+          ]
+        },
+        {
+          "modelId": "generator_v2_3b",
+          "label": "GENERATORv2",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.07878787878787878,
+              "ciLow": 0.04696969696969697,
+              "ciHigh": 0.11439393939393938
+            },
+            {
+              "budget": 5,
+              "successRate": 0.28787878787878785,
+              "ciLow": 0.23257575757575757,
+              "ciHigh": 0.34393939393939393
+            },
+            {
+              "budget": 10,
+              "successRate": 0.425,
+              "ciLow": 0.3621212121212121,
+              "ciHigh": 0.4909090909090909
+            },
+            {
+              "budget": 25,
+              "successRate": 0.6015151515151514,
+              "ciLow": 0.5393939393939394,
+              "ciHigh": 0.6621401515151514
+            }
+          ]
+        },
+        {
+          "modelId": "ntv3_650m_pre",
+          "label": "NTv3 650M pre",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.07651515151515151,
+              "ciLow": 0.04545454545454545,
+              "ciHigh": 0.11212121212121211
+            },
+            {
+              "budget": 5,
+              "successRate": 0.25681818181818183,
+              "ciLow": 0.19924242424242425,
+              "ciHigh": 0.3174242424242424
+            },
+            {
+              "budget": 10,
+              "successRate": 0.375,
+              "ciLow": 0.3098484848484849,
+              "ciHigh": 0.4424242424242424
+            },
+            {
+              "budget": 25,
+              "successRate": 0.5613636363636364,
+              "ciLow": 0.4901515151515151,
+              "ciHigh": 0.6310606060606061
+            }
+          ]
+        },
+        {
+          "modelId": "onehot_resnet",
+          "label": "Task-trained ResNet",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.07651515151515151,
+              "ciLow": 0.04772727272727273,
+              "ciHigh": 0.10984848484848483
+            },
+            {
+              "budget": 5,
+              "successRate": 0.24242424242424243,
+              "ciLow": 0.1893939393939394,
+              "ciHigh": 0.29696969696969694
+            },
+            {
+              "budget": 10,
+              "successRate": 0.41969696969696973,
+              "ciLow": 0.3560606060606061,
+              "ciHigh": 0.4856060606060606
+            },
+            {
+              "budget": 25,
+              "successRate": 0.5446969696969697,
+              "ciLow": 0.47803030303030297,
+              "ciHigh": 0.6136363636363636
+            }
+          ]
+        },
+        {
+          "modelId": "kmer_3_6",
+          "label": "k-mer ridge",
+          "kind": "model",
+          "matchedCurrentTableEndpoint": true,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.09393939393939393,
+              "ciLow": 0.0606060606060606,
+              "ciHigh": 0.13106060606060604
+            },
+            {
+              "budget": 5,
+              "successRate": 0.2909090909090909,
+              "ciLow": 0.2333333333333333,
+              "ciHigh": 0.3499999999999999
+            },
+            {
+              "budget": 10,
+              "successRate": 0.4325757575757576,
+              "ciLow": 0.36666666666666664,
+              "ciHigh": 0.5022727272727273
+            },
+            {
+              "budget": 25,
+              "successRate": 0.587121212121212,
+              "ciLow": 0.5196969696969698,
+              "ciHigh": 0.653806818181818
+            }
+          ]
+        },
+        {
+          "modelId": "uniform",
+          "label": "Uniform selection",
+          "kind": "control",
+          "matchedCurrentTableEndpoint": false,
+          "points": [
+            {
+              "budget": 1,
+              "successRate": 0.06625664455498537,
+              "ciLow": 0.05503447309299768,
+              "ciHigh": 0.07792198934238775
+            },
+            {
+              "budget": 5,
+              "successRate": 0.2495985567215588,
+              "ciLow": 0.21389681249660536,
+              "ciHigh": 0.28570647869947513
+            },
+            {
+              "budget": 10,
+              "successRate": 0.38153710621070097,
+              "ciLow": 0.3355597463994639,
+              "ciHigh": 0.42981543162818975
+            },
+            {
+              "budget": 25,
+              "successRate": 0.5652701269446477,
+              "ciLow": 0.5113695975063679,
+              "ciHigh": 0.6201276928262144
+            }
+          ]
+        }
+      ],
+      "experimentalReference": {
+        "modelId": "experimental_reference",
+        "label": "Experimental reference",
+        "kind": "reference",
+        "sourceId": "repair-budget-reference",
+        "isCeiling": false,
+        "cohort": {
+          "targets": 331,
+          "elements": 110
+        },
+        "protocol": "Select on RNA subsets 1–2 and evaluate on 3–5, then swap; retain the original 331 targets and pooled-data success tolerances. Average requests and directions within each element.",
+        "uncertainty": {
+          "level": 0.95,
+          "type": "pointwise bootstrap interval",
+          "samplingUnit": "element"
+        },
+        "points": [
+          {
+            "budget": 1,
+            "successRate": 0.3965909090909091,
+            "ciLow": 0.35681818181818176,
+            "ciHigh": 0.43674242424242427
+          },
+          {
+            "budget": 5,
+            "successRate": 0.8219696969696969,
+            "ciLow": 0.7821969696969697,
+            "ciHigh": 0.8602272727272727
+          },
+          {
+            "budget": 10,
+            "successRate": 0.8909090909090909,
+            "ciLow": 0.8541666666666666,
+            "ciHigh": 0.925
+          },
+          {
+            "budget": 25,
+            "successRate": 0.9071969696969697,
+            "ciLow": 0.8723484848484848,
+            "ciHigh": 0.9390151515151516
+          }
+        ]
+      }
+    },
+    "multiCellRepeats": {
+      "label": "Multi-cell gain in two RNA repeats",
+      "note": "Only points matched to current Table 1 source values are included. Repeat values are descriptive measurements, not confidence intervals.",
+      "points": [
+        {
+          "modelId": "experimental_reference",
+          "gain": 1.6020480673343154,
+          "repeatValues": [
+            1.5978303196096904,
+            1.6062658150589404
+          ],
+          "absoluteUtility": 0.6732204717102416,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "alphagenome",
+          "gain": 0.7073047054037112,
+          "repeatValues": [
+            0.7132820015680529,
+            0.7013274092393694
+          ],
+          "absoluteUtility": -0.22152289022036267,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "enformer",
+          "gain": 0.7004804914893465,
+          "repeatValues": [
+            0.708790187204438,
+            0.6921707957742551
+          ],
+          "absoluteUtility": -0.22834710413472725,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "ntv3_650m_native",
+          "gain": 0.4820916958518555,
+          "repeatValues": [
+            0.4302441032390426,
+            0.5339392884646684
+          ],
+          "absoluteUtility": -0.4467358997722183,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "kmer_3_6",
+          "gain": 0.3935998909529128,
+          "repeatValues": [
+            0.3676793154506585,
+            0.4195204664551671
+          ],
+          "absoluteUtility": -0.5352277046711611,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "ntv3_100m_native",
+          "gain": 0.34363641871866113,
+          "repeatValues": [
+            0.2923615081644936,
+            0.39491132927282874
+          ],
+          "absoluteUtility": -0.5851911769054127,
+          "sourceId": "atlas-frontier"
+        },
+        {
+          "modelId": "evo2_20b",
+          "gain": 0.2745767447929687,
+          "repeatValues": [
+            0.2326410245026707,
+            0.3165124650832666
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "ceno_1b_1m",
+          "gain": -0.581495968622555,
+          "repeatValues": [
+            -0.58408802539808,
+            -0.57890391184703
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "generator_v2_3b",
+          "gain": 0.2344857975720761,
+          "repeatValues": [
+            0.242512050867217,
+            0.2264595442769352
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "dnabert2",
+          "gain": 0.2328719532775636,
+          "repeatValues": [
+            0.2235294734470943,
+            0.2422144331080329
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "ntv3_100m_pre",
+          "gain": 0.3391168926403413,
+          "repeatValues": [
+            0.3315341857386868,
+            0.3466995995419958
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "ntv3_100m_post",
+          "gain": 0.1441415194506628,
+          "repeatValues": [
+            0.1060014711642299,
+            0.1822815677370956
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "ntv3_650m_pre",
+          "gain": 0.3679799614366345,
+          "repeatValues": [
+            0.390837783518738,
+            0.3451221393545309
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "ntv3_650m_post",
+          "gain": 0.5684901276910762,
+          "repeatValues": [
+            0.5267446738214636,
+            0.6102355815606888
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "alphagenome_fitted",
+          "gain": 0.8329312309424242,
+          "repeatValues": [
+            0.827058248061848,
+            0.8388042138230003
+          ],
+          "absoluteUtility": -0.096,
+          "absoluteUtilityPrecision": "rounded manuscript main-text value",
+          "sourceId": "table-1-records"
+        },
+        {
+          "modelId": "onehot_resnet",
+          "gain": 0.3467009489179127,
+          "repeatValues": [
+            0.3615060835231474,
+            0.331895814312678
+          ],
+          "absoluteUtility": null,
+          "sourceId": "table-1-records"
+        }
+      ]
+    }
+  },
+  "counts": {
+    "reportedModelInterfaceRows": 17,
+    "endpointCount": 8,
+    "categoryCount": 5,
+    "experimentalReferenceCells": 7,
+    "evaluatedModelCells": 111,
+    "datasetGroups": 5
+  },
+  "limitations": [
+    "This site compares the evaluated model–interface pipelines; input context, historical supervision and readout training differ.",
+    "Source data are retrospective experimental evaluations. No new model runs or prospective wet-lab experiments were conducted for the site.",
+    "Source confidence intervals describe individual task estimates. No confidence interval or significance claim is attached to an aggregate index.",
+    "Native and fitted outputs are distinct rows; native multi-cell entries still require fitted readouts."
+  ]
+}
