@@ -1,8 +1,8 @@
-"""Rescore saved intervention predictions against the pinned experimental data.
+"""Rescore intervention predictions against benchmark data.
 
-Only predictions are contributor inputs. Cohorts, measurements, fold membership,
-selection rules and aggregation come from the installed benchmark. This checks
-the reported experiment's scoring, not whether its readout or model was run.
+The installed benchmark supplies cohorts, measurements, folds and selection
+rules. Verifying how the model and readout produced the predictions requires
+a separate rerun.
 """
 
 from __future__ import annotations
@@ -214,11 +214,7 @@ def _selective(data, tables):
 
 
 def rescore(task: str, tables: dict[str, pd.DataFrame], protocol: dict, *, cache_dir=None) -> dict:
-    """Check complete saved evidence and return its independently recomputed metric.
-
-    No contributor code is imported or run. Prediction values are inputs to this
-    review; verifying that a declared model/readout produced them requires a rerun.
-    """
+    """Check the evidence tables and recompute the intervention score."""
     if task not in {"opensplice", "context", "background", "repair_percentile", "cell_selective"}:
         raise ValueError(f"Unknown intervention rescoring task: {task}")
     names = {"predictions", "groups"} | (

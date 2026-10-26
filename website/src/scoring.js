@@ -1,4 +1,4 @@
-/** Fixed-reference arithmetic scoring. Missing measurements never count as zero. */
+/** Normalize to fixed references and average over available measurements. */
 export function finite(value) {
   return typeof value === "number" && Number.isFinite(value);
 }

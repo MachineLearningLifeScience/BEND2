@@ -1,4 +1,4 @@
-"""The eight BEND 2.0 endpoints, with no inference or file handling."""
+"""Task readouts and scoring."""
 
 from dataclasses import dataclass, field
 from importlib import import_module
@@ -8,7 +8,7 @@ import pandas as pd
 
 @dataclass
 class TaskResult:
-    """One task's headline metric, protocol details and inspectable score tables."""
+    """One task's metric, protocol details and result tables."""
 
     task_id: str
     metric: dict

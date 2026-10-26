@@ -1,8 +1,6 @@
-"""A small, reviewable contribution file and an additive leaderboard build.
+"""Prepare submission records and build leaderboard data.
 
-The JSON in ``submissions/`` records contributor results. Publication also
-requires a matching maintainer-reviewed rescoring receipt in ``reviews/``.
-Evidence is read as data, never extracted or executed.
+Contributor records live in submissions/; maintainer reviews live in reviews/.
 """
 
 from __future__ import annotations
@@ -23,8 +21,7 @@ from bend2.results import Run, digest, slug, write_json
 SCHEMA_VERSION = 2
 PROTOCOL_VERSION = "bend2-2026-v1"
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
-# The contract is deliberately about the frozen science, not package versions,
-# hardware, chosen hyperparameters or model-dependent undefined group counts.
+# Protocol fields shared by all submissions for each task.
 _RIDGE = {
     "readout": "ridge",
     "alpha": 10.0,
@@ -212,11 +209,10 @@ def _number(value, label, low=None, high=None):
 
 
 def _model_id(identity):
-    """A model/interface stays the same when its label or source location changes.
+    """Identify a checkpoint and inference setup across changes to display metadata.
 
-    New runs record an inference-specific adapter fingerprint, excluding display
-    metadata and unrelated source edits. Older runs use their complete source
-    digest conservatively; no inference equivalence can be invented retrospectively.
+    New runs use an inference-specific adapter hash. Older runs use the full
+    source hash recorded at evaluation.
     """
     definition = {
         key: identity.get(key, "")
@@ -282,10 +278,9 @@ def prepare_submission(
     family="",
     parameter_label="",
 ):
-    """Package a completed run into one file to add in a leaderboard pull request.
+    """Write the JSON file for a leaderboard pull request.
 
-    Upload the ZIP from ``run.bundle()`` first, then supply its stable download
-    URL. This function does not upload files, create a PR, or publish a result.
+    Upload the ZIP from ``run.bundle()`` first, then supply its download URL.
     """
     run = run if isinstance(run, Run) else Run(run)
     result = run.validate()
@@ -340,11 +335,10 @@ def prepare_submission(
 
 
 def validate_submission(source, *, bundle=None):
-    """Check a contribution; optionally verify every evidence file in its ZIP.
+    """Check submission metadata and, when supplied, the evidence ZIP.
 
-    This establishes consistency with the recorded protocol and assets. It does
-    not establish training-data provenance or prove that the declared model ran.
-    Neither this function nor the website builder executes contributed code.
+    Validates recorded protocols and file hashes. Model execution and
+    training-data declarations require separate review.
     """
     data = copy.deepcopy(source) if isinstance(source, dict) else _read_json(Path(source))
     try:
@@ -525,13 +519,11 @@ def _verify_bundle(data, bundle):
 
 
 def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=False):
-    """Add reviewed community rows without modifying paper scores or anchors.
+    """Add reviewed community results to the paper leaderboard.
 
-    Build from the publication branch's ``submissions/`` after review and merge.
-    Each contribution needs a matching reviewed rescoring receipt. A PR can set
-    ``preview=True`` to inspect unreviewed rows explicitly marked as pending.
-    The base should
-    be the frozen ``website/data/benchmark.paper.json``, never a previously built file.
+    Use ``website/data/benchmark.paper.json`` as the base. Each submission needs
+    a matching review receipt. ``preview=True`` includes unreviewed results and
+    labels all community rows as awaiting review.
     """
     result = copy.deepcopy(base) if isinstance(base, dict) else _read_json(Path(base))
     existing = {model["id"] for model in result["models"]}
@@ -555,8 +547,7 @@ def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=F
                 "before publication, or use --preview for an unreviewed local preview"
             )
         if preview:
-            # A PR may itself propose review JSON. It must not be able to grant
-            # official labels in its preview, even if those fields look valid.
+            # Review JSON supplied in a PR cannot grant approval in its preview.
             review = None
         model, evidence = data["model"], data["evidence"]
         model_id = model["id"]

@@ -57,9 +57,9 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
 
 
 def score(predictions, outcomes):
-    """Freeze predicted choices, then measure their utility across complete loci."""
+    """Select edits from predictions, then aggregate their measured utility by locus."""
     predictions = predictions.copy()
-    # No decision outcomes are referenced until every nomination is fixed.
+    # Select edits before reading their measured outcomes.
     choices = nominate(predictions)
     measured = outcomes.set_index("ID")
     for cell in ("hepg2", "k562"):

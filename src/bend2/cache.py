@@ -1,4 +1,4 @@
-"""Batched, resumable inference without holding long DNA strings in memory."""
+"""Store model outputs after each inference batch."""
 
 from __future__ import annotations
 

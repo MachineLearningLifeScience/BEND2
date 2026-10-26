@@ -1,8 +1,7 @@
-"""Fixed readouts shared by intervention tasks.
+"""Fit ridge readouts to model embeddings.
 
-Frozen sequence embeddings are never fine-tuned. Five-fold GroupKFold holds out
-whole biological groups; category encoders and the ridge fit see training rows
-only. These choices are part of the benchmark protocol, not tuning options.
+Five-fold GroupKFold holds out whole biological groups. Category encoders and
+ridge coefficients are fitted on training rows; the embedding model stays fixed.
 """
 
 import numpy as np

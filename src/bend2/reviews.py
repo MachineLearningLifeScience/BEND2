@@ -1,8 +1,7 @@
-"""Maintainer review records, separate from contributor-supplied evidence.
+"""Rescore submitted predictions and record maintainer review.
 
-A receipt records what was checked, not who is allowed to publish it. Maintainer
-review and the protected publication branch supply that authority. Rescoring
-never imports model code and cannot establish how predictions were produced.
+Receipts describe the checks performed. Publication requires maintainer approval;
+rescoring alone does not verify how the predictions were produced.
 """
 
 from __future__ import annotations
@@ -37,9 +36,8 @@ from bend2.submissions import (
 )
 
 SCHEMA_VERSION = 1
-# The first tolerance compares the same predictions scored independently. The
-# second allows small hardware differences in an actual model rerun. Both use
-# the task's original units, including percentages, and never alter rankings.
+# Rescoring compares identical predictions; reruns allow hardware roundoff.
+# Tolerances use each task's units and do not affect ranking.
 RESCORE_ATOL = 1e-10
 REPRODUCTION_ATOL = 1e-4
 _TABLE_ROWS = {
@@ -60,9 +58,7 @@ _TABLE_ROWS = {
 
 
 def _read_table(archive, task, name):
-    # Parquet has its own compression, independent of the ZIP size limits.
-    # Inspect allocation bounds before decoding; exact schemas/cohorts are
-    # checked by each task after this coarse resource check.
+    # Check Parquet allocation sizes before decoding. Task scorers check schemas.
     contents = io.BytesIO(archive.read(f"{task}/{name}.parquet"))
     metadata = pq.read_metadata(contents)
     if (
@@ -133,12 +129,11 @@ def _compare_metric(expected, actual, task, *, tolerance=RESCORE_ATOL):
 
 
 def rescore_submission(source, bundle, *, output=None, cache_dir=None, progress=None):
-    """Check every submitted task against trusted labels and write a receipt.
+    """Rescore all submitted tasks against benchmark labels and write a receipt.
 
-    ``bundle`` is a downloaded local ZIP. It is read as data, never extracted or
-    executed. All tasks in the submission must pass; no partial receipt is
-    written. Source data comes only from the installed, pinned asset manifest.
-    No genome or model weights are needed for prediction-only rescoring.
+    ``bundle`` is a local ZIP containing prediction tables. Each task must pass
+    before a receipt is written. Source labels come from the installed asset
+    manifest; model weights and a reference-genome download are unnecessary.
     """
     from bend2._rescoring import interventions, panels
 
@@ -188,11 +183,7 @@ def rescore_submission(source, bundle, *, output=None, cache_dir=None, progress=
 
 
 def validate_review(source, submission):
-    """Validate a saved receipt and its binding; this does not repeat rescoring.
-
-    Only a receipt reviewed on the publication branch is authoritative. A
-    contributor can generate the same JSON and cannot self-grant acceptance.
-    """
+    """Check that a receipt matches its submission and recorded results."""
     data = validate_submission(submission)
     receipt = copy.deepcopy(source) if isinstance(source, dict) else _read_json(Path(source))
     try:
@@ -296,12 +287,10 @@ def record_reproduction(
     cache_dir=None,
     progress=None,
 ):
-    """Record selected independently rerun tasks after checking their evidence.
+    """Record tasks rerun by a maintainer with a fresh inference cache.
 
-    The caller must be the maintainer who ran a fresh evaluation with an
-    independent inference cache. The attestation records that human claim;
-    software cannot prove execution from a result archive. ``evidence_url`` is
-    where the rerun's exported ZIP has been hosted. This function never uploads.
+    The caller attests to the independent run. ``evidence_url`` must point to
+    the rerun's exported ZIP, uploaded separately.
     """
     if attest_independent is not True:
         raise ValueError("Attest that you independently ran the model with a fresh inference cache")

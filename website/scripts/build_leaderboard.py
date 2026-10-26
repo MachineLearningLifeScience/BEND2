@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Combine the frozen paper snapshot and reviewed contribution files."""
+"""Build leaderboard data from paper results and reviewed submissions."""
 
 import argparse
 from pathlib import Path
@@ -22,7 +22,7 @@ def main():
         args.reference, args.submissions, args.output, reviews=args.reviews, preview=args.preview
     )
     count = sum(row.get("origin") == "community" for row in data["models"])
-    print(f"Built {args.output}: {count} community models; frozen paper rows retained")
+    print(f"Built {args.output}: {count} community models")
 
 
 if __name__ == "__main__":

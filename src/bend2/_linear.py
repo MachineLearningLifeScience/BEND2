@@ -1,4 +1,4 @@
-"""Disk-backed features and bounded-memory products for the fixed ridge readout."""
+"""Disk-backed features and matrix products for ridge regression."""
 
 from __future__ import annotations
 
@@ -22,11 +22,10 @@ def chunk_rows(width):
 
 @contextmanager
 def intervention_matrix(frame, embeddings, *, scratch_dir=None, progress=None):
-    """Materialize float32 differences once; never hold reference/alternate matrices.
+    """Write sequence differences to a temporary float32 matrix.
 
-    The subtraction intentionally happens in float32 before LSQR sees float64,
-    matching the frozen intervention protocol. Only this disposable matrix is
-    temporary: the model inference cache belongs to the caller and is untouched.
+    Subtract in float32 before converting to float64 for LSQR, as specified by
+    the intervention protocol. Delete the temporary matrix on exit.
     """
     notify = progress or (lambda message: None)
     if not len(frame):

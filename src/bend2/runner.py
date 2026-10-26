@@ -1,4 +1,4 @@
-"""The public evaluate() workflow: data → inference → fixed readout → results."""
+"""Load data, run inference, fit readouts and save results."""
 
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def _inputs(task, data):
 
 def _receipt(data):
     receipt = dict(data["_provenance"])
-    # Share immutable source identities, not the contributor's absolute paths.
+    # Local paths are not needed in exported provenance.
     receipt["paths"] = {key: Path(path).name for key, path in receipt["paths"].items()}
     return receipt
 
@@ -101,15 +101,16 @@ def evaluate(
     cache_dir=None,
     progress=None,
 ) -> Run:
-    """Evaluate a model on complete frozen benchmark tasks.
+    """Evaluate a model on the selected benchmark tasks.
 
-    Start with ``evaluate(model)`` for the small, included enhancer benchmark.
-    ``tasks='all'`` selects every supported capability, recording others as
-    skipped. Explicitly requested unsupported tasks fail before data downloads.
-    Reusing an output directory resumes completed tasks; a revision is required
-    for resume. Batch size and descriptive metadata may change. Model inference
-    must match; completed tasks requested again must have the same scientific
-    version, data and numeric libraries. Source-only refactors preserve resume.
+    The default task is Atlas, whose data ship with the package. ``tasks='all'``
+    selects supported tasks and records skipped tasks. An unsupported task
+    requested by name raises an error before downloading data.
+
+    Reuse an output directory to resume a run. This requires a model revision
+    and unchanged inference settings. Completed tasks must match the requested
+    scientific version, data and numeric libraries. Batch size and descriptive
+    metadata may change.
     """
     if not isinstance(model, Model):
         raise TypeError("Pass a bend2.Model, for example Model('mine', embed=encode)")
@@ -155,7 +156,7 @@ def evaluate(
         "protocols": {task: task_protocol(task, runtime) for task in selected},
     }
     run = Run(output)
-    # OS-backed locking is released after a crash and works on Windows, Linux and macOS.
+    # The OS releases this lock if the process exits.
     with FileLock(output / ".run.lock", timeout=0):
         if (output / "result.json").exists():
             result = run.validate()

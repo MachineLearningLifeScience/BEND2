@@ -5,7 +5,7 @@ This guide continues from a saved run in `results/my-model`.
 
 ## Use Python directly
 
-This complete example runs in a script or notebook:
+Run this example in a script or notebook:
 
 ```python
 import numpy as np
@@ -35,18 +35,15 @@ print(result.to_dataframe())
 
 Replace `embed` with your encoder and update the model declaration. Your
 encoder receives batches of DNA strings and returns one NumPy vector per
-sequence. You can close over an already-loaded model; no file or import hook
-is required.
+sequence. The function can use a model already loaded in your notebook.
 
 In a notebook, `result.to_dataframe()` displays the scores with units, direction
 and available confidence intervals. `result.scores` returns a dictionary of
-headline values. The returned `Run` also gives access to the saved prediction
-and analysis tables, as shown below.
+scores. Use the returned `Run` to read prediction and analysis tables.
 
 ## Add more tasks
 
-The next step after Atlas is `siraj`, which selects `context`, `background`,
-`repair_percentile` and `cell_selective`. These four tasks share one 93 MB
+`siraj` selects `context`, `background`, `repair_percentile` and `cell_selective`. These four tasks share one 93 MB
 download and 169,912 unique DNA inputs. Continue in the same directory to keep
 all your scores together:
 
@@ -58,17 +55,16 @@ You can also list individual task IDs separated by commas. OpenSplice is a
 separate, larger assay. A probability callback enables the sequence-prior task;
 see [model interfaces](models.md).
 
-Before larger runs, inspect the requirements with the optional planning command:
+Check requirements before a larger run:
 
 ```bash
 bend2 tasks
 bend2 plan my_model.py --tasks all
 ```
 
-`plan` lists complete input lengths, declared task limitations, missing optional
-dependencies and additional benchmark-data downloads. It does not call your
-model or fetch benchmark data. Since the CLI imports your adapter module,
-keep weight loading lazy if you want planning to avoid that work too.
+`plan` lists input lengths, model limitations, missing dependencies and data
+downloads. It imports your adapter but does not call it or download data. Load
+weights on first inference so planning can run without them.
 Use `from bend2 import plan` for the same information as a Python dictionary.
 
 Tissue identification uses 131,072-base reference-genome windows. It needs the
@@ -79,8 +75,7 @@ python -m pip install "bend2[genome] @ git+https://github.com/yhsure/genomic-ben
 bend2 run my_model.py --tasks tissue_identification --output results/my-model
 ```
 
-Confirm that your encoder accepts those complete inputs before running it.
-BEND does not silently shorten sequences to fit a model.
+Your encoder must accept the full input length.
 
 `bend2 run my_model.py --tasks all --output results/my-model` evaluates tasks
 compatible with your model's declared interfaces and limitations. An
@@ -89,8 +84,7 @@ to choose the environment and resources for the larger assays.
 
 ## Inspect and analyze saved results
 
-Return to your results without importing the model, downloading data or
-repeating evaluation:
+Print saved scores:
 
 ```bash
 bend2 show results/my-model
@@ -107,9 +101,8 @@ print(result.scores)
 print(result.tables)
 ```
 
-`to_dataframe()` contains one row per completed task. Each task keeps its own
-units and direction; there is no combined score. Tasks that have not run remain
-missing, and a failed or undefined result does not become a zero.
+`to_dataframe()` contains one row per completed task, with its units and score
+direction. Unrun tasks are absent; undefined scores are missing values.
 
 Use `table(task, name="predictions")` to load a saved table as a pandas DataFrame:
 
@@ -118,33 +111,29 @@ predictions = result.table("atlas_profile")
 choices = result.table("atlas_profile", "choices")
 requests = result.table("atlas_profile", "requests")
 
-# Which requested expression programs benefited most from selection?
+# Mean selection gain for each expression program.
 gain_by_program = requests.groupby("program")["gain"].mean().sort_values()
 print(gain_by_program)
 ```
 
-Table names and columns follow the task. `result.tables` lists what is available:
-Atlas has `predictions`, `choices`, `requests` and `validation`; the regulatory
-effect tasks also save per-group scores. For a larger table, select the columns
+`result.tables` lists the tables saved by each task. Atlas has `predictions`,
+`choices`, `requests` and `validation`; the regulatory effect tasks also save
+per-group scores. For a larger table, select the columns
 you need, for example
 `result.table("opensplice", columns=["gene_id", "y_true", "y_pred"])`.
-This reads only those columns after checking the saved file's checksum. It does
-not refit the readout or recompute the published score. Editing the returned
-DataFrame does not change your saved results.
+This checks the file's checksum and reads the selected columns into a new DataFrame.
 
 Scores and provenance live in `result.json`, and each completed task has a
-folder of Parquet tables and `protocol.json`. These are standard formats that
-can be read independently of BEND. For example,
+folder of Parquet tables and `protocol.json`. You can read them with other tools:
 `pandas.read_parquet("results/my-model/atlas_profile/requests.parquet")` reads
 the request table directly. `result.data` exposes the full saved manifest,
 including the model declaration, per-task protocol, data provenance and run
 status. `result.validate()` checks the manifest and recorded file hashes.
-Evaluation and combining save these results without creating submission files.
 
 ### Compare model runs
 
-Give each checkpoint or inference configuration its own output directory. Once
-the runs finish, compare the saved scores without loading either model:
+Give each checkpoint or inference configuration its own output directory. Compare
+the saved scores:
 
 ```python
 import pandas as pd
@@ -175,11 +164,10 @@ remain cached. Descriptive model metadata can be corrected without repeating
 inference. Callbacks must produce the same representation independently of
 batch size; declare numerical settings in `inference_config`.
 
-Benchmark refactors, comments and changes to unrelated tasks do not invalidate
-completed work. Adding a task preserves existing results and their provenance.
-If a requested task's science, data or numeric runtime changed, BEND names the
-difference and asks for a new output directory; compatible inference is reused.
-Each task retains the exact benchmark source that produced it.
+Adding a task or updating BEND with a compatible refactor preserves completed
+results. If a requested task's version, data or numeric libraries changed, use
+a new output directory. Compatible inference is reused. Each task records the
+benchmark source that produced it.
 
 Older development runs that lack per-task compatibility records remain readable
 and exportable. Use a new output directory to continue those evaluations.
@@ -192,8 +180,7 @@ stores scores and prediction tables separately from those caches. See
 ## Combine tasks evaluated separately
 
 You can evaluate different tasks in separate jobs or on different machines.
-Copy the complete result directories into one place, then combine them without
-running model inference or fitted readouts again:
+Copy the result directories into one place and combine them:
 
 ```bash
 bend2 combine results/my-model results/my-model-siraj results/my-model-gtex \
@@ -203,28 +190,22 @@ bend2 show results/my-model-complete
 
 In Python, use `from bend2 import combine` and
 `result = combine(["results/my-model", "results/my-model-siraj"],
-output="results/my-model-complete")`. The returned object supports the same
-score and analysis-table methods as an evaluated run. Use `combine` for tasks
-from one model; compare different models with separate `Run` objects as above.
+output="results/my-model-complete")`. This returns a `Run` containing tasks
+from the same model. To compare different models, use separate `Run` objects.
 
 Use the same adapter, checkpoint, representation and inference configuration in
 each job. Host environment details may differ and remain recorded for review;
 declared numerical settings such as device type and precision must agree.
 Keep the model name and training-data declarations consistent. If two inputs
 contain the same task, its scores, protocol and evidence hashes must agree
-exactly. BEND rejects conflicting outcomes instead of choosing a score.
+exactly.
 
-The new directory preserves each original run's manifest, adapter and benchmark
-implementation alongside the combined task evidence. It never changes the
-source directories. Missing requested tasks remain incomplete. To add future
-tasks, continue the original evaluations and combine them into another new
-directory. Combined results preserve the original evaluations; they cannot be
-resumed as a new evaluation job.
+The combined directory contains each source run's manifest, adapter, benchmark
+implementation and task evidence. Source directories are unchanged. To add
+tasks later, continue the source runs and combine them into a new directory.
+Combined runs cannot be resumed.
 
 ## Share a result on the leaderboard
 
-Any completed subset of tasks can be proposed using the same saved results.
-This is optional; local evaluation and analysis need no account or submission.
-See the [submission guide](submitting.md) for the generated evidence bundle,
-required declarations and review. The [reference-model guide](reference-models.md)
-covers ready-to-run adapters, checkpoint access and GPU settings.
+To submit any completed subset of tasks, follow the
+[submission guide](submitting.md). Submission is optional.

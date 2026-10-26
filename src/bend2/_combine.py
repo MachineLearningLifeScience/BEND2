@@ -1,4 +1,4 @@
-"""Assemble independently evaluated tasks into one reviewable result directory."""
+"""Combine task results from separate evaluations."""
 
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ def _merge_model(results):
 
 
 def _check_task(task, row):
-    """Check the frozen science without demanding publication-only metadata."""
+    """Check task protocols, data identities and evidence files."""
     _subset(_PROTOCOLS[task], row["details"], f"{task}.protocol")
     _validate_data(task, _data_summary(row["data"]))
     required = [f"{task}/{table}.parquet" for table in _TABLES[task]]
@@ -94,13 +94,12 @@ def _copy_verified(source, destination, expected):
 
 
 def combine(runs, output) -> Run:
-    """Combine task evidence from the same model without running inference again.
+    """Combine task results from the same model.
 
     ``runs`` is a sequence of :class:`Run` objects or result-directory paths.
-    ``output`` must not exist. Identical overlapping tasks are retained once;
-    conflicting results are rejected rather than selected or averaged. Original
-    environments, adapters and benchmark implementations remain in the bundle.
-    Add future tasks to the original runs, then combine into a new directory.
+    ``output`` must not exist. Duplicate tasks must have identical results.
+    The new directory includes the original environments, adapters and benchmark
+    source. To add tasks later, evaluate them separately and combine again.
     """
     if isinstance(runs, (str, Path, Run)):
         raise TypeError("Pass a list of at least two result directories or Run objects")
@@ -122,7 +121,7 @@ def combine(runs, output) -> Run:
         rows, owners, origins = {}, {}, []
         for run, result in zip(sources, results, strict=True):
             source_result_hash = digest(run.directory / "result.json")
-            # Model and protocol identity alone does not identify a particular execution.
+            # The manifest hash distinguishes separate executions of the same model.
             origin_key = source_result_hash
             origin = {
                 "run_identity": result["identity"],
@@ -190,7 +189,7 @@ def combine(runs, output) -> Run:
             "implementation_files": {},
         }
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.mkdir()  # Exclusive: never replace an existing result directory.
+        destination.mkdir()
         try:
             for task, row in data["tasks"].items():
                 for relative, checksum in row["files"].items():
@@ -207,8 +206,7 @@ def combine(runs, output) -> Run:
                         continue  # Byte-identical source manifests share one snapshot.
                     _copy_verified(run.directory / relative, destination / copied, checksum)
                     data["implementation_files"][copied] = checksum
-            # Preserve a convenient top-level adapter while retaining every source
-            # copy above, including different descriptive comments/declarations.
+            # Keep an adapter at the top level as well as in the source snapshots.
             for run, result in zip(sources, results, strict=True):
                 if result.get("adapter_file"):
                     _copy_verified(

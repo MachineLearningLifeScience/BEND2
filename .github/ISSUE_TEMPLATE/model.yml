@@ -1,13 +1,13 @@
 name: Submit a model without a pull request
-description: A maintainer can make the one-file leaderboard PR for you.
+description: Ask a maintainer to open your leaderboard submission PR.
 title: "[Model] "
 body:
   - type: markdown
     attributes:
       value: |
-        The usual submission is one generated JSON file in a pull request. This form is the no-Git alternative.
-        Follow docs/submitting.md: evaluate, export, publish the evidence ZIP, then run `bend2 submit` with its URL.
-        Partial task coverage is welcome. Please do not paste scores manually.
+        Use this form to ask a maintainer to open the submission PR.
+        Follow docs/submitting.md: evaluate, export, host the evidence ZIP, then run `bend2 submit` with its URL.
+        You can submit results for any subset of tasks. Attach the generated JSON, which contains the scores.
   - type: textarea
     id: contribution
     attributes:
@@ -19,7 +19,7 @@ body:
     id: evidence
     attributes:
       label: Evidence download URL
-      description: The stable public submission.zip URL recorded in the JSON. No weights or embedding caches are needed.
+      description: The public submission.zip download URL recorded in the JSON.
     validations:
       required: true
   - type: textarea

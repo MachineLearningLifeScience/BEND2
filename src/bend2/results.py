@@ -1,4 +1,4 @@
-"""Saved scores, analysis tables and optional portable leaderboard evidence."""
+"""Read saved scores and tables, and export submission bundles."""
 
 from __future__ import annotations
 
@@ -38,11 +38,10 @@ def slug(name):
 
 
 class Run:
-    """Open saved scores and tables without loading a model or rerunning evaluation.
+    """Read scores and tables from a saved run.
 
-    ``evaluate`` and ``combine`` return a Run. Reopen one with
-    ``Run("results/my-model")`` in a later Python session. Its JSON and Parquet
-    files also remain readable without BEND installed.
+    ``evaluate`` and ``combine`` return a Run. Use ``Run("results/my-model")``
+    to reopen one. Results are stored as JSON and Parquet files.
     """
 
     def __init__(self, directory):
@@ -54,23 +53,21 @@ class Run:
 
     @property
     def scores(self):
-        """Headline values by completed task; units and intervals are in to_dataframe()."""
+        """Scores by completed task; to_dataframe() also includes units and intervals."""
         return {task: row["metric"]["value"] for task, row in self.data["tasks"].items()}
 
     @property
     def tables(self):
-        """Available saved table names by completed task, without reading their contents."""
+        """List saved table names by task."""
         return {
             task: sorted(_table_paths(task, row)) for task, row in self.data["tasks"].items()
         }
 
     def table(self, task, name="predictions", *, columns=None):
-        """Read one saved analysis table as a pandas DataFrame.
+        """Read a saved table as a pandas DataFrame.
 
-        Use ``run.tables`` to discover names such as ``predictions``, ``choices``
-        or ``groups``. ``columns=[...]`` reads only selected columns. The saved
-        file's checksum is checked before reading; this does not recompute its
-        scientific results. No model, data download or inference is involved.
+        Use ``run.tables`` to list table names. ``columns=[...]`` selects columns
+        to load. The file checksum is verified before reading.
         """
         import pandas as pd
 
@@ -113,7 +110,7 @@ class Run:
         return prepare_submission(self, evidence_url, output, **metadata)
 
     def validate(self):
-        """Check recorded files and scores, not authorship or absence of leakage."""
+        """Check the run manifest against its recorded files and hashes."""
         data = self.data
         if data.get("schema_version") != 1 or data.get("benchmark") != "BEND 2.0":
             raise ValueError("This is not a supported BEND 2.0 result directory")
@@ -162,7 +159,7 @@ class Run:
         return data
 
     def write_submission(self):
-        """Write the machine-readable leaderboard handoff from verified results."""
+        """Write submission.json from the saved results."""
         data = self.validate()
         metadata = data["model"]
         required = ["revision", "training_data"]
@@ -250,8 +247,7 @@ class Run:
         temporary = self.directory / ".submission.zip"
         with zipfile.ZipFile(temporary, "w", zipfile.ZIP_DEFLATED) as archive:
             for path in sorted(files):
-                # Stable bytes make an already uploaded bundle reusable when preparing
-                # its PR record. Filesystem timestamps and umasks are not evidence.
+                # Fixed timestamps and permissions keep repeated exports byte-identical.
                 entry = zipfile.ZipInfo(path, date_time=(1980, 1, 1, 0, 0, 0))
                 entry.compress_type = zipfile.ZIP_DEFLATED
                 entry.external_attr = 0o100644 << 16
@@ -262,7 +258,7 @@ class Run:
 
 
 def _table_paths(task, row):
-    """Expose recorded task tables only, never arbitrary paths from a caller."""
+    """Map table names to their recorded Parquet paths."""
     return {
         Path(relative).stem: relative
         for relative in row["files"]

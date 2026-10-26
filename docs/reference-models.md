@@ -1,8 +1,7 @@
 # Reference model integrations
 
-These adapters specify a complete representation: weights, tokenizer, code,
-layer, pooling, numeric precision and context limit. They load frozen weights on
-the first batch. Inference sees sequences and hidden target positions only.
+The reference adapters specify the checkpoint, tokenizer, model code, layer,
+pooling, precision and context limit. Weights load on the first batch.
 
 ```bash
 pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
@@ -13,11 +12,9 @@ bend2 run ntv3.py --tasks prior --batch-size 8 --output results/ntv3-paper-prior
 ```
 
 The [DNABERT-2](../src/bend2/_examples/dnabert2.py) and
-[NTv3](../src/bend2/_examples/ntv3_prior.py) examples are the exact files shipped
-with the package and copied by `init`. Creating them does not download weights
-and never overwrites an existing file. Edit the generated file
-to select a GPU or another supported precision before running it. NTv3 may
-require acceptance of its checkpoint terms, as described below.
+[NTv3](../src/bend2/_examples/ntv3_prior.py) examples are included in the package.
+Edit the generated file to select a GPU or another precision. NTv3 may require
+acceptance of its checkpoint terms, as described below.
 
 Use the same adapters directly in Python:
 
@@ -37,11 +34,10 @@ print(prior.scores)
 The [released DNABERT-2 checkpoint](https://huggingface.co/zhihan1996/DNABERT-2-117M/tree/b5d88cda421f106afef78cd286200a5b5b8f6fea)
 produces 768 features: the mean final-layer state over non-special, non-padding
 DNA tokens. No projection, fine-tuning or reverse-complement ensemble is applied.
-This matches the representation and PyTorch attention path used by BEND's frozen
-DNABERT-2 comparison. The adapter accepts up to 512 tokens and fails explicitly
-on longer inputs; it does not crop GTEx's long genomic windows. It declares tissue
-identification unsupported: `tasks="all"` records that omission, while requesting
-the task explicitly fails before downloading data or starting inference.
+This matches the representation and PyTorch attention path in BEND's DNABERT-2
+comparison. The adapter accepts up to 512 tokens and rejects longer inputs.
+Tissue identification is unsupported: `tasks="all"` skips it, and requesting it
+by name fails before downloading data or starting inference.
 
 The default uses float32 weights and float32 inference on CPU. For a compatible
 NVIDIA or AMD GPU:
@@ -50,25 +46,22 @@ NVIDIA or AMD GPU:
 model = dnabert2(device="cuda:0", precision="bfloat16")
 ```
 
-The paper's GPU extraction used bfloat16 autocast. A float32 run has a different
-recorded inference identity and need not give bit-identical results. Numeric
-precision and device type are included in the inference cache identity. Model
-names, output locations and batch size do not define a new representation.
-This adapter accumulates the token mean in float32, including when model compute
-uses bfloat16; the archived extraction pooled in the hidden-state dtype. The
-underlying layer and pooling rule agree, but exact archived GPU numbers require
-matching that reduction precision as well.
+The paper's GPU extraction used bfloat16 autocast and pooled in the hidden-state
+dtype. This adapter accumulates the token mean in float32 even with bfloat16
+compute. Reproducing archived GPU numbers requires matching the reduction
+precision as well as the layer and pooling rule. Device and precision are
+recorded in the inference cache identity.
 
 The pinned model has an optional Triton import that newer Transformers versions
 try to resolve even on CPU. BEND verifies the SHA-256 of its two source modules
 and replaces only that import block with `flash_attn_qkvpacked_func = None` before
 loading them. This selects the authors' released PyTorch attention calculation,
-also used in BEND's paper integration. It does not modify the downloaded source,
-weights or Hugging Face cache. The compatibility patch and source hashes appear
-in the run's inference metadata. No Triton installation is needed.
+also used in BEND's paper integration. The downloaded files stay unchanged.
+The patch and source hashes are recorded in the run's inference metadata;
+Triton is not required.
 
-DNABERT-2 uses variable-length BPE tokens. Its token softmax is not a distribution
-over one hidden nucleotide, so this adapter deliberately exposes embeddings only.
+This adapter provides embeddings only. DNABERT-2 uses variable-length BPE
+tokens, whose softmax does not directly give probabilities for one hidden base.
 
 ## NTv3 paper prior and native alternative
 
@@ -86,16 +79,15 @@ to every input position; the 144 smallest priorities outside the target are
 masked. Padding is never eligible. The model receives the complete window,
 right-padded with its pad token to a multiple of 128. Its target-position logits
 are normalized over A/C/G/T in float64. The adapter returns `[batch, 2, 4]` and
-BEND averages **individual-query losses**, then resamples whole windows. It does
-not average probabilities or use the separate eight-query ensemble study.
+BEND averages the **individual-query losses**, then resamples whole windows.
+This follows Table 1's two-query procedure; the eight-query ensemble study used
+a different readout.
 
-The tiny included query table contains only already-hidden-input SHA-256 hashes
-and the exact two random seeds. It contains no original sequence, target base
-or outcome. Its checksum is recorded in the model's inference configuration.
-All 1,024 masks were compared with the frozen implementation. Query selection
-depends on the input's hash, so changing order or batch size does not change
-the queries. This paper readout accepts the 512 frozen benchmark inputs; it fails
-for another input instead of silently choosing new seeds.
+The query table contains SHA-256 hashes of masked inputs and two random seeds
+per input. It excludes original sequences, target bases and outcomes. Its checksum
+is recorded in the model's inference configuration. All 1,024 masks match the
+paper implementation. The input hash determines the queries independently of
+batch size and order. The paper readout accepts only the 512 benchmark inputs.
 
 For a native single-mask probability readout, choose:
 
@@ -109,8 +101,7 @@ readout. Neither method fits a head or calibrates against benchmark labels.
 
 NTv3 access is governed by the checkpoint publisher's terms. Accept those terms
 on the model page and authenticate with `hf auth login` if the download requires
-it. BEND does not redistribute these weights or change their license. The default
-is float32; `device="cuda:0", precision="bfloat16"` explicitly selects the
+it. The default is float32; `device="cuda:0", precision="bfloat16"` selects the
 publisher's mixed-precision compute settings for the stem, convolution,
 transformer and modulation blocks. Embeddings, layer normalization and the
 nucleotide output head remain float32. NTv3 controls these settings inside each
@@ -130,25 +121,21 @@ Transformers 4.57.6, complete float32 runs with already downloaded weights took:
 
 DNABERT-2 used batches of 16 and four CPU threads; NTv3 used batches of eight and
 two CPU threads. The NTv3 process peak includes a separate native-head equivalence
-check. These are practical examples, not hardware requirements or throughput
-guarantees. The checkpoint downloads are approximately 447 MiB and 458 MiB,
-respectively; subsequent runs reuse them. Larger tasks such as OpenSplice contain
-many more unique sequences and warrant a GPU.
+check. The checkpoint downloads are approximately 447 MiB and 458 MiB,
+respectively; subsequent runs reuse them. Larger tasks such as OpenSplice have
+many more sequences and benefit from a GPU.
 
-The paper-prior run scored **1.4924317 bits/base**, compared with the frozen
-GPU Table 1 value **1.4924619**. The absolute difference was 0.0000302 bits/base;
-the input queries match exactly and numeric execution differs. The native run
-scored 2.8898627 bits/base. These readouts describe the same frozen weights under
-different input conditions, so the submission records the condition explicitly.
+The paper-prior run scored **1.4924317 bits/base**, compared with the
+GPU Table 1 value **1.4924619**. The absolute difference was 0.0000302 bits/base,
+with identical input queries and different numerical execution. The native run
+scored 2.8898627 bits/base using the same weights under different input conditions.
+Submissions record which readout was used.
 
 ## What a score establishes
 
-These integrations make the model input and readout reproducible. A completed
-task uses the same frozen task cohorts and scoring protocol as any other model.
-An identical model family name alone does not establish reproduction of a paper
-row: checkpoint, representation, precision, assay context and probability readout
-must also match. In particular, NTv3's Atlas paper row used human functional
-tracks and verified reporter flanks, not a generic mean embedding.
+To reproduce a paper row, match its checkpoint, representation, precision,
+sequence context and probability readout. NTv3's Atlas paper row, for example,
+used human functional tracks and verified reporter flanks.
 
 For a new model, create an editable starter with `bend2 init my_model.py`. Keep its
 training-data declaration and representation details with the adapter so that

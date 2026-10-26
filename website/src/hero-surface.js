@@ -42,7 +42,7 @@ function initializeSurface() {
   let width = 1, height = 1, heroHeight = 430, aspect = 3.5, narrow = 0;
   let visible = true, lost = false, disposed = false, ready = false;
   let regionsDirty = true, regions = [];
-  // Ambient motion is explicitly requested. Reduced motion removes cursor lag.
+  // Reduced motion disables cursor lag.
   let frame = 0, previous = 0, nextDraw = 0, time = 0;
   let px = 2.5, py = .6, sx = px, sy = py, presence = 0, active = 0;
   let pointerId = null, pointerSurface = null, captureSurface = null;

@@ -1,7 +1,7 @@
 import { createDesignExample } from './design-example.js';
 
 // An illustrative sequence-level experiment leads into the one real chart.
-// Scrolling changes presentation only, never benchmark values or chart state.
+
 const passage = document.querySelector('.design-passage');
 if (passage) {
   const scrollArea = passage.querySelector('.passage-scroll');
@@ -15,7 +15,7 @@ if (passage) {
   const resultsLink = passage.querySelector('a[href="#design-results"]');
   const shortcutLabel = passage.querySelector('.passage-shortcut-label');
   const shortcutIcon = passage.querySelector('.passage-shortcut-icon');
-  // Viewport size changes spacing, never the one-scene scroll behaviour.
+  // Adjust spacing to the viewport.
   const staticLayout = matchMedia('print');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   // [Scroll distance in svh, illustration progress]. The reference is settled
@@ -93,7 +93,7 @@ if (passage) {
       shortcutLabel.textContent = index === 3 ? 'Back to the experiment' : 'View benchmark results';
       shortcutIcon.textContent = index === 3 ? '↺' : '↗';
     }
-    // One text node fades through the transition; captions can never overlap.
+    // Fade the caption before replacing its text.
     const entering = index ? smooth((distance - steps[index].start) / (steps[index].fade || 7)) : 1;
     const leaving = index < 3 ? smooth((steps[index + 1].start - distance) / (steps[index + 1].fade || 7)) : 1;
     const opacity = Math.min(entering,leaving).toFixed(3);
@@ -144,8 +144,7 @@ if (passage) {
       renderedProgress = exampleProgress;
       renderedStatic = isStatic;
     }
-    // Both complete figures move as one vertical strip. Scroll changes their
-    // position only; measurements never turn into aggregate benchmark values.
+    // Move both figures as one vertical strip.
     const finished = isStatic || handoff>=.999;
     // Trim unused SVG letterboxing from the distance between the figures.
     // Both plots still clear the viewport edge before being hidden.

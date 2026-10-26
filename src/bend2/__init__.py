@@ -1,4 +1,4 @@
-"""BEND 2.0: benchmark the capabilities needed to design DNA."""
+"""BEND 2.0: a benchmark for DNA models."""
 
 from bend2.catalog import tasks
 from bend2.model import Model
@@ -10,7 +10,7 @@ __all__ = ["Model", "Run", "evaluate", "plan", "combine", "tasks"]
 def evaluate(
     model, *, tasks="atlas_profile", output=None, batch_size=32, cache_dir=None, progress=None
 ):
-    """Evaluate a model; see :func:`bend2.runner.evaluate` for the complete contract."""
+    """Evaluate a model; see :func:`bend2.runner.evaluate` for parameters."""
     from bend2.runner import evaluate as run
 
     return run(
@@ -24,7 +24,7 @@ def evaluate(
 
 
 def combine(runs, output):
-    """Combine compatible task evidence into a new inspectable, submittable run."""
+    """Combine task results from one model into a new run directory."""
     from bend2._combine import combine as merge
 
     return merge(runs, output)

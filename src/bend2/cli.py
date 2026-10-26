@@ -1,4 +1,4 @@
-"""A small command line for the same Model/evaluate API used in notebooks."""
+"""Command-line interface for BEND 2.0."""
 
 from __future__ import annotations
 
@@ -34,10 +34,9 @@ def load_model(spec):
     module_spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(module_spec)
     sys.modules[name] = module
-    # Match running a Python script: adjacent helper modules remain importable,
-    # including imports performed lazily by the inference callback.
+    # Allow the adapter to import adjacent modules, including during inference.
     sys.path.insert(0, str(path.parent))
-    # Execute exactly the bytes whose source is recorded, avoiding stale .pyc files.
+    # Use the recorded source rather than a potentially stale .pyc file.
     exec(compile(source, str(path), "exec"), module.__dict__)
     model = getattr(module, "model", None)
     if not isinstance(model, Model):
@@ -119,10 +118,10 @@ def main(argv=None):
     parser.add_argument("--version", action="version", version=f"bend2 {__version__}")
     parser.add_argument("--debug", action="store_true", help="Show the full traceback on errors")
     commands = parser.add_subparsers(dest="command", required=True)
-    init = commands.add_parser("init", help="Create a working one-file model adapter")
+    init = commands.add_parser("init", help="Create a model adapter")
     init.add_argument("path", nargs="?", default="model.py")
     init.add_argument(
-        "--template", choices=TEMPLATES, default="custom", help="Installed starter adapter"
+        "--template", choices=TEMPLATES, default="custom", help="Adapter example to copy"
     )
     run = commands.add_parser("run", help="Evaluate a model, print scores and save results")
     run.add_argument(
@@ -149,14 +148,14 @@ def main(argv=None):
     )
     show.add_argument("directory", type=Path)
     show.add_argument("--json", action="store_true", help="Print the saved result JSON")
-    commands.add_parser("tasks", help="List tasks, model capabilities and input sizes")
+    commands.add_parser("tasks", help="List tasks, model interfaces and input sizes")
     preflight = commands.add_parser(
         "plan", help="Inspect tasks, context limits and downloads before running"
     )
     preflight.add_argument("model", help="composition, uniform, or your model.py")
     preflight.add_argument("--tasks", default="atlas_profile", help="Task IDs, siraj, or all")
     preflight.add_argument("--cache-dir", type=Path)
-    preflight.add_argument("--json", action="store_true", help="Print the machine-readable plan")
+    preflight.add_argument("--json", action="store_true", help="Print the plan as JSON")
     combine = commands.add_parser(
         "combine", help="Combine compatible task runs into one result directory"
     )
@@ -190,12 +189,12 @@ def main(argv=None):
     submit.add_argument("--parameter-label", default="", help="Display size, for example 117M")
     admin = commands.add_parser("admin", help="Review submissions and build the leaderboard")
     maintenance = admin.add_subparsers(dest="admin_command", required=True)
-    validate = maintenance.add_parser("validate-submission", help="Validate a contribution as data")
+    validate = maintenance.add_parser("validate-submission", help="Validate a submission")
     validate.add_argument("path", type=Path)
     validate.add_argument("--bundle", type=Path, help="Also check a downloaded evidence ZIP")
     rescore = maintenance.add_parser(
         "rescore-submission",
-        help="Independently score evidence against trusted labels",
+        help="Rescore predictions against benchmark labels",
     )
     rescore.add_argument("path", type=Path)
     rescore.add_argument("--bundle", required=True, type=Path)
@@ -224,7 +223,7 @@ def main(argv=None):
     )
     reproduce.add_argument("--cache-dir", type=Path)
     leaderboard = maintenance.add_parser(
-        "build-leaderboard", help="Combine reviewed submissions with frozen paper results"
+        "build-leaderboard", help="Combine reviewed submissions with paper results"
     )
     leaderboard.add_argument(
         "--reference", type=Path, default=Path("website/data/benchmark.paper.json")
@@ -232,7 +231,7 @@ def main(argv=None):
     leaderboard.add_argument("--submissions", type=Path, default=Path("submissions"))
     leaderboard.add_argument("--reviews", type=Path, default=Path("reviews"))
     leaderboard.add_argument(
-        "--preview", action="store_true", help="Include clearly marked unreviewed candidates"
+        "--preview", action="store_true", help="Include submissions awaiting review"
     )
     leaderboard.add_argument("--output", type=Path, default=Path("website/data/benchmark.json"))
     args = parser.parse_args(argv)

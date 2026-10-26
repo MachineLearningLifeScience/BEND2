@@ -1,8 +1,7 @@
 # Choose a task
 
-BEND 2.0 measures eight endpoints across five capabilities. Start with
-`atlas_profile`: it uses short sequences, includes its data, and exercises the
-same model interface as the larger fitted-readout tasks.
+BEND 2.0 has eight tasks across five capabilities. `atlas_profile` is a useful
+first task: it uses short sequences and includes its data.
 
 | Capability | Task ID | What your model needs to do | Score · better direction |
 |---|---|---|---|
@@ -15,9 +14,8 @@ same model interface as the larger fitted-readout tasks.
 | Genomic design | `cell_selective` | Select an edit that changes a target cell while limiting the effect in the other cell | Measured cell-selective utility, log₂ · ↑ |
 | Genomic design | `atlas_profile` | Select sequences for requested combinations of active and inactive cells | Measured gain over intent-matched random selection, log₂ · ↑ |
 
-All eight endpoints have runners. Seven use frozen embeddings; `prior` needs
-nucleotide probabilities. A model can contribute a subset. Missing tasks stay
-visible in the saved results and are never treated as failed models or zeros.
+Seven tasks use frozen embeddings; `prior` needs nucleotide probabilities.
+You can run any supported subset. Unrun tasks are recorded as missing.
 
 ## Plan a run
 
@@ -30,9 +28,9 @@ bend2 run my_model.py --tasks siraj --output results/my-model
 
 `siraj` selects the four related regulatory tasks together: `context`,
 `background`, `repair_percentile` and `cell_selective`. Use individual task IDs,
-a comma-separated list, or `all`. The default remains the small, included
-`atlas_profile` task. `all` records incompatible tasks as skipped; an explicitly
-requested incompatible task stops the run before any data downloads.
+a comma-separated list, or `all`. The default is `atlas_profile`. `all` records
+incompatible tasks as skipped; requesting one by name stops the run before
+data downloads.
 
 The same plan is available in Python:
 
@@ -55,13 +53,12 @@ Custom adapter files are imported by the CLI, so load weights lazily if you want
 planning to avoid model initialization too.
 
 The core package and statistical readouts run on CPU. Your encoder determines
-whether inference needs a GPU. Runtime depends strongly on model size, feature
-dimension, context length, and hardware; the counts below are more useful than
-an unmeasured wall-clock estimate.
+whether inference needs a GPU. Runtime depends on model size, feature dimension,
+context length and hardware.
 
 | Task | Scale | First-run data | Practical use |
 |---|---|---|---|
-| `atlas_profile` | 7,657 distinct 145-base sequences | Included | First real run; no external assay download |
+| `atlas_profile` | 7,657 distinct 145-base sequences | Included | Short sequences; CPU baseline available |
 | `prior` | 512 evaluation windows, 1,200 bases each | Included | Small, but requires nucleotide probabilities |
 | `context` | 170,292 substitutions; 128 elements | 93 MB Siraj download, shared below | Start here for cell-dependent effects |
 | `background` | 68,026 paired mutations; 114 elements | Same Siraj data | Reuses Siraj embeddings and fitted readouts |
@@ -72,19 +69,18 @@ an unmeasured wall-clock estimate.
 
 Assay rows and unique DNA sequences are different counts. Reference sequences
 repeat across interventions; BEND embeds each unique sequence once within a
-shared dataset. The frozen Siraj cohort has 169,912 distinct sequences of
-189–200 bases; OpenSplice has 590,703 distinct sequences of 77–245 bases.
+shared dataset. Siraj has 169,912 distinct sequences of 189–200 bases;
+OpenSplice has 590,703 distinct sequences of 77–245 bases.
 Request the four Siraj tasks together to share that work.
 Allow additional disk space for preparation and embeddings. A float32 matrix
 alone costs `number_of_sequences × feature_dimension × 4` bytes; preparation
-files and resumable shards add overhead.
+files and cache metadata require additional space.
 
 ## What stays fixed
 
-For embedding tasks, your model supplies frozen representations. BEND fits
-the prescribed readout and evaluates it under the task's biological holdout.
-This is a **fitted-readout result**. It does not become a native prediction-head
-result because the underlying architecture also has a native head.
+For embedding tasks, BEND fits a readout on frozen representations and evaluates
+it using the task's biological holdout. These results measure the fitted readout;
+native prediction heads use separate evaluation procedures.
 
 - **OpenSplice:** five folds hold out whole genes. Mutant-minus-reference
   effects are scored within each held-out gene, then averaged equally over
@@ -98,8 +94,8 @@ result because the underlying architecture also has a native head.
   A lower percentile is better; it is not an effect size or success rate.
 - **Cell-selective editing:** select using predicted target-cell effect minus
   the absolute predicted off-target-cell effect, with no edit available.
-  Nominations are fixed before measured outcomes are used for scoring. Both target cells
-  are evaluated and loci receive equal weight.
+  Both target cells are evaluated and loci receive equal weight. Measured outcomes
+  are used only after selection.
 - **Atlas:** fit on 5,246 source constructs, separate from 2,411 candidate
   sequences and their families. Select ten sequences for each of 16 requests
   across twelve cells. Score their measured gain over intent-matched random
@@ -116,10 +112,9 @@ reference-genome windows centered on the prescribed transcription start site.
 
 ## Read scores in context
 
-Scores keep their own units and direction. BEND does not combine them into
-an overall score. Missing tasks and undefined metrics remain visible.
-Experimental references describe reproducibility or transfer under a specific
-measurement construction; they are not universal ceilings.
+Compare scores within each task, using its units and direction. The package
+reports separate task scores. Experimental references measure reproducibility
+or transfer for particular assays and should not be interpreted as universal ceilings.
 
 Training exposure, allowed sequence context, pooling, and native versus fitted
 interfaces matter when comparing models. Keep those declarations with the

@@ -1,10 +1,6 @@
 # Website
 
-This folder contains a committed starting snapshot of the BEND 2.0 website,
-connected to the benchmark's contribution flow. It preserves the existing
-visual design and scoring. The separate active website project remains the
-authoritative place for its ongoing design work until those changes are
-integrated deliberately; its unfinished edits were not copied or modified.
+The website displays paper results and reviewed community submissions.
 
 ## Run locally
 
@@ -16,7 +12,7 @@ npm --prefix website ci
 npm --prefix website run dev
 ```
 
-Open the printed local URL. For a self-contained static output:
+Open the printed local URL. To build the static site:
 
 ```bash
 npm --prefix website run build
@@ -25,51 +21,44 @@ npm --prefix website run build
 The output is `website/dist/`. Both commands first generate leaderboard data.
 Node.js 22 or newer is required. If the active Python is elsewhere, set
 `BEND2_PYTHON=/absolute/path/to/venv/bin/python` before the npm command. Restart
-the development server after changing contribution JSON files. The committed
-snapshot still has a placeholder paper link; set the verified publication URL
-when that release information is available.
+the development server after changing contribution JSON files. Set the paper
+link in `index.html` when the publication URL is available.
 
-## Website data integration
+## Leaderboard data
 
-The leaderboard is built from three reviewable inputs:
+The build reads:
 
-- `data/benchmark.paper.json`: the frozen paper snapshot.
-- `../submissions/*.json`: community contributions accepted by maintainer review
-  and merge into the publication branch.
-- `../reviews/*.json`: matching trusted rescoring receipts and any per-task rerun records.
+- `data/benchmark.paper.json`: the paper results.
+- `../submissions/*.json`: community submissions.
+- `../reviews/*.json`: matching rescoring and reproduction records.
 
-Generate the frontend's combined `data/benchmark.json`:
+To generate `data/benchmark.json` separately:
 
 ```bash
 python website/scripts/build_leaderboard.py
 ```
 
-Run this after installing the repository package (`pip install -e .`) and before
-the website's static build. The same builder is available as
-`bend2.submissions.build_leaderboard` for other build systems. Arguments
-`--reference`, `--submissions`, `--reviews` and `--output` support separate
-folders. Publication requires every contribution to have a valid matching review.
+The Python API is `bend2.submissions.build_leaderboard`. Arguments
+`--reference`, `--submissions`, `--reviews` and `--output` set the input and output
+paths. Every published submission must have a matching review.
 Use `--preview` (or `BEND2_PREVIEW_SUBMISSIONS=1` with npm) only for PR previews;
-all community rows and task details are explicitly labelled **Awaiting review**
-in preview mode, even when the PR includes a proposed receipt. The builder does not download evidence or run model code.
+all community results are labelled **Awaiting review**, including those with
+proposed receipts. The build reads local JSON files; maintainer rescoring is
+a separate step.
 
-The output adds community models, eight task cells per model and evidence
-sources. Missing tasks stay missing. It preserves all paper models,
-measurements, references and normalization anchors. For consistency with the
-site's existing rank contract, community `value` and `displayValue` use each
-task's stated display precision; `sourceValue` and the submission retain the
-exact result. Build from the paper snapshot each time, not a previous combined
-file. An empty submissions directory reproduces the paper data unchanged.
+The output retains the paper data and adds community models and their evidence
+links. Each model has eight task cells; unrun tasks have null values. Ranking
+and display use each task's stated precision. `sourceValue` retains the
+unrounded result. Always build from `benchmark.paper.json`.
 
-## Frontend contract
+## Frontend data
 
-The current website already consumes the `models`, `measurements`, and `sources`
-arrays in `data/benchmark.json`. Community records extend that shape:
+`data/benchmark.json` contains `models`, `measurements` and `sources` arrays.
+Community records have the following fields:
 
 - A model has `origin: "community"`, a public `url`, `submissionPath`, and its
-  evaluated model `declarations`. Its model kind is `foundation`, so it belongs
-  with models rather than scientific baselines. Embedding readouts use the
-  `fitted` interface; probability-only entries use `native`. A prior cell retains
+  evaluated model `declarations`. Its model kind is `foundation`. Embedding
+  readouts use the `fitted` interface; probability-only entries use `native`. A prior cell retains
   its own probability interface even when that model also provides embeddings.
 - Each measurement links to its source with `sourceId`; its original value is
   in `sourceValue`. Intervals retain their sampling unit. An unrun endpoint has
@@ -87,33 +76,25 @@ CSV. Keep the existing fixed-reference scoring logic. The frontend must escape
 model names and other contributor text as it does existing data.
 
 `submissionPath` is repository-relative; link it to the repository publication
-branch or copy those compact files into the static build. The evidence `url` is
-a direct external link. The frozen snapshot's `counts` describe paper data;
+branch or copy those files into the static build. The evidence `url` is
+a direct external link. The snapshot's `counts` describe paper data;
 derive current displayed model counts from the combined arrays.
 
 ## Publication and review
 
-Only the publication branch should deploy the public site. A pull request can
-build a preview with its candidate contribution, but a preview is not an
-accepted public leaderboard result. Require maintainer review for contribution
-PRs and verify their downloaded evidence before merging; see
-[the maintainer procedure](../docs/reviewing.md).
+Deploy from the publication branch after maintainer review. PR builds use
+preview mode; push builds require matching review records. Maintainers rescore
+the evidence before merging, following the [review procedure](../docs/reviewing.md).
+Configure branch protection to require their approval.
 
-PR CI enables preview mode; push builds require matching receipts. Neither
-performs the actual trusted rescoring. Maintainers do that before acceptance.
-Receipt JSON is not authentication: require protected-branch review before
-publishing it. A contributor can create JSON fields but cannot self-grant a
-public status merely by submitting them.
-
-No deployment workflow is assumed or installed here. Connect this build step to
-the website's chosen static hosting workflow when that deployment is configured.
-Do not execute a submitted adapter during a site build or privileged PR check.
+Deployment is not configured in this repository. Connect the static build to
+the hosting service when deploying. Submitted adapters must not run during
+site builds or privileged PR checks.
 
 ## Snapshot provenance
 
-The runtime files and paper snapshot were copied from the committed website source.
-`snapshot.json` records the imported file hashes before integration edits. The
-paper data itself was copied byte-for-byte:
+`snapshot.json` records the hashes of the files imported from the website
+repository. The paper data came from:
 
 - Repository: `genomic-bending-leaderboard`
 - Producing commit: `509a14056b6102258a2df1c83eefe0ee76140e32`
@@ -121,7 +102,4 @@ paper data itself was copied byte-for-byte:
 - Manuscript revision recorded inside the snapshot:
   `1abee7c638616c578b2fea497e63b59e68752c01`
 
-The separate website checkout also had unfinished visual edits. This integration
-uses its committed benchmark data and does not copy or modify those edits.
-Changes to the frozen paper snapshot need an explicit scientific update, rather
-than being a side effect of a community model submission.
+Changes to the paper results require a separate scientific revision.

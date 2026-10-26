@@ -1,9 +1,4 @@
-"""Optional, restartable GitHub handoff using the contributor's installed ``gh``.
-
-Only :func:`publish_submission` changes remote state. It hosts evidence in the
-contributor's fork or a named repository and proposes one data file against ``benchmark``.
-Credentials stay with GitHub CLI; model code is never imported here.
-"""
+"""Publish submission evidence and open a pull request using GitHub CLI."""
 
 from __future__ import annotations
 
@@ -186,7 +181,7 @@ def _contributor_repository_candidate(github, login):
     if available:
         return available, None
     raise ValueError(
-        "Your genomic-bending and bend2-submissions repositories are unrelated to BEND. Use the manual one-file PR workflow"
+        "Your genomic-bending and bend2-submissions repositories are unrelated to BEND. Use the manual submission workflow"
     )
 
 
@@ -259,13 +254,12 @@ def publish_submission(
     parameter_label="",
     progress=None,
 ):
-    """Upload evidence and propose one leaderboard JSON file through GitHub.
+    """Upload evidence and open a leaderboard pull request.
 
-    By default, evidence lives in the same public BEND fork used for the PR.
-    ``evidence_repository`` can name an existing, public ``OWNER/REPO`` you can write.
-    Calling this function explicitly authorizes its upload, fork, branch and PR.
-    Repeating it reuses matching evidence and the existing PR. No clone, shell,
-    token handling, force push, default-branch edit or evidence replacement occurs.
+    Evidence is hosted in the contributor's public BEND fork by default.
+    ``evidence_repository`` selects another public ``OWNER/REPO`` with write
+    access. The function creates the fork, release, branch and PR as needed;
+    repeating it reuses matching uploads and the existing PR.
     """
     if evidence_repository is not None and (
         not isinstance(evidence_repository, str) or not _REPOSITORY.fullmatch(evidence_repository)
@@ -393,7 +387,7 @@ def _publish(
     write_json(journal, state)
     repository = repository or _contributor_repository(github, login)
     state["repository"] = repository
-    notify(f"Preparing the one-file contribution in {repository}")
+    notify(f"Preparing the submission in {repository}")
     reference = f"repos/{repository}/git/ref/heads/{branch}"
     if github.api(reference, optional=True) is not None:
         previous = github.api(
@@ -419,8 +413,7 @@ def _publish(
                 time.sleep(2)
     existing = _content(github, repository, path, branch)
     if not _same_content(existing, payload):
-        # A resumed branch can contain only its expected parent version. Never
-        # overwrite manual changes made after an earlier submission attempt.
+        # Detect manual edits to a branch created by an earlier submission attempt.
         parent_record = _content(github, UPSTREAM, path, base)
         if existing and (not parent_record or existing["sha"] != parent_record["sha"]):
             raise ValueError(f"{branch} contains a different contribution; it was not overwritten")

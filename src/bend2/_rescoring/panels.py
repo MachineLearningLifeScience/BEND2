@@ -1,9 +1,8 @@
-"""Rescore the frozen prior, Atlas and GTEx panels from prediction evidence.
+"""Rescore prior, Atlas and GTEx predictions against benchmark data.
 
-Only installed, checksum-verified benchmark assets supply labels, cohort IDs and
-decision requests. Contributor code is never imported. The validation-loss
-tables establish internal consistency of the declared penalty selection; they
-cannot establish how a model or its readout produced the predictions.
+Labels, cohort IDs and requests come from the installed assets. Validation-loss
+tables check penalty selection; verifying how the model and readout produced
+the predictions requires a separate rerun.
 """
 
 from __future__ import annotations
@@ -254,7 +253,7 @@ def _tissue(tables, protocol, cache_dir):
 
 
 def rescore(task: str, tables: dict[str, pd.DataFrame], protocol: dict, *, cache_dir=None) -> dict:
-    """Reconstruct a panel endpoint from complete predictions and trusted labels."""
+    """Recompute a panel score from submitted predictions and benchmark labels."""
     implementations = {"prior": _prior, "atlas_profile": _atlas, "tissue_identification": _tissue}
     if task not in implementations:
         raise ValueError(f"Unsupported panel task: {task}")

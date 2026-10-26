@@ -1,4 +1,4 @@
-"""The public task menu. Identifiers match the BEND 2.0 leaderboard."""
+"""Task names, interfaces and input sizes."""
 
 CATALOG = {
     "prior": ("Sequence prior", "probabilities", "512 × 1,200 bp; included", "lower"),
@@ -45,7 +45,7 @@ TASK_VERSIONS = {
 
 
 def tasks():
-    """Return task names, required model capabilities and practical data sizes."""
+    """Return task names, required interfaces and input sizes."""
     return [
         {"id": key, "name": row[0], "requires": row[1], "inputs": row[2], "direction": row[3]}
         for key, row in CATALOG.items()

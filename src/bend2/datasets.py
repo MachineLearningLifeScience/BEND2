@@ -1,8 +1,7 @@
-"""Lazy, checksum-pinned data acquisition for the published BEND 2.0 tasks.
+"""Download and prepare benchmark data.
 
-Compact frozen panels are included; large public sources live in the user cache.
-Task engines consume
-``load(task)`` dictionaries and do not need to know how data was acquired.
+Small datasets ship with the package; downloaded data use the local cache.
+``load(task)`` returns the inputs and provenance for one task.
 """
 
 from __future__ import annotations
@@ -133,7 +132,7 @@ def task_identity(task):
 
 
 def cache_root(cache_dir=None) -> Path:
-    """Use an explicit cache, BEND2_CACHE, or the standard user cache directory."""
+    """Choose the supplied cache path, BEND2_CACHE, or ~/.cache/bend2."""
     if cache_dir is not None:
         return Path(cache_dir).expanduser()
     return Path(os.environ.get("BEND2_CACHE", Path.home() / ".cache" / "bend2")).expanduser()
@@ -154,11 +153,10 @@ def _check_asset(path: Path, spec: dict) -> None:
 
 
 def asset(name: str, cache_dir=None) -> Path:
-    """Get a verified immutable asset, downloading it only when absent.
+    """Get a dataset file and verify its checksum.
 
-    BEND2_ASSET_DIR points at an offline mirror containing manifest filenames.
-    Bundled frozen panels require no downloads. Offline sources must still
-    satisfy the pinned checksum.
+    Files are loaded from the package, cache, or BEND2_ASSET_DIR mirror before
+    downloading. Mirror filenames must match the asset manifest.
     """
     try:
         spec = MANIFEST["files"][name]
@@ -204,7 +202,7 @@ def asset(name: str, cache_dir=None) -> Path:
 
 
 def cohort_fingerprint(name: str, frame: pd.DataFrame) -> str:
-    """Hash exact scientific columns independent of Parquet serialization."""
+    """Hash cohort columns independently of Parquet encoding."""
     if name not in COLUMNS:
         raise ValueError(f"Unknown canonical dataset: {name}")
     schema = COLUMNS[name]
@@ -452,7 +450,7 @@ def _canonical(name: str, cache_dir=None) -> tuple[Path, dict]:
 
 
 def prepare(task: str, cache_dir=None) -> dict:
-    """Download and prepare one task; return paths and immutable data receipts."""
+    """Prepare one task and return file paths, hashes and source information."""
     paths, cohorts, receipts = {}, {}, {}
     if task in {
         "opensplice",
@@ -502,7 +500,7 @@ def prepare(task: str, cache_dir=None) -> dict:
 
 
 class GenomeWindows(Sequence):
-    """Read frozen GTEx windows on demand instead of allocating 2.5 GB of DNA."""
+    """Read GTEx windows from the 2bit genome on demand."""
 
     def __init__(self, genome: Path, genes: pd.DataFrame):
         try:
@@ -531,10 +529,10 @@ class GenomeWindows(Sequence):
 
 
 def load(task: str, cache_dir=None) -> dict:
-    """Load the published inputs expected by ``bend2.tasks`` task engines.
+    """Load the inputs for a task.
 
-    GTEx DNA remains a lazy sequence accessor; call its ``close()`` when finished.
-    ``_provenance`` records file identities and scientific-cohort verification.
+    GTEx sequences are read on demand; call ``close()`` on the sequence accessor
+    when finished. ``_provenance`` records source files and cohort checks.
     """
     if task == "tissue_identification":
         try:

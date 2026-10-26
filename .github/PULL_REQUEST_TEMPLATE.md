@@ -1,7 +1,7 @@
 ## What this changes
 
 <!-- For a model submission, add only the generated submissions/community-*.json.
-No need to repeat its score table here. See docs/submitting.md. -->
+See docs/submitting.md for the submission steps. -->
 
 ## Validation or review notes
 

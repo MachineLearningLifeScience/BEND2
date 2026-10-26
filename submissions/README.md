@@ -1,41 +1,29 @@
 # Community model submissions
 
-**One model/interface, one generated JSON file, one pull request.**
+Generate a contribution with `bend2 submit` and add its JSON file here in a
+pull request. See [the submission guide](../docs/submitting.md) for exporting
+and hosting the prediction files.
 
-Follow [the submission guide](../docs/submitting.md). Generate the file with
-`bend2 submit`, then add it here without editing its metrics. Predictions and
-other large evidence stay in the linked, SHA256-identified ZIP.
+Files are named `community-<16-character-identity>.json`. The ID depends on
+the checkpoint, representation and inference implementation. It stays the same
+when you edit descriptive metadata or move the adapter. Each file records:
 
-Files are named `community-<16-character-identity>.json`. The identity follows
-the checkpoint, representation and inference implementation. Correcting the
-display name, training-data description or model URL does not create a second
-row. Moving an adapter between computers does not change its identity.
-Each file records:
-
-- The immutable model/checkpoint declaration and adapter identity.
-- A public evidence download URL, file size and SHA256.
-- Raw task metrics, exact protocol and cohort identities, and evidence hashes.
-- Coverage and an explanation for every task not evaluated.
-
-The file format is validated by `bend2.submissions.validate_submission`. It has
-no acceptance field. Maintainer review and merge are the acceptance event; a
-website build reads these files from the publication branch and adds their rows
-to the frozen reference data.
+- Model and checkpoint declarations, including the adapter identity.
+- A public evidence URL, file size and SHA256 checksum.
+- Task scores, protocols, cohort identities and evidence hashes.
+- The reason for each task not evaluated.
 
 Update the same file when adding tasks for the same model configuration. Use
-`bend2 combine` first if those tasks were evaluated in separate result
-directories. The website build rejects duplicate model configurations, including
-duplicates presented under different display names. Historical generated
-filenames remain readable, but new contributions use the stable identity.
-Older runs without inference-specific fingerprints retain conservative full-source
-identity: comments or metadata edits inside their adapter source may require a
-new result manifest before BEND can establish that inference is unchanged.
+`bend2 combine` first if the tasks were evaluated in separate directories.
+The website build rejects duplicate model configurations, including ones with
+different display names. Older filenames remain supported. Runs made before
+inference-specific fingerprints were introduced use the full adapter source
+for identity, so editing comments or metadata can change their ID.
 
-Do not add example results here: every JSON in this directory becomes a
-community row in a build. No ZIPs, predictions, model implementations or weights
-belong in this directory. Use the issue form if you prefer a maintainer to open
-the PR for you.
+Each published record also needs a matching maintainer-generated receipt in
+`reviews/`. Maintainers add this during review and merge both files. The
+[review guide](../docs/reviewing.md) describes rescoring and independent reruns.
 
-Publication also requires a matching maintainer-generated receipt in `reviews/`.
-Contributors do not add their own acceptance or reproduction status. See the
-[review guide](../docs/reviewing.md) for trusted rescoring and selective reruns.
+Keep only submitted JSON records here. The website build reads every JSON in
+this directory, so examples belong elsewhere. Host ZIPs and prediction
+files at the evidence URL; model code and weights belong with the model.

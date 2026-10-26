@@ -146,9 +146,7 @@ void main() {
   lab = ramp(0.) + (lab - ramp(0.)) *
     (1. + (diffuse * .35 + max(diffuse, 0.) * diffuse * .6) * SILK);
 
-  // The hand brings a soft light close to the surface. Its footprint follows
-  // the local fold, with a long, feathered edge along the material rather than
-  // a circular cursor halo. The underlying field and its normals never move.
+  // Align the pointer light with the local fold.
   vec2 acrossFold = normalize(grad + vec2(.00001));
   vec2 alongFold = vec2(-acrossFold.y, acrossFold.x);
   vec2 fromHand = world - uPointer;

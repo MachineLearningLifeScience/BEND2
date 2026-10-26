@@ -91,10 +91,10 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
 
 
 def score(data, predictions, losses):
-    """Select from predicted profiles, then score against held-out activities.
+    """Select candidates from predicted profiles, then score held-out activities.
 
-    Evaluation and evidence review use this same frozen decision and scoring
-    procedure. Only the readout fit supplies the validation losses.
+    Shared by evaluation and submission review. ``losses`` contains the readout's
+    validation errors.
     """
     population = data["population"].query('split != "excluded_source_family"')
     train = population.split.eq("train")

@@ -125,10 +125,7 @@ def select_penalty(losses):
 
 
 def summarize(targets, test, prediction, losses):
-    """Build the complete endpoint from predictions and trusted target arrays.
-
-    This shared evaluation/review path needs neither sequences nor a genome.
-    """
+    """Calculate the tissue-retrieval metric and tables from predictions and targets."""
     train, validation = targets["train"], targets["validation"]
     truth = np.asarray(targets["truth"], dtype=float)
     selected = select_penalty(losses)

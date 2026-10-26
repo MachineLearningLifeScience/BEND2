@@ -21,13 +21,13 @@ def model(
     trust_remote_code: bool = False,
     max_tokens: int | None = None,
 ) -> Model:
-    """Create a frozen embedding model with a pinned checkpoint and tokenizer.
+    """Create an embedding adapter for a Hugging Face checkpoint.
 
-    Install ``bend2[huggingface]``. The encoder averages final-layer states over
-    non-special tokens, preserves complete sequences, and never pads a batch.
-    ``revision`` must be a complete 40-character Hub commit SHA. Custom model or
-    tokenizer Python runs only when ``trust_remote_code=True`` is explicit.
-    This generic embedding readout is distinct from a model's native predictions.
+    Requires ``bend2[huggingface]``. The encoder averages final-layer states over
+    non-special tokens and groups inputs by token length to avoid padding.
+    Inputs beyond the context limit raise an error. ``revision`` must be a
+    40-character Hub commit SHA. Set ``trust_remote_code=True`` for checkpoints
+    that require custom model or tokenizer code.
     """
     if not isinstance(checkpoint, str) or not re.fullmatch(r"[\w.-]+(?:/[\w.-]+)?", checkpoint):
         raise ValueError("checkpoint must be a Hugging Face model repository ID")

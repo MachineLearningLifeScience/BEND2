@@ -1,7 +1,6 @@
-"""Concrete frozen-model readouts with pinned weights, code and preprocessing.
+"""DNABERT-2 and NTv3 adapters with pinned weights and preprocessing.
 
-These integrations load optional machine-learning dependencies only on inference.
-They download and execute the named checkpoint authors' pinned Python code.
+Model dependencies and checkpoint code load on the first inference call.
 """
 
 from __future__ import annotations
@@ -91,13 +90,11 @@ def _precision(torch, device, precision, *, autocast=True):
 
 
 def dnabert2(*, device="cpu", precision="float32") -> Model:
-    """DNABERT-2 117M: last-layer mean of DNA tokens, 768 unprojected features.
+    """DNABERT-2 117M: mean final-layer DNA-token states, 768 features.
 
-    The weights and PyTorch attention implementation match the paper's frozen
-    DNABERT-2 integration. Precision is explicit: the paper's GPU extraction used
-    bfloat16 autocast; this portable default uses float32. Inputs longer than 512
-    tokens fail instead of being shortened. No nucleotide probabilities are
-    inferred from DNABERT-2's variable-length BPE vocabulary.
+    Uses the paper's weights and PyTorch attention implementation. The paper
+    used GPU bfloat16 autocast; the default here is float32. Inputs are limited
+    to 512 tokens. This adapter provides embeddings only.
     """
     _runtime(device, precision)
     encoder = _DNABERT2(device, precision)
@@ -134,13 +131,12 @@ def dnabert2(*, device="cpu", precision="float32") -> Model:
 
 
 def ntv3_prior(*, size="100m", readout="paper", device="cpu", precision="float32") -> Model:
-    """The paper's two-query NTv3 prior, or its native one-mask alternative.
+    """NTv3 probabilities with the paper or native masking protocol.
 
-    The target becomes the released mask token. Logits at that position are
-    normalized over A/C/G/T in float64. ``readout='paper'`` additionally hides
-    exactly 144 positions using each window's two frozen seeds, and returns
-    [batch, 2, 4] for mean individual-query loss. This is not an ensemble.
-    ``readout='native'`` returns [batch, 4] with no extra masking.
+    Replace the target with the mask token and normalize its A/C/G/T logits in
+    float64. ``readout='paper'`` also masks 144 positions per query using two
+    fixed seeds per window. It returns [batch, 2, 4]; scoring averages query
+    losses. ``readout='native'`` masks only the target and returns [batch, 4].
     """
     if size not in NTV3_RELEASES:
         raise ValueError("Choose size='100m' or size='650m'")

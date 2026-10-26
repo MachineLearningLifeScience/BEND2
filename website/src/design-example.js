@@ -1,6 +1,6 @@
 import { createReferenceExperiment } from './reference-experiment.js';
 
-// An illustrative experiment. Scroll choreographs objects, never benchmark values.
+// Scroll animation for the illustrative editing experiment.
 const original = 'ACGTACGCTAGCTACGATGC';
 const alternatives = [
   { site:9, base:'G', prediction:.73, measured:.88 },

@@ -1,7 +1,6 @@
-"""Inspect a run before loading data or calling a model.
+"""Check task requirements and cached file sizes before evaluation.
 
-Planning checks file locations and sizes, not their contents. Evaluation remains
-responsible for verifying every asset and prepared scientific cohort.
+Evaluation verifies file checksums and cohort contents.
 """
 
 from __future__ import annotations
@@ -17,9 +16,8 @@ from bend2.model import Model
 SIRAJ_TASKS = ("context", "background", "repair_percentile", "cell_selective")
 TASK_GROUPS = {"siraj": SIRAJ_TASKS, "all": tuple(CATALOG)}
 
-# Frozen input counts and lengths, measured from the checksum-pinned canonical
-# cohorts. They describe model inputs, not the smaller endpoint-specific score
-# tables. All Siraj endpoints share the same 169,912 distinct DNA sequences.
+# Counts describe model inputs, before filtering to each task's scoring cohort.
+# The four Siraj tasks share 169,912 distinct DNA sequences.
 _INPUTS = {
     "prior": {
         "sequences": 512,
@@ -73,8 +71,7 @@ _EXTRA_MODULES = {
 def resolve_tasks(tasks="atlas_profile") -> list[str]:
     """Expand task IDs, ``siraj`` and ``all``, preserving order without duplicates.
 
-    Accept a comma-separated string or an iterable of individual task IDs and
-    group names. A group always means its complete published tasks.
+    Accept a comma-separated string or an iterable of task IDs and group names.
     """
     requested = tasks.split(",") if isinstance(tasks, str) else list(tasks)
     if not requested or any(not isinstance(task, str) for task in requested):
@@ -138,13 +135,12 @@ def _model_extra(model, capability):
 
 
 def plan(model: Model, *, tasks="atlas_profile", cache_dir=None) -> dict:
-    """Describe supported tasks, full input lengths, dependencies and data downloads.
+    """Describe supported tasks, input lengths, dependencies and data downloads.
 
-    No model callback, tokenizer, network request, data load or checksum scan is
-    performed. Existing files remain *unverified* until evaluation. Download
-    sizes exclude model weights, prepared data and inference/readout storage.
-    ``inference_config['maximum_bases']``, when declared, is a full-input base
-    limit. Token limits cannot be converted to base limits without a tokenizer.
+    Checks cached file sizes without loading data, running inference or making
+    network requests. Download sizes exclude model weights and generated files.
+    ``inference_config['maximum_bases']`` declares a limit in bases; tokenizer
+    limits must be checked by the adapter.
     """
     if not isinstance(model, Model):
         raise TypeError("Pass a bend2.Model")

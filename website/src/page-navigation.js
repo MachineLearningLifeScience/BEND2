@@ -158,8 +158,7 @@ export function initPageNavigation({ updateTableOverflow = () => {} } = {}) {
     stopTopScroll();
     const from = window.scrollY;
     if (from < 1) return;
-    // These two explicit actions use the requested brisk scroll, independently
-    // of the page's reduced-motion setting for incidental transitions.
+    // The top link uses a short scroll animation even with reduced motion.
     const duration = Math.min(460, 260 + from * .05);
     restoreScrollBehavior = document.documentElement.style.scrollBehavior;
     document.documentElement.style.scrollBehavior = "auto";

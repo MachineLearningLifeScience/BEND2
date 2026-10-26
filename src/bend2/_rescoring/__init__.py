@@ -1,1 +1,1 @@
-"""Trusted, prediction-only scoring for the frozen benchmark protocols."""
+"""Recompute submitted scores from predictions and benchmark labels."""

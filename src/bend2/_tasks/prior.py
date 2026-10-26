@@ -42,7 +42,7 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
         accuracy = np.take_along_axis(tied, truth[:, None, None], axis=-1).squeeze(-1) / tied.sum(
             -1
         )
-    # Average individual scores, never probabilities, before resampling complete windows.
+    # Average query losses and accuracy within each window before resampling.
     scores = np.column_stack((losses.mean(1), accuracy.mean(1)))
     counts = np.random.default_rng(20260910).multinomial(
         len(panel), np.full(len(panel), 1 / len(panel)), 4000

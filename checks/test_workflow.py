@@ -1,4 +1,4 @@
-"""Three checks for the public workflow; scientific engines stay uncluttered."""
+"""Checks for evaluation, submission and interrupted runs."""
 
 import json
 import urllib.request
