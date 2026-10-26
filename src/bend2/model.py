@@ -34,6 +34,7 @@ class Model:
     probability_interface: str = ""
     source: str = ""
     inference_config: dict = field(default_factory=dict)
+    unsupported_tasks: dict[str, str] = field(default_factory=dict)
     _source_file: Path | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
@@ -58,6 +59,14 @@ class Model:
             raise TypeError("inference_config must be a JSON object")
         # Copy declarations so mutating the caller's configuration cannot change a run.
         self.inference_config = json.loads(json.dumps(self.inference_config, allow_nan=False))
+        from bend2.catalog import CATALOG
+
+        if not isinstance(self.unsupported_tasks, dict) or any(
+            task not in CATALOG or not isinstance(reason, str) or not reason.strip()
+            for task, reason in self.unsupported_tasks.items()
+        ):
+            raise ValueError("unsupported_tasks must map known task IDs to nonempty reasons")
+        self.unsupported_tasks = dict(self.unsupported_tasks)
 
     def metadata(self):
         fields = (
@@ -71,6 +80,7 @@ class Model:
         )
         result = {name: getattr(self, name).strip() for name in fields}
         result["inference_config"] = self.inference_config
+        result["unsupported_tasks"] = self.unsupported_tasks
         result["capabilities"] = [
             name for name in ("embed", "probabilities") if getattr(self, name) is not None
         ]

@@ -130,9 +130,9 @@ def evaluate(
     if not requested or any(task not in CATALOG for task in requested):
         raise ValueError(f"Choose task IDs from: {', '.join(CATALOG)}")
     skipped = {
-        task: f"Model does not provide {CATALOG[task][1]}"
+        task: model.unsupported_tasks.get(task, f"Model does not provide {CATALOG[task][1]}")
         for task in requested
-        if getattr(model, CATALOG[task][1]) is None
+        if getattr(model, CATALOG[task][1]) is None or task in model.unsupported_tasks
     }
     if skipped and not all_tasks:
         raise ValueError("; ".join(f"{task}: {reason}" for task, reason in skipped.items()))

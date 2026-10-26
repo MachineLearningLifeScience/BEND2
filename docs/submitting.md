@@ -26,6 +26,8 @@ tables and the entry-point `model.py` when supplied. It excludes weights,
 embedding caches and raw input sequences. If your adapter imports local helper
 modules, publish those alongside it and provide the implementation URL below.
 Inspect the files and the [source-data terms](data.md) before sharing them.
+New runs also include the small installed benchmark implementation and its
+hashes, so a development-version result retains the exact evaluation code.
 
 ## 2. Publish the evidence and generate the contribution
 
@@ -143,6 +145,11 @@ from that branch. A PR preview can include a candidate row for inspection,
 but should not deploy it to the public leaderboard. These are repository
 settings/deployment choices, not a status field provided by the contributor.
 [GitHub protected branch documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
+
+The repository's `benchmark.yml` workflow checks the three contributor workflows
+and builds the website on pull requests. The build validates every contribution's
+metadata and protocol; it does not download external evidence or execute model
+adapters. Evidence review remains the explicit maintainer step above.
 
 The website build is deterministic and additive. Removing a community JSON in
 a reviewed PR removes its row on the next build. Corrections and withdrawals

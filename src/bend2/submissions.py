@@ -383,6 +383,8 @@ def _validate(data):
     for task in tasks:
         if CATALOG[task][1] not in capabilities:
             raise ValueError(f"Model identity does not declare the capability needed for {task}")
+        if task in identity.get("unsupported_tasks", {}):
+            raise ValueError(f"Model declares {task} unsupported but supplies a result for it")
     for capability in capabilities:
         _sha(identity["adapter"][capability]["source_sha256"], f"{capability} adapter")
     if identity["revision"].strip().lower() in {"main", "master", "latest", "head", "default"}:
@@ -517,6 +519,8 @@ def build_leaderboard(base, submissions, output=None):
     if any(model.get("origin") == "community" for model in result["models"]):
         raise ValueError("Build from the frozen reference JSON, not a previous community build")
     directory = Path(submissions)
+    if not directory.is_dir():
+        raise ValueError(f"Submission directory does not exist: {directory}")
     paths = sorted(directory.glob("*.json"))
     for path in paths:
         data = validate_submission(path)

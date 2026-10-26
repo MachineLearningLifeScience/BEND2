@@ -74,6 +74,7 @@ Keep these declarations with your adapter:
 | `pooling` | How sequence or token outputs become one vector |
 | `source` | Model, checkpoint, or implementation URL (needed for submission) |
 | `inference_config` | JSON object of numerical/preprocessing options such as precision, device and windowing |
+| `unsupported_tasks` | Optional mapping of task IDs to reasons, for example a known context-length limit |
 
 Only a name and one callable are needed for local exploration. Missing
 checkpoint or training declarations mark the submission incomplete; fill
@@ -86,6 +87,12 @@ weights. A moving branch such as `main` is not a checkpoint identity.
 Changing weights, preprocessing, or a remote model endpoint requires a new
 revision and a new run. Accurate training-data declarations matter even when
 the package can reproduce the score.
+
+Declare known task limits before a long run, for example
+`unsupported_tasks={"tissue_identification": "This encoder cannot accept 131,072 bases"}`.
+`--tasks all` records and skips these tasks. Requesting one explicitly fails before
+any downloads or inference. Other input problems still produce an explicit error;
+the benchmark never shortens sequences to make them fit.
 
 ### Inference configuration and reuse
 
