@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEND README banner artwork</title>
+<!-- Serve the repository root over HTTP, then open website/scripts/readme-banner.html.
+     Install website dependencies with npm ci first. Download the rendered PNG to
+     docs/assets/readme-banner.png; the two smaller previews show README scaling. -->
+<style>
+  @font-face { font-family:Newsreader; src:url('../assets/fonts/newsreader-display-latin.woff2'); }
+  body { margin:24px; background:#f6f4ee; color:#333; font:14px system-ui; }
+  canvas,img { display:block; max-width:100%; height:auto; margin:24px 0; }
+</style>
+<a id="download" download="readme-banner.png">Download banner</a>
+<canvas id="output" width="1200" height="240" aria-label="BEND 2.0 — Benchmarking the capabilities needed to design DNA"></canvas>
+<img id="readme" width="840" alt="Banner at README width">
+<img id="phone" width="340" alt="Banner at phone width">
+<script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+  import * as THREE from 'three';
+  import {fluxVertex,fluxFragment} from '../src/hero-flux.js';
+
+  const canvas=document.querySelector('#output'), ctx=canvas.getContext('2d');
+  const mark=new Image();
+  mark.src='../../docs/assets/readme-mark.svg';
+  await mark.decode();
+  await document.fonts.load('400 60px Newsreader');
+
+  const mask=document.createElement('canvas');
+  mask.width=mask.height=256;
+  const m=mask.getContext('2d');
+  m.drawImage(mark,0,0,256,256);
+  m.globalCompositeOperation='source-in';
+  m.fillStyle='#f1f0e2';
+  m.fillRect(0,0,256,256);
+
+  const renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,preserveDrawingBuffer:true});
+  renderer.setSize(1200,240,false);
+  renderer.setPixelRatio(1);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  const uniforms={
+    uTime:{value:48}, uViewScale:{value:1.15}, uNarrow:{value:1},
+    uAspect:{value:1200/480}, uPresence:{value:0}, uDpr:{value:1},
+    uPointer:{value:new THREE.Vector2(2.5,.6)},
+  };
+  const fragment=fluxFragment
+    .replace('const float BANDS = 2.15;','const float BANDS = 3.05;')
+    .replace('const float FLOW = 2.15;','const float FLOW = 2.4;')
+    .replace('const float SILK = .40;','const float SILK = .52;')
+    .replace('grain * .048','grain * .038');
+  const material=new THREE.ShaderMaterial({uniforms,vertexShader:fluxVertex,fragmentShader:fragment,depthTest:false,depthWrite:false,toneMapped:false});
+  const scene=new THREE.Scene();
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),material));
+  renderer.render(scene,new THREE.OrthographicCamera(-1,1,1,-1,0,1));
+  ctx.save();
+  ctx.translate(0,240);
+  ctx.scale(1,-1);
+  ctx.drawImage(renderer.domElement,0,0);
+  ctx.restore();
+
+  ctx.fillStyle='#f1f0e2';
+  ctx.drawImage(mask,50,78,116,116);
+  // Keep the edition attached to the mark's upper row, inside the same vertical
+  // footprint. Its 45-degree baseline leaves the headline's space undisturbed.
+  ctx.save();
+  ctx.translate(194,106);
+  ctx.rotate(-Math.PI/4);
+  ctx.font='400 40px Newsreader';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('2.0',0,0);
+  ctx.restore();
+  ctx.font='400 60px Newsreader';
+  ctx.fillText('Benchmarking the capabilities',285,120);
+  ctx.fillText('needed to design DNA',285,186);
+
+  const url=canvas.toDataURL('image/png');
+  document.querySelector('#download').href=url;
+  document.querySelector('#readme').src=url;
+  document.querySelector('#phone').src=url;
+  renderer.dispose();
+</script>
