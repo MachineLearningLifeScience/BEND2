@@ -38,7 +38,8 @@ Progress and links are saved in `results/my-model/github-submission.json`.
 Record the checkpoint revision, training data, representation and pooling in
 the model declaration. Prior results also need the probability interface. Use
 a weight hash or immutable checkpoint revision, and describe known overlap with
-benchmark sequences or labels in `training_data`.
+benchmark sequences or labels in `training_data`. Reference-genome pretraining
+alone does not disqualify a model.
 
 `submission.zip` contains scores, protocols, model declarations, prediction
 tables, benchmark source snapshots and the entry-point `model.py` when supplied.
@@ -87,12 +88,14 @@ Accepted community results are labelled **Contributor evaluated**. Every submitt
 task has been independently rescored from its predictions against trusted labels.
 Selected tasks that a BEND maintainer also independently reruns are labelled
 **Reproduced by BEND**, with the rerun evidence linked on that task. Other tasks
-keep their contributor-evaluated label. Neither label establishes absence of
-training-data overlap or benchmark contamination.
+keep their contributor-evaluated label.
 
-Maintainers may ask about pooling, input handling, fitting or training data, or
-for help reproducing your setup. They rerun selected entries, including leading
-or unusual results and a random sample.
+By submitting, you confirm that your declarations are accurate. Held-out
+evaluation labels must not be used to train or tune the submitted model or
+adapter. We may request supporting code, checkpoints and training details, and
+independently rerun submissions before or after publication. Fabricated results,
+prohibited label use or knowingly misleading declarations will lead to rejection
+or removal, with the reason recorded in the submission PR.
 
 The [maintainer guide](reviewing.md) describes acceptance and reproduction. PR
 previews label candidates **Awaiting review**. Corrections need an updated review

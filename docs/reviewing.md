@@ -38,7 +38,11 @@ whether labels leaked into training. Checking model execution requires a rerun.
 
 Review the checkpoint, adapter, representation, pooling, input handling, fitting
 procedure and training-data disclosure. Confirm that the model uses each task's
-full input. Resolve discrepancies in the PR before publication.
+full input. Ask contributors to explain discrepancies before deciding; withhold
+unresolved results. Reject or remove entries with fabricated results, prohibited
+use of evaluation labels or knowingly misleading declarations. Record the
+supporting evidence and decision in the submission PR. Sequence overlap from
+reference-genome pretraining alone is not grounds for rejection.
 
 Generate the receipt using your installed benchmark. Add it under `reviews/`
 with the same filename as the contribution, then review and merge both. Receipts
@@ -87,5 +91,5 @@ accepting a reproduction. The leaderboard keeps the contributor's score and
 links the rerun estimate and evidence in the task's details.
 
 Review the job provenance before attesting to an independent run: files with
-edited metadata can pass the software checks. Training-data contamination remains
-possible even when a rerun agrees.
+edited metadata can pass the software checks. Review training-data disclosures
+separately from reproduction.
