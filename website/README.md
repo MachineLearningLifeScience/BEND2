@@ -45,6 +45,8 @@ node website/scripts/readme-results.mjs
 
 Run this from the repository root. It updates the light and dark figures and
 the text table from the same measurements and scoring code used by the website.
+Cell shading runs from each task's fixed baseline to its best model result;
+worse-than-baseline values remain neutral and do not stretch the colour scale.
 
 ## Publication and review
 

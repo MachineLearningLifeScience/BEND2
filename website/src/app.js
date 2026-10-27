@@ -10,6 +10,7 @@ import {
   csvCell,
 } from "./scoring.js";
 import { icon } from "./icons.js";
+import { tableTintOpacity } from "./table-tint.js";
 import { budgetExplorer } from "./budget.js";
 import { explorerRows, taskExplorerChart } from "./explore-charts.js";
 import { pairedChart } from "./paired-chart.js";
@@ -200,17 +201,8 @@ function tint(task, value) {
   if (!finite(value)) return "";
   const values = data.models
     .filter((m) => m.kind === "foundation")
-    .map((m) => raw(m.id, task.id))
-    .filter(finite);
-  const lo = Math.min(task.baseline.value, ...values),
-    hi = Math.max(task.baseline.value, ...values);
-  const f =
-    hi === lo
-      ? 0.5
-      : task.direction === "higher"
-        ? (value - lo) / (hi - lo)
-        : (hi - value) / (hi - lo);
-  const amount = 0.025 + 0.16 * Math.pow(Math.max(0, Math.min(1, f)), 1.6);
+    .map((m) => raw(m.id, task.id));
+  const amount = tableTintOpacity(task, value, values);
   const h = colorFor(task);
   return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${amount})`;
 }

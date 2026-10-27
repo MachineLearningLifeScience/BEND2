@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import { finite, indexData, ordered, overallScore, ranks } from "../src/scoring.js";
+import { tableTintOpacity } from "../src/table-tint.js";
 
 const root = new URL("../../", import.meta.url);
 const data = JSON.parse(await fs.readFile(new URL("website/data/benchmark.json", root), "utf8"));
@@ -27,10 +28,7 @@ const score = model => finite(overallScore(data, model.id)) ? overallScore(data,
 const maxScore = Math.max(100, ...models.map(m => overallScore(data, m.id)).filter(finite));
 
 function tint(task, value) {
-  const values = models.map(m => cell(m, task)?.value).filter(finite);
-  const lo = Math.min(task.baseline.value, ...values), hi = Math.max(task.baseline.value, ...values);
-  const fraction = hi === lo ? .5 : task.direction === "higher" ? (value - lo) / (hi - lo) : (hi - value) / (hi - lo);
-  return .025 + .16 * Math.pow(Math.max(0, Math.min(1, fraction)), 1.6);
+  return tableTintOpacity(task, value, models.map(m => cell(m, task)?.value));
 }
 
 function figure(dark) {
