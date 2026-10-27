@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="440" viewBox="0 0 600 440" role="img" aria-labelledby="title desc">
+<title id="title">Five capabilities tested in BEND 2.0</title>
+<desc id="desc">Recover hidden bases, predict edit effects, account for cell type and genetic background, and select DNA for a desired response. Conceptual diagrams, not benchmark measurements.</desc>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#e6edf3}
+path{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.base{text-anchor:middle;font-family:ui-monospace,monospace;font-size:20px;fill:#9ba9b2}
+.guide,.muted{stroke:#53616a}.muted circle{fill:#53616a;stroke:none}
+.accent{fill:var(--accent)}.signal,.cell{stroke:var(--accent)}
+.signal circle,.nucleus{fill:var(--accent);stroke:none}.cell{fill:none;stroke-width:1.8}
+.label{font-size:28px;font-weight:600}.caption{font-size:23px;fill:#9ba9b2}
+</style>
+<g style="--accent:#d6b063" transform="translate(0,0)">
+<g transform="translate(4,12) scale(.95)"><path class="guide" d="M13 41H187"/><text class="base " x="24" y="34">A</text><text class="base " x="53" y="34">C</text><text class="base accent" x="82" y="34">?</text><text class="base " x="111" y="34">G</text><text class="base " x="140" y="34">T</text><text class="base " x="169" y="34">A</text><path class="signal" d="M70 17V12H94V17M70 44V49H94V44M73 61V57M82 61V52M91 61V58"/></g>
+<text class="label" x="220" y="35">Sequence priors</text>
+<text class="caption" x="220" y="67">Recover a hidden base.</text>
+</g>
+<g style="--accent:#8eb9e6" transform="translate(0,88)">
+<g transform="translate(4,12) scale(.95)"><text class="base" x="27" y="35">C</text><text class="base accent" x="76" y="35">T</text><path class="guide" d="M42 28H60M55 23L60 28L55 33"/><g class="muted"><path d="M106 21H145"/><circle cx="145" cy="21" r="2.5"/></g><g class="signal"><path d="M106 44H179"/><circle cx="179" cy="44" r="2.5"/></g></g>
+<text class="label" x="220" y="35">Functional prediction</text>
+<text class="caption" x="220" y="67">Predict an edit’s effect.</text>
+</g>
+<g style="--accent:#83cbb7" transform="translate(0,176)">
+<g transform="translate(4,12) scale(.95)"><text class="base" x="22" y="37">C</text><text class="base accent" x="50" y="37">T</text><path class="guide" d="M30 31H39M36 28L39 31L36 34M65 31H82M82 31V15H99M82 31V49H99"/><g class="cell"><circle cx="114" cy="15" r="11"/><circle cx="114" cy="49" r="11"/></g><g class="nucleus"><circle cx="115" cy="14" r="3"/><circle cx="112" cy="50" r="3"/></g><g class="signal"><path d="M135 15H182"/><circle cx="182" cy="15" r="2.5"/></g><g class="signal"><path d="M135 49H155"/><circle cx="155" cy="49" r="2.5"/></g></g>
+<text class="label" x="220" y="35">Biological context</text>
+<text class="caption" x="220" y="67">Across cells and tissues.</text>
+</g>
+<g style="--accent:#b6a0d5" transform="translate(0,264)">
+<g transform="translate(4,12) scale(.95)"><text class="base" x="14" y="24">A</text><text class="base accent" x="38" y="24">C</text><text class="base accent" x="78" y="24">T</text><text class="base" x="102" y="24">G</text><path class="signal" d="M51 18H64M60 14L64 18L60 22"/><g class="signal"><path d="M128 18H184"/><circle cx="184" cy="18" r="2.5"/></g><text class="base" x="14" y="54">G</text><text class="base accent" x="38" y="54">C</text><text class="base accent" x="78" y="54">T</text><text class="base" x="102" y="54">A</text><path class="signal" d="M51 48H64M60 44L64 48L60 52"/><g class="signal"><path d="M128 48H151"/><circle cx="151" cy="48" r="2.5"/></g></g>
+<text class="label" x="220" y="35">Genetic interactions</text>
+<text class="caption" x="220" y="67">Across DNA backgrounds.</text>
+</g>
+<g style="--accent:#e3a08d" transform="translate(0,352)">
+<g transform="translate(4,12) scale(.95)"><path class="guide" stroke-dasharray="2 3" d="M170 6V62"/><path class="guide" d="M18 14H88"/><path class="guide" d="M26 10V18"/><path class="signal" d="M38 10V18"/><path class="guide" d="M50 10V18"/><path class="guide" d="M62 10V18"/><path class="guide" d="M74 10V18"/><path class="guide" d="M86 10V18"/><g class="muted"><path d="M115 14H143"/><circle cx="143" cy="14" r="2.5"/></g><path class="signal" d="M18 30H88"/><path class="guide" d="M26 26V34"/><path class="guide" d="M38 26V34"/><path class="signal" d="M50 26V34"/><path class="guide" d="M62 26V34"/><path class="guide" d="M74 26V34"/><path class="guide" d="M86 26V34"/><g class="signal"><path d="M115 30H170"/><circle cx="170" cy="30" r="2.5"/></g><path class="guide" d="M18 46H88"/><path class="guide" d="M26 42V50"/><path class="guide" d="M38 42V50"/><path class="guide" d="M50 42V50"/><path class="signal" d="M62 42V50"/><path class="guide" d="M74 42V50"/><path class="guide" d="M86 42V50"/><g class="muted"><path d="M115 46H151"/><circle cx="151" cy="46" r="2.5"/></g><path class="signal" d="M12 24H8V36H12"/></g>
+<text class="label" x="220" y="35">Genomic design</text>
+<text class="caption" x="220" y="67">Select DNA for a target.</text>
+</g>
+</svg>
