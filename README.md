@@ -23,35 +23,25 @@ to choosing sequences for a desired response. Model weights stay fixed throughou
   </picture>
 </a>
 
-Combined scores use **NTv3 650M post = 100** and weight available categories
-equally. † Incomplete task coverage; missing results are omitted. This is the
-website’s summary score, not a manuscript metric.
-
 <details>
 <summary>Results as a text table</summary>
 
 | Model / readout | Combined<br>score ↑ | Hidden-base<br>loss<br>bits&nbsp;↓ | Splicing<br>effects<br>Spearman&nbsp;↑ | Cell<br>contrast<br>Spearman&nbsp;↑ | Tissue<br>identification<br>top-1&nbsp;%&nbsp;↑ | Background<br>interaction<br>Spearman&nbsp;↑ | Single-edit<br>rank<br>percentile&nbsp;↓ | Cell<br>selectivity<br>log₂&nbsp;utility&nbsp;↑ | Multi-cell<br>gain<br>log₂&nbsp;gain&nbsp;↑ |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| AlphaGenome<br><sub>Fitted&nbsp;readouts</sub> | 136.0† | — | 0.650 | 0.402 | 64.7 | 0.269 | 25.7 | 0.515 | 0.833 |
-| AlphaGenome<br><sub>Native&nbsp;outputs</sub> | 129.1† | — | 0.621 | 0.398 | 68.6 | 0.260 | 24.3 | 0.384 | 0.707 |
+| AlphaGenome<br><sub>Fitted&nbsp;readouts</sub> | 136.0 | — | 0.650 | 0.402 | 64.7 | 0.269 | 25.7 | 0.515 | 0.833 |
+| AlphaGenome<br><sub>Native&nbsp;outputs</sub> | 129.1 | — | 0.621 | 0.398 | 68.6 | 0.260 | 24.3 | 0.384 | 0.707 |
 | NTv3&nbsp;650M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 100.0 | 1.375 | 0.564 | 0.256 | 56.9 | 0.187 | 30.0 | 0.287 | 0.568 |
-| Enformer<br><sub>Native&nbsp;outputs</sub> | 94.8† | — | — | 0.282 | 31.4 | 0.181 | 31.5 | 0.290 | 0.700 |
-| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 87.6† | — | 0.461 | 0.239 | 45.1 | 0.170 | 29.3 | 0.250 | 0.482 |
+| Enformer<br><sub>Native&nbsp;outputs</sub> | 94.8 | — | — | 0.282 | 31.4 | 0.181 | 31.5 | 0.290 | 0.700 |
+| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 87.6 | — | 0.461 | 0.239 | 45.1 | 0.170 | 29.3 | 0.250 | 0.482 |
 | NTv3&nbsp;100M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 80.4 | 1.492 | 0.502 | 0.244 | 51.0 | 0.139 | 30.3 | 0.211 | 0.144 |
-| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 61.8† | — | 0.168 | 0.203 | 27.5 | 0.152 | 32.0 | 0.200 | 0.344 |
-| Evo2&nbsp;20B<br><sub>Fitted&nbsp;readouts</sub> | 38.4† | 1.388 | 0.367 | 0.041 | — | 0.050 | 43.5 | -0.350 | 0.275 |
+| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 61.8 | — | 0.168 | 0.203 | 27.5 | 0.152 | 32.0 | 0.200 | 0.344 |
+| Evo2&nbsp;20B<br><sub>Fitted&nbsp;readouts</sub> | 38.4 | 1.388 | 0.367 | 0.041 | — | 0.050 | 43.5 | -0.350 | 0.275 |
 | NTv3&nbsp;100M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 32.1 | 1.537 | 0.349 | 0.076 | 7.8 | 0.010 | 47.3 | -0.207 | 0.339 |
 | GENERATORv2<br><sub>Fitted&nbsp;readouts</sub> | 31.5 | 1.711 | 0.388 | 0.066 | 17.6 | 0.046 | 44.7 | -0.256 | 0.234 |
 | NTv3&nbsp;650M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 29.4 | 1.447 | 0.187 | 0.010 | 7.8 | 0.009 | 50.4 | -0.061 | 0.368 |
-| DNABERT-2<br><sub>Fitted&nbsp;readouts</sub> | 11.3† | — | 0.198 | 0.076 | 5.9 | 0.020 | 48.6 | -0.302 | 0.233 |
-| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 5.3† | 1.549 | — | 0.036 | 9.8 | 0.010 | 48.9 | -0.318 | -0.581 |
+| DNABERT-2<br><sub>Fitted&nbsp;readouts</sub> | 11.3 | — | 0.198 | 0.076 | 5.9 | 0.020 | 48.6 | -0.302 | 0.233 |
+| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 5.3 | 1.549 | — | 0.036 | 9.8 | 0.010 | 48.9 | -0.318 | -0.581 |
 | Experimental&nbsp;reference | — | — | 0.809 | 0.594 | 99.0 | 0.421 | 11.8 | 0.962 | 1.602 |
-
-On functional tasks, fitted readouts use frozen embeddings. Native outputs use the model's released
-predictions, with task-specific calibration; multi-cell design fits a head to
-those outputs. Experimental references are comparisons, not ceilings.
-See [task definitions](docs/tasks.md) and the
-[source measurements](website/data/benchmark.json) for protocols and uncertainty.
 
 </details>
 <!-- END GENERATED RESULTS -->

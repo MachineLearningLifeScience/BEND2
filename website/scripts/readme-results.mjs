@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { finite, indexData, ordered, overallScore, ranks, scoreCoverage } from "../src/scoring.js";
+import { finite, indexData, ordered, overallScore, ranks } from "../src/scoring.js";
 
 const root = new URL("../../", import.meta.url);
 const data = JSON.parse(await fs.readFile(new URL("website/data/benchmark.json", root), "utf8"));
@@ -23,7 +23,6 @@ const title = model => model.label.replace(" · native", "");
 const readout = model => model.interface === "native" ? "Native outputs" : "Fitted readouts";
 const cell = (model, task) => lookup.measurements.get(`${model.id}:${task.id}`);
 const display = measurement => finite(measurement?.value) ? measurement.displayValue : "—";
-const partial = model => scoreCoverage(data, model.id).tasks.complete < data.tasks.length;
 const score = model => finite(overallScore(data, model.id)) ? overallScore(data, model.id).toFixed(1) : "—";
 const maxScore = Math.max(100, ...models.map(m => overallScore(data, m.id)).filter(finite));
 
@@ -44,7 +43,7 @@ function figure(dark) {
   const color = task => colors[data.categories.findIndex(c => c.id === task.categoryId)];
   const out = [`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title desc">
 <title id="title">BEND 2.0 benchmark results</title>
-<desc id="desc">${models.length} model and readout configurations, ordered by the website's combined score, with all ${data.tasks.length} task measurements and a separate experimental reference. Daggers mark incomplete coverage. A text version follows the figure in the README.</desc>
+<desc id="desc">${models.length} model and readout configurations, ordered by the website's combined score, with all ${data.tasks.length} task measurements and a separate experimental reference. Combined scores use NTv3 650M post as the 100-point reference and weight available categories equally; missing results are omitted. A text version follows the figure in the README.</desc>
 <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;fill:${ink};font-variant-numeric:tabular-nums}.muted{fill:${muted}}.name{font-size:18px;font-weight:500}.value{font-size:18px}.label{font-size:16px}.small{font-size:14px}</style>
 <rect width="${width}" height="${height}" fill="${paper}"/>`];
   const text = (x, y, value, cls = "label", anchor = "start", fill = "") => out.push(`<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}"${fill ? ` style="fill:${fill}"` : ""}>${escape(value)}</text>`);
@@ -81,7 +80,6 @@ function figure(dark) {
     text(32, y + 21, title(model), "name");
     text(32, y + 39, readout(model), "small muted");
     text(scoreX, y + 28, score(model), "value", "middle");
-    if (partial(model)) text(scoreX + (score(model).length * 5.1) + 4, y + 20, "†", "small muted");
     if (finite(overallScore(data, model.id))) line(modelWidth + 13, y + 38, modelWidth + 13 + Math.max(0, overallScore(data, model.id)) / maxScore * (scoreWidth - 26), muted, 1.5);
     metrics(task => cell(model, task), y);
     line(0, y + rowHeight, width);
@@ -97,7 +95,7 @@ function figure(dark) {
 const nativeTable = [
   `| Model / readout | Combined<br>score ↑ | ${data.tasks.map(t => headings[t.id].map(keepTogether).join("<br>")).join(" | ")} |`,
   `| :--- | ---: | ${data.tasks.map(() => "---:").join(" | ")} |`,
-  ...models.map(m => `| ${keepTogether(title(m))}<br><sub>${keepTogether(readout(m))}</sub> | ${score(m)}${partial(m) ? "†" : ""} | ${data.tasks.map(t => display(cell(m, t))).join(" | ")} |`),
+  ...models.map(m => `| ${keepTogether(title(m))}<br><sub>${keepTogether(readout(m))}</sub> | ${score(m)} | ${data.tasks.map(t => display(cell(m, t))).join(" | ")} |`),
   `| Experimental&nbsp;reference | — | ${data.tasks.map(t => display(data.references.find(r => r.taskId === t.id))).join(" | ")} |`,
 ].join("\n");
 const section = `<!-- BEGIN GENERATED RESULTS: node website/scripts/readme-results.mjs -->
@@ -110,20 +108,10 @@ const section = `<!-- BEGIN GENERATED RESULTS: node website/scripts/readme-resul
   </picture>
 </a>
 
-Combined scores use **NTv3 650M post = 100** and weight available categories
-equally. † Incomplete task coverage; missing results are omitted. This is the
-website’s summary score, not a manuscript metric.
-
 <details>
 <summary>Results as a text table</summary>
 
 ${nativeTable}
-
-On functional tasks, fitted readouts use frozen embeddings. Native outputs use the model's released
-predictions, with task-specific calibration; multi-cell design fits a head to
-those outputs. Experimental references are comparisons, not ceilings.
-See [task definitions](docs/tasks.md) and the
-[source measurements](website/data/benchmark.json) for protocols and uncertainty.
 
 </details>
 <!-- END GENERATED RESULTS -->`;

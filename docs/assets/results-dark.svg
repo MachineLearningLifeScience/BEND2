@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="804" viewBox="0 0 1200 804" role="img" aria-labelledby="title desc">
 <title id="title">BEND 2.0 benchmark results</title>
-<desc id="desc">13 model and readout configurations, ordered by the website's combined score, with all 8 task measurements and a separate experimental reference. Daggers mark incomplete coverage. A text version follows the figure in the README.</desc>
+<desc id="desc">13 model and readout configurations, ordered by the website's combined score, with all 8 task measurements and a separate experimental reference. Combined scores use NTv3 650M post as the 100-point reference and weight available categories equally; missing results are omitted. A text version follows the figure in the README.</desc>
 <style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;fill:#e6edf3;font-variant-numeric:tabular-nums}.muted{fill:#9ba9b2}.name{font-size:18px;font-weight:500}.value{font-size:18px}.label{font-size:16px}.small{font-size:14px}</style>
 <rect width="1200" height="804" fill="#0d1117"/>
 <path d="M0 1H1200" stroke="#303c42" stroke-width="1"/>
@@ -47,7 +47,6 @@
 <text x="32" y="129" class="name" text-anchor="start">AlphaGenome</text>
 <text x="32" y="147" class="small muted" text-anchor="start">Fitted readouts</text>
 <text x="274" y="136" class="value" text-anchor="middle">136.0</text>
-<text x="303.5" y="128" class="small muted" text-anchor="start">†</text>
 <path d="M241 146H307" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="138" class="value muted" text-anchor="middle">—</text>
 <rect x="433" y="113" width="104" height="38" fill="#8eb9e6" opacity="0.1850"/>
@@ -69,7 +68,6 @@
 <text x="32" y="177" class="name" text-anchor="start">AlphaGenome</text>
 <text x="32" y="195" class="small muted" text-anchor="start">Native outputs</text>
 <text x="274" y="184" class="value" text-anchor="middle">129.1</text>
-<text x="303.5" y="176" class="small muted" text-anchor="start">†</text>
 <path d="M241 194H303.66761966501696" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="186" class="value muted" text-anchor="middle">—</text>
 <rect x="433" y="161" width="104" height="38" fill="#8eb9e6" opacity="0.1737"/>
@@ -113,7 +111,6 @@
 <text x="32" y="273" class="name" text-anchor="start">Enformer</text>
 <text x="32" y="291" class="small muted" text-anchor="start">Native outputs</text>
 <text x="274" y="280" class="value" text-anchor="middle">94.8</text>
-<text x="298.4" y="272" class="small muted" text-anchor="start">†</text>
 <path d="M241 290H286.99019008246927" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="282" class="value muted" text-anchor="middle">—</text>
 <text x="485" y="282" class="value muted" text-anchor="middle">—</text>
@@ -134,7 +131,6 @@
 <text x="32" y="321" class="name" text-anchor="start">NTv3 650M post</text>
 <text x="32" y="339" class="small muted" text-anchor="start">Native outputs</text>
 <text x="274" y="328" class="value" text-anchor="middle">87.6</text>
-<text x="298.4" y="320" class="small muted" text-anchor="start">†</text>
 <path d="M241 338H283.5198079318411" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="330" class="value muted" text-anchor="middle">—</text>
 <rect x="433" y="305" width="104" height="38" fill="#8eb9e6" opacity="0.1173"/>
@@ -178,7 +174,6 @@
 <text x="32" y="417" class="name" text-anchor="start">NTv3 100M post</text>
 <text x="32" y="435" class="small muted" text-anchor="start">Native outputs</text>
 <text x="274" y="424" class="value" text-anchor="middle">61.8</text>
-<text x="298.4" y="416" class="small muted" text-anchor="start">†</text>
 <path d="M241 434H271.0177296040008" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="426" class="value muted" text-anchor="middle">—</text>
 <rect x="433" y="401" width="104" height="38" fill="#8eb9e6" opacity="0.0434"/>
@@ -200,7 +195,6 @@
 <text x="32" y="465" class="name" text-anchor="start">Evo2 20B</text>
 <text x="32" y="483" class="small muted" text-anchor="start">Fitted readouts</text>
 <text x="274" y="472" class="value" text-anchor="middle">38.4</text>
-<text x="298.4" y="464" class="small muted" text-anchor="start">†</text>
 <path d="M241 482H259.63594523491196" stroke="#9ba9b2" stroke-width="1.5"/>
 <rect x="323" y="449" width="104" height="38" fill="#d6b063" opacity="0.1795"/>
 <text x="375" y="474" class="value" text-anchor="middle">1.388</text>
@@ -288,7 +282,6 @@
 <text x="32" y="657" class="name" text-anchor="start">DNABERT-2</text>
 <text x="32" y="675" class="small muted" text-anchor="start">Fitted readouts</text>
 <text x="274" y="664" class="value" text-anchor="middle">11.3</text>
-<text x="298.4" y="656" class="small muted" text-anchor="start">†</text>
 <path d="M241 674H246.4800917636184" stroke="#9ba9b2" stroke-width="1.5"/>
 <text x="375" y="666" class="value muted" text-anchor="middle">—</text>
 <rect x="433" y="641" width="104" height="38" fill="#8eb9e6" opacity="0.0489"/>
@@ -310,7 +303,6 @@
 <text x="32" y="705" class="name" text-anchor="start">CENO 1B</text>
 <text x="32" y="723" class="small muted" text-anchor="start">Fitted readouts</text>
 <text x="274" y="712" class="value" text-anchor="middle">5.3</text>
-<text x="293.3" y="704" class="small muted" text-anchor="start">†</text>
 <path d="M241 722H243.58074626221247" stroke="#9ba9b2" stroke-width="1.5"/>
 <rect x="323" y="689" width="104" height="38" fill="#d6b063" opacity="0.1174"/>
 <text x="375" y="714" class="value" text-anchor="middle">1.549</text>
