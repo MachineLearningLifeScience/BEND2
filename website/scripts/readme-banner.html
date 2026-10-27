@@ -59,12 +59,12 @@
 
   ctx.fillStyle='#f1f0e2';
   ctx.drawImage(mask,50,78,116,116);
-  // Keep the edition attached to the mark's upper row, inside the same vertical
-  // footprint. Its 45-degree baseline leaves the headline's space undisturbed.
+  // Wrap the edition around the e's upper-right corner: the 2 sits above its
+  // shoulder and the 0 descends beside it, with a clear gap between their ink.
   ctx.save();
-  ctx.translate(194,106);
-  ctx.rotate(-Math.PI/4);
-  ctx.font='400 40px Newsreader';
+  ctx.translate(173,91);
+  ctx.rotate(Math.PI/4);
+  ctx.font='400 34px Newsreader';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   ctx.fillText('2.0',0,0);
