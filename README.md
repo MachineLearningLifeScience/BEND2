@@ -1,7 +1,6 @@
 ![BEND 2.0 — Benchmarking the capabilities needed to design DNA](docs/assets/readme-banner.png)
 
-BEND 2.0 evaluates DNA models on eight tasks, from recovering a hidden base
-to choosing sequences for a desired response. Model weights stay fixed throughout.
+We built BEND 2.0 to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response.
 
 <picture>
   <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/assets/capabilities-narrow-dark.svg">
@@ -9,9 +8,6 @@ to choosing sequences for a desired response. Model weights stay fixed throughou
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/capabilities-wide-dark.svg">
   <img src="docs/assets/capabilities-wide-light.svg" alt="Five capabilities: recover a hidden base; predict an edit’s effect; account for cells and tissues; account for DNA background; select DNA for a target.">
 </picture>
-
-[Evaluate your model](#evaluate-your-model) · [Task guide](docs/tasks.md) ·
-[Submit results](#add-your-model-to-the-leaderboard)
 
 <!-- BEGIN GENERATED RESULTS: node website/scripts/readme-results.mjs -->
 ## Benchmark results
