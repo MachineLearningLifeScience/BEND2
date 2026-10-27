@@ -4,6 +4,29 @@ type: software
 title: "BEND 2.0"
 authors:
   - name: "BEND 2.0 contributors"
+preferred-citation:
+  type: generic
+  title: "BEND 2.0: Benchmarking the Capabilities Needed to Design DNA"
+  authors:
+    - family-names: "Bjerregaard"
+      given-names: "Andreas"
+    - family-names: "Brilli"
+      given-names: "Dionysia Danai"
+    - family-names: "DeVries"
+      given-names: "Rachael"
+    - family-names: "Antoniadis"
+      given-names: "Panagiotis"
+    - family-names: "Li"
+      given-names: "Yan"
+    - family-names: "Krogh"
+      given-names: "Anders"
+    - family-names: "Boomsma"
+      given-names: "Wouter"
+    - family-names: "Winther"
+      given-names: "Ole"
+    - family-names: "Marin"
+      given-names: "Frederikke Isa"
+  year: 2026
 repository-code: "https://github.com/yhsure/genomic-bending"
 license: MIT
 keywords:
