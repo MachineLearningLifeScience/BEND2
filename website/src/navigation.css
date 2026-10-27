@@ -80,8 +80,7 @@
 .publication-links { display:flex; align-items:center; gap:24px; }
 .publication-links a { display:inline-flex; align-items:center; gap:6px; min-height:44px; color:var(--nav-muted); font:13px/1.2 var(--sans); white-space:nowrap; text-decoration:none; }
 .publication-links a:hover { color:var(--nav-ink); }
-.publication-mark { display:block; flex:none; width:14px; height:14px; opacity:.85; }
-.publication-mark-arxiv { width:15px; height:15px; }
+.publication-links a > span { font-size:12px; opacity:.7; }
 .navigation-toggle { display:none; }
 @media(max-width:1000px) {
   .navigation-panel { gap:32px; }

@@ -146,7 +146,8 @@ function initializeSurface() {
     wake();
   }
   function point(event, element) {
-    if (event.target?.closest("a, button")) { release(); return; }
+    // Hovering text or links keeps the same light. Touch capture is excluded
+    // separately on controls so their normal taps and clicks remain untouched.
     // Every opening reveals the same hero-scaled material and cursor light.
     px = THREE.MathUtils.clamp(event.clientX / heroHeight, -.25, aspect + .25);
     const bottom = element === hero ? 1.5 : height / heroHeight + .25;

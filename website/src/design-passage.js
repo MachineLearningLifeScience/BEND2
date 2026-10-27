@@ -1,7 +1,7 @@
 import { createDesignExample } from './design-example.js';
 
 // An illustrative sequence-level experiment leads into the one real chart.
-
+// Scrolling changes presentation only, never benchmark values or chart state.
 const passage = document.querySelector('.design-passage');
 if (passage) {
   const scrollArea = passage.querySelector('.passage-scroll');
@@ -12,10 +12,8 @@ if (passage) {
   const previous = passage.querySelector('.passage-previous');
   const next = passage.querySelector('.passage-next');
   const cue = passage.querySelector('.passage-cue');
-  const resultsLink = passage.querySelector('a[href="#design-results"]');
-  const shortcutLabel = passage.querySelector('.passage-shortcut-label');
-  const shortcutIcon = passage.querySelector('.passage-shortcut-icon');
-  // Adjust spacing to the viewport.
+  const skipLink = passage.querySelector('.passage-shortcut');
+  // Viewport size changes spacing, never the one-scene scroll behaviour.
   const staticLayout = matchMedia('print');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   // [Scroll distance in svh, illustration progress]. The reference is settled
@@ -34,7 +32,7 @@ if (passage) {
   const scrollLength = resultsReady + pacing.results;
   let frame = 0, travel = 1, navHeight = 76, visible = true, focusResults = false, firstChart = true;
   let renderedProgress = NaN, renderedStatic = false;
-  let resultsInert, diagramInert, cueOpacity, frameHeight = 1, transportLength, transport, moving;
+  let resultsInert, diagramInert, cueOpacity, skipOpacity, frameHeight = 1, transportLength, transport, moving;
   const displayValues = new WeakMap();
   let activeStep = -1;
   const steps = [
@@ -62,12 +60,12 @@ if (passage) {
     return exampleDistance;
   }
   const example = createDesignExample(diagram);
-  function goToStep(index, restart = false) {
+  function goToStep(index) {
     if (index === 3) { openResults(); return; }
     focusResults = false;
     if (location.hash === '#design-results') history.replaceState(null, '', '#design');
     if (staticLayout.matches) diagram.scrollIntoView({block:'start',behavior:'instant'});
-    else goToProgress((restart ? 0 : distanceAt(steps[index].progress)) / scrollLength, !restart);
+    else goToProgress(distanceAt(steps[index].progress) / scrollLength, true);
   }
   previous.addEventListener('click', () => goToStep(Math.max(0,activeStep - 1)));
   next.addEventListener('click', () => goToStep(Math.min(3,activeStep + 1)));
@@ -88,12 +86,8 @@ if (passage) {
       next.disabled = index === 3;
       next.setAttribute('aria-label',index === 3 ? 'Next step' : `Next: ${steps[index + 1].name}`);
       next.setAttribute('aria-controls',index === 2 ? 'design-results' : 'design-example');
-      resultsLink.setAttribute('href',index === 3 ? '#design' : '#design-results');
-      resultsLink.setAttribute('aria-controls',index === 3 ? 'design-example' : 'design-results');
-      shortcutLabel.textContent = index === 3 ? 'Back to the experiment' : 'View benchmark results';
-      shortcutIcon.textContent = index === 3 ? '↺' : '↗';
     }
-    // Fade the caption before replacing its text.
+    // One text node fades through the transition; captions can never overlap.
     const entering = index ? smooth((distance - steps[index].start) / (steps[index].fade || 7)) : 1;
     const leaving = index < 3 ? smooth((steps[index + 1].start - distance) / (steps[index + 1].fade || 7)) : 1;
     const opacity = Math.min(entering,leaving).toFixed(3);
@@ -136,6 +130,16 @@ if (passage) {
     const isStatic = staticLayout.matches;
     const p = isStatic ? 1 : clamp((navHeight - scrollArea.getBoundingClientRect().top) / travel);
     const distance = p * scrollLength;
+    // Keep Skip clear through the results hold. Only fade after the pinned
+    // chapter has released and its heading is passing beneath the masthead.
+    const exitDistance = Math.max(0, navHeight - stage.getBoundingClientRect().top);
+    const skipVisibility = isStatic ? 1 : 1 - smooth((exitDistance - 40) / 120);
+    const skipValue = skipVisibility.toFixed(3);
+    if (skipOpacity !== skipValue) {
+      skipLink.style.opacity = skipValue;
+      skipLink.inert = skipVisibility < .001;
+      skipOpacity = skipValue;
+    }
     const handoff = clamp((distance - handoffStart) / pacing.handoff);
     const exampleProgress = progressAt(distance);
     // Reuse unchanged frames during proposal/plot holds. Resize invalidates this cache.
@@ -144,7 +148,8 @@ if (passage) {
       renderedProgress = exampleProgress;
       renderedStatic = isStatic;
     }
-    // Move both figures as one vertical strip.
+    // Both complete figures move as one vertical strip. Scroll changes their
+    // position only; measurements never turn into aggregate benchmark values.
     const finished = isStatic || handoff>=.999;
     // Trim unused SVG letterboxing from the distance between the figures.
     // Both plots still clear the viewport edge before being hidden.
@@ -177,23 +182,23 @@ if (passage) {
     window.scrollTo({ top:scrollArea.getBoundingClientRect().top + scrollY - navHeight + travel * progress, behavior:animate && !reducedMotion.matches ? 'smooth' : 'instant' });
     wake();
   }
-  function goToResults() {
+  function goToResults(skip = false) {
     measure();
     if (staticLayout.matches) results.scrollIntoView({ behavior:'instant', block:'start' });
-    // Land just inside the reading hold, with its full scroll allowance ahead.
-    else goToProgress((resultsReady + 1) / scrollLength);
+    // The step arrow and direct links begin the reading hold; Skip lands
+    // farther into it so continuing to scroll reaches the next section sooner.
+    else goToProgress((resultsReady + (skip ? pacing.results * .6 : 1)) / scrollLength);
     wake();
   }
-  resultsLink.addEventListener('click', event => {
-    if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  skipLink.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    if (activeStep === 3) goToStep(0,true);
-    else openResults();
+    openResults(true);
   });
-  function openResults() {
+  function openResults(skip = false) {
     if (location.hash !== '#design-results') history.pushState(null, '', '#design-results');
     focusResults = true;
-    goToResults();
+    goToResults(skip);
   }
   function followHash() { if (location.hash === '#design-results') goToResults(); }
   document.addEventListener('design:render', () => {

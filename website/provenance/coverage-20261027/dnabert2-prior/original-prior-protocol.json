@@ -1,0 +1,23 @@
+{
+  "seed": 20260910,
+  "genome": "data/raw/hg38_twobit/hg38.2bit",
+  "panel": "data/processed/prior_benchmark/windows.parquet",
+  "excluded_panel": "data/processed/prior_sequence_probability/windows.parquet",
+  "evaluation_windows": 512,
+  "sequence_length": 1200,
+  "block_length": 1000000,
+  "prefix_length": 600,
+  "recovery_position": 600,
+  "selection": "Random autosomal ACGT windows in blocks absent from all previous prior training and evaluation windows; random fixed strand. Original 1024 baseline-training blocks are reused without refitting hyperparameters.",
+  "causal_models": ["evo2_20b", "generator_v2_3b", "ceno_1b_1m"],
+  "masked_models": ["ntv3_650m_pre", "ntv3_650m_post", "ntv3_100m_pre", "ntv3_100m_post"],
+  "random_controls": ["generator_v2_3b", "ceno_1b_1m", "ntv3_650m_post", "ntv3_100m_post"],
+  "denoising": {"rate": 0.12, "draws": 8, "probability": "Arithmetic mean of normalized ACGT probabilities across eight fixed random masks; centre always hidden. No fitted temperature or benchmark labels. The rate is the expected MASK fraction in the published 15%/80-10-10 objective, not the best observed density."},
+  "mask_density": {"rates": [0.01, 0.03, 0.06, 0.12, 0.24], "draws": 2, "metric": "Mean single-query log loss across draws, then windows; distinct from ensemble log loss."},
+  "baselines": {"uniform": null, "markov0": [0, null], "markov5": [5, null], "markov_cv": [10, 64]},
+  "smoothing": 0.5,
+  "bootstrap_replicates": 4000,
+  "metrics": ["Causal sequence bits/base", "Hidden-base bits", "Hidden-base accuracy"],
+  "assay_followup": "NTv3 650M pre/post, same fixed eight-draw readout on all Siraj substitutions; both orientations, same element-macro evaluation as existing native scores. No assay-based tuning.",
+  "scope": "Fresh benchmark blocks, not pretraining-unseen genomes. All scoring conditions retained. The denoising ensemble is a separate label-free probability readout, not a joint sequence likelihood."
+}

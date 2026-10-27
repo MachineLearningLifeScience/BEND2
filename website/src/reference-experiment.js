@@ -57,13 +57,14 @@ export function createReferenceExperiment(host,original,alternatives) {
     draw(p,W,H,small,comparison) {
       const referenceEdit=ramp(p,.025,.105);
       const edit=referenceEdit*(1-ramp(p,.28,.325));
-      const compact=small||H<340;
       const spacing=small?Math.min(46,(W-56)/5):Math.min(104,(W-80)/6);
-      const referenceSize=compact?Math.min(64,H*.26):Math.min(132,spacing*1.5);
+      // Scale down continuously on short screens instead of halving the DNA
+      // at one height threshold when the caption needs more room.
+      const referenceSize=small?Math.min(64,H*.26):Math.min(132,spacing*1.5,H*.36);
       const cx=small?W/2-spacing*.5:W/2;
-      const rowGap=compact?44:58;
-      const assayGap=compact?42:58;
-      const sy=Math.min(H*.42,H-referenceSize*.46-assayGap-rowGap-30);
+      const rowGap=small?44:Math.max(44,Math.min(58,H*.15));
+      const assayGap=small?42:Math.max(42,Math.min(58,H*.15));
+      const sy=Math.min(H*(small?.30:.34),small?150:170,H-referenceSize*.46-assayGap-rowGap-30);
       const backdrop=mix(1,.035,ramp(p,.53,.60))*(1-ramp(p,.80,.87));
       attrs(tape,{opacity:backdrop});
       loci.forEach(locus=>{

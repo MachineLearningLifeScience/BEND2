@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BEND 2.0 · Social preview studio</title>
+  <style>
+    @font-face { font-family:Newsreader; src:url('../../assets/fonts/newsreader-display-latin.woff2') format('woff2'); font-weight:400; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:28px; color:#353c36; background:#f7f5ee; font:13px/1.5 system-ui,sans-serif; }
+    header { display:flex; align-items:center; flex-wrap:wrap; gap:18px; margin:0 auto 24px; max-width:1200px; }
+    h1 { margin:0 auto 0 0; font:400 25px Newsreader,serif; }
+    label { display:flex; align-items:center; gap:7px; }
+    select,a { color:inherit; }
+    select { padding:5px; background:transparent; border:1px solid #c4c9bc; }
+    a { text-underline-offset:4px; }
+    #output { display:block; width:100%; max-width:1200px; height:auto; margin:auto; background:#081a19; }
+    .sizes { max-width:1200px; margin:25px auto; display:flex; flex-wrap:wrap; align-items:flex-start; gap:24px; }
+    figure { margin:0; max-width:100%; }
+    figure img { display:block; max-width:100%; height:auto; }
+    figcaption { margin-top:8px; color:#70766c; font-size:11px; }
+    #status { max-width:1200px; margin:12px auto; }
+  </style>
+  <script type="importmap">{"imports":{"three":"../../node_modules/three/build/three.module.js"}}</script>
+  <script type="module" src="./render.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Social preview</h1>
+    <label>Light <select id="frame"><option value="0">0s</option><option value="12">12s</option><option value="24">24s</option><option value="36">36s</option><option value="42">42s</option><option value="48">48s</option><option value="60">60s</option><option value="72">72s</option><option value="84">84s</option></select></label>
+    <a id="download" download="social-preview.png" aria-disabled="true">Download PNG</a>
+  </header>
+  <canvas id="output" width="1200" height="630" role="img" aria-label="BEND 2.0: Benchmarking the Capabilities Needed to Design DNA. Fitted-readout model configurations ranked by the website combined score."></canvas>
+  <p id="status" role="status">Rendering…</p>
+  <div class="sizes">
+    <figure><img id="half" width="600" height="315" alt="Preview at 600 pixels wide"><figcaption>600 × 315</figcaption></figure>
+    <figure><img id="small" width="360" height="189" alt="Preview at 360 pixels wide"><figcaption>360 × 189</figcaption></figure>
+  </div>
+</body>
+</html>

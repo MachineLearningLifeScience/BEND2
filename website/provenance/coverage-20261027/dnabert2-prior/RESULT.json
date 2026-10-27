@@ -1,0 +1,43 @@
+{
+  "checkpoint_revision": "b5d88cda421f106afef78cd286200a5b5b8f6fea",
+  "checkpoint_sha256": "75c91dc7bd0eea50f63e2ce6aeac2d9f20980f9efc9c715a26e4efa1e369de1c",
+  "checks": {
+    "max_batch_individual_log_probability_difference": 2.61091464377472e-05,
+    "max_padded_log_probability_difference": 0.0,
+    "max_padded_log_vocabulary_mass_difference": 0.0
+  },
+  "gpu": "AMD Instinct MI250X",
+  "loading_info": {
+    "error_msgs": [],
+    "mismatched_keys": [],
+    "missing_keys": [],
+    "unexpected_keys": []
+  },
+  "numpy": "2.2.6",
+  "parameters": 117074176,
+  "predictions_sha256": "137e6932cc68e5ebefaf90e47914fe53881b25f6c23f8d2e27d67247e3c9942f",
+  "protocol_sha256": "05002ea040cadfae2513405271783e262e3af07a450dd6f2c797075eebdd548f",
+  "python": "3.12.11",
+  "script_sha256": "134bc81625872e0981fba4248e651234eb33444f7c799926a4f6ce7c55e94a62",
+  "seconds": 11.29380400897935,
+  "summary": {
+    "n_windows": 512,
+    "recovery_accuracy": 0.248046875,
+    "recovery_accuracy_high": 0.28515625,
+    "recovery_accuracy_low": 0.212890625,
+    "recovery_bits": 6.203061367572851,
+    "recovery_bits_high": 6.603653290524412,
+    "recovery_bits_low": 5.795166019549131,
+    "vocabulary_mass_quantiles": {
+      "0": 1.5340548676118955e-09,
+      "0.05": 3.754495539101185e-08,
+      "0.25": 3.465724848321467e-07,
+      "0.5": 2.96410441258163e-06,
+      "0.75": 2.402698301539978e-05,
+      "0.95": 0.00016148063220468092,
+      "1": 0.03617959961595325
+    }
+  },
+  "torch": "2.7.1+rocm6.2.4",
+  "transformers": "4.56.2"
+}

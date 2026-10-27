@@ -1,147 +1,118 @@
-/* A result should read as one explanation, with the audit trail available on demand. */
-#detail-dialog:has(.measurement-detail, .score-definition) {
-  width:min(660px,calc(100% - 32px));
+/* Dialogs share a quiet reading layout; technical detail opens in place. */
+#detail-dialog {
+  width:min(650px,calc(100% - 40px));
+  max-height:calc(100dvh - 48px);
+  border:1px solid var(--rule);
+  box-shadow:0 18px 65px #18191424;
 }
-#detail-dialog:has(.measurement-detail, .score-definition) .dialog-head {
-  padding:25px 30px 20px;
-  border-bottom-color:var(--rule);
+#detail-dialog[data-type="task"],
+#detail-dialog[data-type="budget"] { width:min(800px,calc(100% - 40px)); }
+#detail-dialog::backdrop { background:rgb(24 25 20 / .32); backdrop-filter:blur(2px); }
+#detail-dialog .dialog-head {
+  padding:28px 30px 20px;
+  border:0;
+  align-items:flex-start;
+  gap:20px;
 }
-#detail-dialog:has(.measurement-detail, .score-definition) .dialog-head h2 {
-  font-size:29px;
-  margin-top:7px;
-}
-#detail-dialog:has(.measurement-detail, .score-definition) .dialog-head .eyebrow {
-  font-size:10px;
-  line-height:1.6;
-  letter-spacing:.025em;
-}
-#detail-dialog:has(.measurement-detail, .score-definition) .dialog-body {
-  padding:26px 30px 25px;
-}
-.measurement-result {
-  display:flex;
-  align-items:center;
-  gap:22px;
-  margin-bottom:12px;
-}
-.measurement-value {
-  color:var(--measurement-color);
-  font:54px/1.05 var(--serif);
-  letter-spacing:-1.8px;
-  font-variant-numeric:tabular-nums;
-}
-.measurement-metric {
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-  max-width:260px;
-  font-size:12px;
-  line-height:1.45;
-}
-.measurement-metric small {
-  font-size:10px;
-  color:var(--muted);
-}
-.measurement-result.is-missing .measurement-value { color:var(--muted); }
-.measurement-detail .measurement-uncertainty {
-  font-size:11px;
-  margin:0 0 23px;
-  color:var(--muted);
-}
-.measurement-uncertainty strong {
-  font-weight:400;
-  color:var(--ink);
-  font-variant-numeric:tabular-nums;
-  margin-left:8px;
-}
-.measurement-repeats { margin:17px 0 24px; }
-.measurement-repeats dl {
-  display:flex;
-  gap:30px;
-  margin:0 0 8px;
-}
-.measurement-repeats dl > div { display:flex; gap:9px; align-items:baseline; }
-.measurement-repeats dt { color:var(--muted); font-size:10px; }
-.measurement-repeats dd { margin:0; font-size:12px; font-variant-numeric:tabular-nums; }
-.measurement-detail .measurement-repeats p { margin:0; font-size:10px; }
-.measurement-detail .measurement-explanation {
-  font:17px/1.6 var(--serif);
-  color:var(--ink);
-  margin:24px 0 15px;
-}
-.measurement-detail .measurement-interface {
-  color:var(--muted);
-  font-size:11px;
-  margin:-4px 0 16px;
-}
-.measurement-detail .measurement-cohort {
-  display:flex;
-  align-items:baseline;
-  gap:9px;
-  font-size:11px;
-  line-height:1.6;
-  margin:0 0 21px;
-}
-.measurement-cohort strong { font-weight:500; color:var(--ink); white-space:nowrap; }
-.measurement-cohort span::before { content:"·"; margin-right:9px; color:var(--rule-dark); }
-.measurement-task-link {
-  padding:0;
-  color:var(--measurement-color);
-  font-size:12px;
-  line-height:1.5;
-  margin-bottom:26px;
-}
-.measurement-task-link span { margin-left:3px; }
-.measurement-method { border-top:1px solid var(--rule); }
-.measurement-method > summary {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  cursor:pointer;
-  list-style:none;
-  padding:17px 0 0;
-  color:var(--muted);
-  font-size:11px;
-}
-.measurement-method > summary::-webkit-details-marker { display:none; }
-.measurement-method > summary > span { font-size:15px; line-height:1; }
-.measurement-method[open] > summary > span { transform:rotate(45deg); }
-.measurement-method > summary:focus-visible { outline:2px solid var(--rust); outline-offset:5px; }
-.measurement-method-content { padding-top:19px; }
-.measurement-method-content dl { margin:0 0 17px; }
-.measurement-method-content dl > div { display:grid; grid-template-columns:77px minmax(0,1fr); gap:15px; margin-bottom:12px; }
-.measurement-method-content dt { font-size:10px; color:var(--muted); }
-.measurement-method-content dd { font-size:11px; line-height:1.6; margin:0; }
-.measurement-detail .measurement-method-content p {
-  font-size:11px;
-  line-height:1.7;
-  margin-bottom:13px;
-}
-.measurement-normalization strong { font-weight:500; color:var(--ink); }
-.measurement-normalization button { font-size:11px; padding:0; color:var(--measurement-color); }
-.measurement-source { margin-top:19px; padding-top:17px; border-top:1px solid var(--rule); }
-.measurement-source code { font-size:10px; overflow-wrap:anywhere; }
-.measurement-source a { font-size:11px; }
-@media(max-width:600px) {
-  #detail-dialog:has(.measurement-detail, .score-definition) .dialog-head { padding:22px 22px 18px; }
-  #detail-dialog:has(.measurement-detail, .score-definition) .dialog-head h2 { font-size:26px; }
-  #detail-dialog:has(.measurement-detail, .score-definition) .dialog-body { padding:24px 22px; }
-  .measurement-result { gap:17px; }
-  .measurement-value { font-size:46px; letter-spacing:-1.4px; }
-  .measurement-metric { font-size:11px; }
-  .measurement-detail .measurement-explanation { font-size:16px; }
-  .measurement-detail .measurement-cohort { display:block; }
-  .measurement-cohort span { display:block; margin-top:4px; }
-  .measurement-cohort span::before { display:none; }
-  .measurement-repeats dl { flex-wrap:wrap; gap:8px 20px; }
-  .measurement-method-content dl > div { grid-template-columns:1fr; gap:3px; }
-}
+#detail-dialog .dialog-head h2 { margin:0; font:30px/1.2 var(--serif); letter-spacing:-.025em; }
+#detail-dialog .dialog-context { margin:8px 0 0; font:13px/1.5 var(--sans); color:var(--muted); }
+#detail-dialog .close-button { margin:-4px -10px 0 0; color:var(--muted); }
+#detail-dialog .close-button:hover { color:var(--ink); }
+#detail-dialog .dialog-body { padding:0 30px 28px; font:14px/1.65 var(--sans); }
+#detail-dialog .dialog-body p { margin:0 0 18px; color:var(--ink); font:14px/1.65 var(--sans); }
+#detail-dialog .dialog-body > :last-child { margin-bottom:0; }
+#detail-dialog .dialog-body h3 { font:500 15px/1.5 var(--sans); margin:24px 0 8px; }
+#detail-dialog :is(a, .dialog-links button, .measurement-task-link, .measurement-normalization button) { color:var(--forest); }
+#detail-dialog :is(.dialog-links button, .measurement-task-link, .measurement-normalization button) { padding:0; font:inherit; text-align:left; }
+#detail-dialog :is(.dialog-links a, .dialog-links button, .measurement-task-link):hover { color:var(--rust); }
+.dialog-links { display:flex; flex-wrap:wrap; gap:12px 25px; margin-top:22px; }
+.dialog-definitions { margin:20px 0; }
+.dialog-definitions > div { display:grid; grid-template-columns:135px minmax(0,1fr); gap:16px; margin-bottom:18px; }
+.dialog-definitions dt { color:var(--muted); }
+.dialog-definitions dd { margin:0; }
+#detail-dialog code { overflow-wrap:anywhere; font-size:12px; }
+.dialog-steps { margin:24px 0; padding-left:20px; }
+.dialog-steps li { padding-left:4px; margin-bottom:20px; }
+.dialog-steps strong { font-weight:500; }
+#detail-dialog .dialog-steps p { margin-top:5px; }
 
-.score-definition .dialog-lede { font-size:20px; line-height:1.5; }
-.score-definition p { font-size:12px; line-height:1.8; }
-.score-formula { display:flex; justify-content:center; align-items:center; gap:13px; margin:24px 0 26px; padding:19px 8px; font:18px/1.6 var(--serif); color:var(--forest); background:#315a4906; }
+#detail-dialog :is(.dialog-details, .measurement-method) { margin-top:24px; border-top:1px solid var(--rule); }
+#detail-dialog :is(.dialog-details, .measurement-method) > summary {
+  display:list-item;
+  padding-top:15px;
+  cursor:pointer;
+  color:var(--muted);
+  font:13px/1.5 var(--sans);
+  list-style:disclosure-closed inside;
+}
+#detail-dialog :is(.dialog-details, .measurement-method)[open] > summary { list-style-type:disclosure-open; }
+#detail-dialog :is(.dialog-details, .measurement-method) > summary::marker { font-size:10px; }
+#detail-dialog :is(.dialog-details, .measurement-method) > summary:hover { color:var(--ink); }
+#detail-dialog :is(.dialog-details, .measurement-method) > summary:focus-visible { outline:2px solid var(--rust); outline-offset:5px; }
+#detail-dialog :is(.dialog-details, .measurement-method) > div { padding-top:20px; }
+#detail-dialog :is(.dialog-details, .measurement-method) p { font-size:13px; }
+#detail-dialog :is(.dialog-details, .measurement-method) > div > :last-child { margin-bottom:0; }
+#detail-dialog .protocol-table { font-size:13px; margin:0; }
+#detail-dialog .protocol-table th { font-size:12px; }
+#detail-dialog .protocol-table :is(th,td) { padding-block:11px; }
+#detail-dialog .protocol-table td:last-child { white-space:nowrap; }
+#detail-dialog .model-score-table { width:100%; margin:0; font-size:14px; }
+#detail-dialog .model-score-table td { padding:12px 0; }
+#detail-dialog .model-score-table tr:first-child td { padding-top:3px; }
+#detail-dialog .model-score-table tr:last-child td { border-bottom:0; }
+#detail-dialog .model-score-table button { font-size:14px; }
+#detail-dialog .model-score-table td:nth-child(2) { padding-left:12px; }
+#detail-dialog .model-score-table td:last-child { padding-left:18px; font-size:12px; }
+
+.measurement-result { display:flex; align-items:center; gap:22px; margin:2px 0 22px; }
+.measurement-value { color:var(--measurement-color); font:44px/1.1 var(--serif); letter-spacing:-1.3px; font-variant-numeric:tabular-nums; }
+.measurement-metric { display:flex; flex-direction:column; gap:5px; min-width:0; font-size:13px; line-height:1.55; }
+.measurement-metric small { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.measurement-result.is-missing .measurement-value { color:var(--muted); }
+#detail-dialog .measurement-explanation { margin-bottom:14px; }
+#detail-dialog .measurement-task-link { font-size:13px; }
+.measurement-method-content dl { margin:0 0 20px; }
+.measurement-method-content dl > div { display:grid; grid-template-columns:85px minmax(0,1fr); gap:14px; margin-bottom:12px; font-size:13px; }
+.measurement-method-content dt { color:var(--muted); }
+.measurement-method-content dd { margin:0; }
+.measurement-normalization strong { font-weight:500; }
+.measurement-source { border-top:1px solid var(--rule); margin-top:22px; padding-top:18px; font-size:13px; }
+.measurement-repeats dd { font-variant-numeric:tabular-nums; }
+.score-formula { display:flex; align-items:center; justify-content:center; gap:13px; margin:25px 0; padding:8px 0; font:19px/1.6 var(--serif); color:var(--ink); }
 .score-fraction { display:flex; flex-direction:column; text-align:center; }
-.score-fraction > span:first-child { border-bottom:1px solid #315a4960; padding:0 8px 4px; }
-.score-fraction > span:last-child { padding:4px 8px 0; }
-.score-definition .score-definition-note { margin:22px 0 0; padding-top:17px; border-top:1px solid var(--rule); font-size:10px; color:var(--muted); }
-@media(max-width:600px) { .score-formula { font-size:15px; gap:9px; } }
+.score-fraction > span:first-child { border-bottom:1px solid var(--rule-dark); padding:0 10px 4px; }
+.score-fraction > span:last-child { padding:4px 10px 0; }
+#detail-dialog .task-chart { margin-top:22px; }
+#detail-dialog .dialog-plot-label { margin-bottom:16px; font-size:12px; color:var(--muted); }
+#detail-dialog .chart-row { min-height:34px; font-size:12px; }
+#detail-dialog .chart-row > button { font-size:12px; }
+#detail-dialog .chart-note { color:var(--muted); font-size:12px !important; margin:16px 0 0 !important; }
+#detail-dialog .budget-readout { display:block; border-top:1px solid var(--rule); }
+#detail-dialog .budget-readout > div { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:baseline; gap:18px; padding:12px 0; border-top:0; border-bottom:1px solid var(--rule); }
+#detail-dialog .budget-readout > div:last-child { border-bottom:0; }
+#detail-dialog .budget-readout :is(small,strong,em) { margin:0; font:13px/1.5 var(--sans); }
+#detail-dialog .budget-readout strong { font-size:16px; font-variant-numeric:tabular-nums; }
+#detail-dialog .budget-readout strong > span { font-size:inherit; }
+#detail-dialog .budget-readout em { font-size:12px; color:var(--muted); }
+#detail-dialog .budget-readout .category-dot { margin:0; }
+
+@media(max-width:600px) {
+  #detail-dialog, #detail-dialog[data-type] { width:calc(100% - 24px); max-height:calc(100dvh - 32px); }
+  #detail-dialog .dialog-head { padding:23px 22px 19px; }
+  #detail-dialog .dialog-head h2 { font-size:27px; }
+  #detail-dialog .dialog-body { padding:0 22px 24px; }
+  #detail-dialog .dialog-context { font-size:12px; }
+  .measurement-result { gap:16px; align-items:flex-start; }
+  .measurement-value { font-size:40px; }
+  .measurement-metric { font-size:12px; }
+  .measurement-metric small { font-size:11px; }
+  .score-formula { font-size:17px; gap:10px; }
+  .dialog-definitions > div, .measurement-method-content dl > div { grid-template-columns:1fr; gap:4px; }
+  #detail-dialog .model-score-table :is(button,td) { font-size:13px; }
+  #detail-dialog .model-score-table td:last-child { padding-left:10px; font-size:11px; }
+  #detail-dialog .chart-row { grid-template-columns:125px minmax(0,1fr) 40px; gap:8px; }
+  #detail-dialog .chart-row > button { font-size:11px; }
+  #detail-dialog .chart-axis { margin-left:133px; margin-right:48px; }
+  #detail-dialog .budget-readout > div { grid-template-columns:minmax(0,1fr) auto; gap:3px 12px; }
+  #detail-dialog .budget-readout em { grid-column:1/-1; padding-left:14px; }
+}

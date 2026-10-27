@@ -1,0 +1,173 @@
+{
+  "id": "coverage-20261027",
+  "checkedOn": "2026-10-27",
+  "sharedPriors": [
+    {
+      "modelId": "ntv3_100m_native",
+      "fromModelId": "ntv3_100m_post",
+      "checkpoint": "InstaDeepAI/NTv3_100M_post",
+      "revision": "b7292f0bd1b5b004d28561783a1890e1ec6f94fd"
+    },
+    {
+      "modelId": "ntv3_650m_native",
+      "fromModelId": "ntv3_650m_post",
+      "checkpoint": "InstaDeepAI/NTv3_650M_post",
+      "revision": "ad622051abbe9376bdea3f2727863fa559957e9f"
+    }
+  ],
+  "missing": [
+    {
+      "modelId": "alphagenome_fitted",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "AlphaGenome does not provide nucleotide probabilities for this hidden-base task. Fitting its functional readouts does not supply a sequence-prior head."
+    },
+    {
+      "modelId": "alphagenome",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "AlphaGenome predicts functional measurements, not nucleotide probabilities for a hidden base."
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "Enformer predicts functional measurements, not nucleotide probabilities for a hidden base."
+    },
+    {
+      "modelId": "enformer",
+      "taskId": "opensplice",
+      "status": "unsupported",
+      "reason": "Enformer has no native splice output. A splicing predictor fitted to its representations would be a separate model/readout entry."
+    },
+    {
+      "modelId": "dnabert2",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "DNABERT-2 predicts multi-base tokens. A forced single-base query was tested, but its tokenization mismatch prevents a directly comparable prior score.",
+      "diagnosticSourceId": "dnabert2-prior-diagnostic"
+    },
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "opensplice",
+      "status": "unevaluated",
+      "reason": "The saved CENO transfer evaluation covers a smaller substitution-only source set. This column requires all 590,104 OpenSplice interventions across 466 held-out genes."
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "tissue_identification",
+      "status": "unevaluated",
+      "reason": "The full-context Evo2 tissue evaluation is incomplete. Partial embeddings cannot supply the full held-out-gene result."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "opensplice",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "context",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "tissue_identification",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "background",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "repair_percentile",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "cell_selective",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "markov0",
+      "taskId": "atlas_profile",
+      "status": "unsupported",
+      "reason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes."
+    },
+    {
+      "modelId": "kmer_3_6",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "This baseline was trained to predict functional measurements and has no hidden-base probability output."
+    },
+    {
+      "modelId": "onehot_resnet",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "This baseline was trained to predict functional measurements and has no hidden-base probability output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "prior",
+      "status": "unsupported",
+      "reason": "SpliceAI predicts splice sites, not nucleotide probabilities for a hidden base."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "context",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "tissue_identification",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "background",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "repair_percentile",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "cell_selective",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    },
+    {
+      "modelId": "spliceai",
+      "taskId": "atlas_profile",
+      "status": "unsupported",
+      "reason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output."
+    }
+  ],
+  "additionalSources": [
+    {
+      "id": "dnabert2-prior-diagnostic",
+      "title": "DNABERT-2 single-base query audit (excluded from scores)",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/README.md",
+      "sha256": "7880ca30ea6bdbbf1cf71c78202e4e3109b546b6910ffa2a535f94439539d7b1"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic-files",
+      "title": "DNABERT-2 diagnostic artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
+      "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
+    }
+  ]
+}

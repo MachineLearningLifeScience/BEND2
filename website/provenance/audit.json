@@ -5,20 +5,20 @@
   "sourceWorkingTreeClean": true,
   "tableSha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471",
   "csvSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
-  "benchmarkSha256": "8856e60b494f27d3b4bf14478b8a3af2fe63b831de9de3155b958b1c540512d5",
+  "benchmarkSha256": "9bec13a18466753a019023565f37753d6a6e4514d47d93164e5f6141379d4bcf",
   "checkedCells": 144,
   "publishedNonMissingCells": 118,
   "checks": [
-    "All 144 table cells (18 rows × 8 endpoints, including experimental reference) match current source CSV presence and published rounding.",
+    "The archived 144 manuscript table positions remain unchanged; website additions and missing-status corrections are explicitly recorded in data/evaluation-updates.json.",
     "All nonmissing model/task pairs are unique.",
     "All preserved uncertainty intervals contain their exact source point and are only attached to their reported task.",
     "Current background reference is 0.421 HepG2–K562 transfer.",
     "No reference index confidence intervals are fabricated.",
-    "No prior score is assigned to a native functional-output row.",
     "Repeat data included only when matching current multi-cell source point estimates.",
     "Task baseline rationale is explicit for all eight endpoints.",
     "Original source snapshots are byte-preserving copies with SHA-256 hashes.",
-    "The response-matching budget reference preserves all four source rates and element-bootstrap bounds for 331 targets in 110 elements."
+    "The response-matching budget reference preserves all four source rates and element-bootstrap bounds for 331 targets in 110 elements.",
+    "NTv3 native-functional rows reuse their exact parent checkpoint prior estimates and intervals; no new inference is claimed."
   ],
   "sources": [
     {
@@ -111,6 +111,32 @@
       "manuscriptPath": "provenance/experimental-reference-figures-20260923/summary.csv",
       "snapshotPath": "provenance/repair-budget-reference.csv",
       "sha256": "6f2cb289cfebfd538e946193fb49730a88316687740a952f35d6b6d93f979d60"
+    },
+    {
+      "id": "evaluation-updates",
+      "title": "Audited website additions and missing-result explanations",
+      "snapshotPath": "data/evaluation-updates.json",
+      "sha256": "f8af71ef29e1f4d2e0ac58570c68df886a191ca47b1f1f39c08588308a92b70b"
+    },
+    {
+      "id": "ntv3-checkpoints",
+      "title": "Pinned NTv3 checkpoints used by the native-output evaluations",
+      "snapshotPath": "provenance/coverage-20261027/ntv3-native-head-inventory.json",
+      "sha256": "08c1e9b997ebc10669c297fa0343e59786ebb481f5f679b7f5253e4eb7d9bb15"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic",
+      "title": "DNABERT-2 single-base query audit (excluded from scores)",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/README.md",
+      "sha256": "7880ca30ea6bdbbf1cf71c78202e4e3109b546b6910ffa2a535f94439539d7b1"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic-files",
+      "title": "DNABERT-2 diagnostic artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
+      "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
     }
-  ]
+  ],
+  "extensionId": "coverage-20261027",
+  "sharedCheckpointCells": 2
 }

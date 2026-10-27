@@ -1,6 +1,6 @@
 # DRAFT leaderboard data snapshot
 
-This directory freezes the current manuscript's **Table 1**, not a new model evaluation. The manuscript title is **Benchmarking the Capabilities Needed to Design DNA**; DRAFT expands to **DNA Design Readiness Across Functional Tasks**. “Genomic Bending” is an older project name.
+This directory preserves the manuscript's **Table 1**, with audited website additions recorded separately in `evaluation-updates.json`. The manuscript title is **Benchmarking the Capabilities Needed to Design DNA**; DRAFT expands to **DNA Design Readiness Across Functional Tasks**. “Genomic Bending” is an older project name.
 
 - Manuscript revision: `1abee7c638616c578b2fea497e63b59e68752c01` (clean working tree at extraction).
 - Extracted: 22 October 2026.
@@ -10,21 +10,31 @@ This directory freezes the current manuscript's **Table 1**, not a new model eva
 - Records SHA-256: `332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28`.
 - The exact copied source files and their hashes are listed in [the audit](../provenance/audit.json).
 
-`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 reported model values and seven experimental-reference values. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
+`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 manuscript model values, two shared checkpoint priors added on the website, and seven experimental-reference values. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
 
 ## Values and interfaces
 
-`value` and `displayValue` preserve the displayed manuscript precision, including ties. `sourceValue` preserves the matching precise CSV estimate; the experimental arrays have not been rerun. Every one of the 144 table positions (18 rows including the reference, by eight endpoints) is checked against the CSV for matching missingness and rounding. Missing entries retain `unsupported` or `unevaluated` status and are never replaced with zero.
+`value` and `displayValue` preserve the displayed manuscript precision, including ties. For manuscript entries, `sourceValue` preserves the matching precise CSV estimate. All 144 archived table positions (18 rows including the reference, by eight endpoints) are checked against the original CSV. Website additions retain their own explicit source mapping. Missing entries retain `unsupported` or `unevaluated` status and are never replaced with zero.
 
 The primary AlphaGenome row is `alphagenome_fitted`; `alphagenome` is its native-output row. Native rows for NTv3 are separate from their fitted hidden-representation rows. Enformer uses native functional outputs. **All four of these native-output pipelines fit a linear head to native features for multi-cell selection.** Their cell-selective native outputs also use held-locus calibration slopes. “Native” must not be interpreted as zero-shot throughout the table.
 
 Source confidence intervals are retained only when a matching CSV row supplies both limits, contains its source point, and identifies the appropriate biological sampling unit. They remain task-level, reported pointwise intervals. They do not quantify uncertainty in the reference index, and they do not establish a between-model ranking. Tissue-identification intervals are not exported because their provenance differs across rows. Multi-cell repeats are descriptive values, not confidence intervals.
 
+## Coverage audit, 27 October 2026
+
+The two post-trained NTv3 checkpoints already had hidden-base evaluations. Their native-functional rows now show the same values (100M: 1.492; 650M: 1.375), with identical source estimates and intervals. Checkpoint revisions were checked against the native-head inventory; `sharedFrom` identifies each source row. These are shared measurements, not new inference runs. Their combined scores now include the Prior category.
+
+AlphaGenome has no nucleotide-probability head, including when its functional representations receive fitted readouts. Enformer has neither nucleotide probabilities nor native splice outputs. CENO's archived splicing transfer used only substitutions and cannot fill the full OpenSplice endpoint. Evo2 tissue embeddings remain incomplete and are pending at the user's request. Missing-cell dialogs give these reasons.
+
+DNABERT-2's older prior experiments scored entire BPE tokens. A new, explicitly defined single-base query was evaluated on LUMI using all 512 frozen genomic blocks. It forces singleton outputs where native tokenization uses multi-base tokens in all 512 cases, retaining a median 0.000002964 of the original vocabulary probability mass before renormalization. The resulting 6.203 bits/base is archived as a query diagnostic, **excluded from the table and combined score**. This is an interface limitation, not a conclusion about the model's sequence knowledge. The [query audit](../provenance/coverage-20261027/dnabert2-prior/README.md) includes source code, probabilities, checkpoint hashes and numerical checks.
+
+`evaluation_updates.py` applies the documented additions after a snapshot build and can also be run independently. It never edits the archived manuscript CSV or LaTeX table.
+
 ## Reference-index audit
 
 The site-defined **Reference index** is exploratory and is not a metric reported in the paper. Each task score is `100 × (value − baseline) / (NTv3 650M post − baseline)`. This handles both metric directions. Average available endpoints within each category, then available categories equally. Do not clamp: scores below 0 or above 100 remain meaningful relative to the stated anchors. Models with missing tasks receive partial scores. Tooltips and CSV exports include task and category coverage. Missing values never count as zero.
 
-The index (`reference-index-v2`) uses eight endpoints across five categories, including Sequence priors. Prior loss uses the empirical base-composition baseline of 1.974 bits/base and the fixed NTv3 650M post reference of 1.375 bits/base; lower loss gives a higher score. Prior scores use different probability interfaces, and many functional models do not report them. When prior loss is missing, the combined score averages the other available categories without imputing a score from another interface.
+The index (`reference-index-v2`) uses eight endpoints across five categories, including Sequence priors. Prior loss uses the empirical base-composition baseline of 1.974 bits/base and the fixed NTv3 650M post reference of 1.375 bits/base; lower loss gives a higher score. Prior scores use different probability interfaces, and many functional models do not report them. The native-functional NTv3 rows share the prior evaluation of their identical post-trained checkpoints; this is the same nucleotide-probability head, not an estimate inferred from downstream performance. When prior loss is unavailable, the combined score averages the other available categories.
 
 | Endpoint | Zero-point baseline | Scientific meaning |
 | --- | ---: | --- |

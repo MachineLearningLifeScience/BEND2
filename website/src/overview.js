@@ -1,4 +1,4 @@
-import { renderOverviewScoreChart } from "./overview-score-chart.js";
+import { initOverviewScoreInteractions, renderOverviewScoreChart } from "./overview-score-chart.js";
 
 // These explain the biological questions. Exact metrics remain in task details.
 const categories = [
@@ -78,6 +78,7 @@ export function initOverview(data) {
     <p class="overview-copy">We built BEND 2.0 to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response.</p>
   </div>
   <div id="overview-scores">${renderOverviewScoreChart(data)}</div>`;
+  initOverviewScoreInteractions(root.querySelector("#overview-scores"));
 
   document.querySelector("#category-guide").innerHTML = `<div class="overview-categories">
     ${categories.map(category => `<figure class="overview-category" style="--category:${category.color}">

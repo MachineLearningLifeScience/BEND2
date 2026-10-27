@@ -1,0 +1,161 @@
+{
+  "checked": "2026-09-14",
+  "scope": "Native output availability; no model inference or assay evaluation",
+  "checkpoints": [
+    {
+      "model": "InstaDeepAI/NTv3_100M_post",
+      "revision": "b7292f0bd1b5b004d28561783a1890e1ec6f94fd",
+      "config_sha256": "d9a13b03cbe7985daf21bafe8f0a41a58461a9873eb21004f9e8c2e9f582f174",
+      "shared_code_revision": "0ecff3637f0d3ba5b686d1095083218157c2ca34",
+      "human_tracks": 7362,
+      "all_species_tracks": 15889,
+      "species": 24,
+      "config_url": "https://huggingface.co/InstaDeepAI/NTv3_100M_post/blob/b7292f0bd1b5b004d28561783a1890e1ec6f94fd/config.json"
+    },
+    {
+      "model": "InstaDeepAI/NTv3_650M_post",
+      "revision": "ad622051abbe9376bdea3f2727863fa559957e9f",
+      "config_sha256": "a770f4b26cefc821e62b07752b0b02a75fd3a0f1150bbecefd7a379116bcf9a4",
+      "shared_code_revision": "0ecff3637f0d3ba5b686d1095083218157c2ca34",
+      "human_tracks": 7362,
+      "all_species_tracks": 15889,
+      "species": 24,
+      "config_url": "https://huggingface.co/InstaDeepAI/NTv3_650M_post/blob/ad622051abbe9376bdea3f2727863fa559957e9f/config.json"
+    }
+  ],
+  "identical_track_lists": true,
+  "identical_bed_lists": true,
+  "bed_annotation_names": [
+    "protein_coding_gene",
+    "lncRNA",
+    "exon",
+    "intron",
+    "splice_donor",
+    "splice_acceptor",
+    "CTCF-bound",
+    "polyA_signal",
+    "enhancer_Tissue_specific",
+    "enhancer_Tissue_invariant",
+    "promoter_Tissue_specific",
+    "promoter_Tissue_invariant",
+    "5UTR+",
+    "5UTR-",
+    "3UTR+",
+    "3UTR-",
+    "skipped_exon",
+    "always_on_exon",
+    "start_codon",
+    "stop_codon",
+    "ORF"
+  ],
+  "bed_classes": 2,
+  "bed_cell_specific_axis": false,
+  "metadata": {
+    "url": "https://huggingface.co/spaces/InstaDeepAI/ntv3_tracks/resolve/516378db0b8839c0f0774e263cc657840fbeaf3c/data/functional_tracks_metadata.csv",
+    "space_revision": "516378db0b8839c0f0774e263cc657840fbeaf3c",
+    "sha256": "a34a045d78e64022fc3d35193baf8165146b3d378762f70cc87a1a46a40cf65a",
+    "total_rows": 15889,
+    "matched_human_rows": 7362,
+    "all_configured_human_ids_matched": true
+  },
+  "human_assay_counts": {
+    "ATAC-seq": 232,
+    "CAGE": 1276,
+    "DNase-seq": 573,
+    "Histone ChIP-seq": 1959,
+    "RNA-seq": 86,
+    "TF ChIP-seq": 1833,
+    "polyA plus RNA-seq": 559,
+    "total RNA-seq": 844
+  },
+  "exact_tissue_matches": {
+    "K562": {
+      "total_channels": 517,
+      "assay_counts": {
+        "DNase-seq": 4,
+        "Histone ChIP-seq": 16,
+        "TF ChIP-seq": 411,
+        "polyA plus RNA-seq": 19,
+        "total RNA-seq": 67
+      }
+    },
+    "HepG2": {
+      "total_channels": 261,
+      "assay_counts": {
+        "DNase-seq": 2,
+        "Histone ChIP-seq": 11,
+        "TF ChIP-seq": 217,
+        "polyA plus RNA-seq": 19,
+        "total RNA-seq": 12
+      }
+    },
+    "GM12878": {
+      "total_channels": 194,
+      "assay_counts": {
+        "DNase-seq": 1,
+        "Histone ChIP-seq": 13,
+        "TF ChIP-seq": 152,
+        "polyA plus RNA-seq": 18,
+        "total RNA-seq": 10
+      }
+    },
+    "HeLa-S3": {
+      "total_channels": 41,
+      "assay_counts": {
+        "DNase-seq": 3,
+        "Histone ChIP-seq": 14,
+        "TF ChIP-seq": 17,
+        "polyA plus RNA-seq": 7
+      }
+    },
+    "MCF-7": {
+      "total_channels": 130,
+      "assay_counts": {
+        "DNase-seq": 1,
+        "Histone ChIP-seq": 15,
+        "TF ChIP-seq": 105,
+        "polyA plus RNA-seq": 7,
+        "total RNA-seq": 2
+      }
+    },
+    "SK-N-SH": {
+      "total_channels": 48,
+      "assay_counts": {
+        "Histone ChIP-seq": 20,
+        "TF ChIP-seq": 19,
+        "polyA plus RNA-seq": 9
+      }
+    },
+    "HEK293": {
+      "total_channels": 191,
+      "assay_counts": {
+        "Histone ChIP-seq": 3,
+        "TF ChIP-seq": 188
+      }
+    },
+    "HEK293T": {
+      "total_channels": 17,
+      "assay_counts": {
+        "DNase-seq": 1,
+        "TF ChIP-seq": 16
+      }
+    },
+    "HMC3": {
+      "total_channels": 0,
+      "assay_counts": {}
+    },
+    "HCT116": {
+      "total_channels": 24,
+      "assay_counts": {
+        "Histone ChIP-seq": 13,
+        "TF ChIP-seq": 8,
+        "polyA plus RNA-seq": 1,
+        "total RNA-seq": 2
+      }
+    }
+  },
+  "track_examples_rows": 36,
+  "track_index_convention": "zero-based human channel index; identical in both cached checkpoint configs",
+  "interpretation": "Track availability does not establish a native assay-score definition, assay performance, matched experiment condition, or a direct quantitative PSI/editing-program head.",
+  "shared_model_code_url": "https://huggingface.co/InstaDeepAI/ntv3_base_model/blob/0ecff3637f0d3ba5b686d1095083218157c2ca34/modeling_ntv3_posttrained.py"
+}

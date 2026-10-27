@@ -48,10 +48,6 @@
   .motion-scene .edit-label { font-size:14px; }
   .motion-scene .measured-value { font-size:13px; }
 }
-@media(max-width:700px) and (max-height:760px) {
-  .passage-inner { padding-block:24px 10px; }
-  .passage-heading { margin-bottom:8px; }
-}
 @media print {
   .edit-lab { height:650px; break-inside:avoid; }
 }

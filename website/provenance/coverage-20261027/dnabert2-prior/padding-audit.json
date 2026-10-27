@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "indices": [
+    452,
+    160,
+    121,
+    219
+  ],
+  "trimmed_width": 235,
+  "padded_width": 276,
+  "checks": {
+    "log_probability_max_abs_difference": 1.687354112123174e-05,
+    "log_vocabulary_mass_max_abs_difference": 7.327251164923609e-06
+  },
+  "script_sha256": "04f39206b0d69a026641f5d9f4adf3fcb4ae8fa7960f278e3238e1e3b083b2f7",
+  "protocol_sha256": "05002ea040cadfae2513405271783e262e3af07a450dd6f2c797075eebdd548f",
+  "evaluated_predictions_sha256": "137e6932cc68e5ebefaf90e47914fe53881b25f6c23f8d2e27d67247e3c9942f"
+}

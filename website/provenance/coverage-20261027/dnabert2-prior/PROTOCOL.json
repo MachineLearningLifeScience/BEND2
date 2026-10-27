@@ -1,0 +1,49 @@
+{
+  "block_column": "block_id",
+  "bootstrap_replicates": 4000,
+  "bootstrap_sampling": "multinomial with replacement, original prior benchmark convention",
+  "bootstrap_seed": 20260910,
+  "bootstrap_unit": "one window per independent 1 Mb genomic block",
+  "conditional_probability": "Softmax of pretrained MASK logits restricted to the four single-nucleotide tokens",
+  "full_vocabulary_mass": "Retained as a diagnostic before four-way renormalization",
+  "independent_genomic_blocks": 512,
+  "max_allowed_tokens": 512,
+  "model": "zhihan1996/DNABERT-2-117M",
+  "model_source_files": {
+    "bert_layers.py": "317ad7e9667980ac724c07f0174ba265c8446ca5230f6b473068ff1b911edcf9",
+    "bert_padding.py": "44d1c68afb1f585fdc66c150d4c60f1ed44a89c006abc57d50531d71940d7421",
+    "configuration_bert.py": "95fc868641b87bbcd7a32d2cd7b9f4769c27592e129daf167d14b5b8c74ec4c5",
+    "flash_attn_triton.py": "568d1ac3beca0b5e1df528a1f136aa19b6489a616fcf3784f33336a50bb1de81"
+  },
+  "n_windows": 512,
+  "nucleotide_ids": {
+    "A": 5,
+    "C": 6,
+    "G": 7,
+    "T": 8
+  },
+  "nucleotide_window": 1200,
+  "original_protocol_sha256": "bd8152655f24a60932bd7082b75e6abc3fc855922c1ac15569a2a9e2f1ee2bf2",
+  "panel_sha256": "d4a07c4bcb98c4f5a3f94a6d82a3dfd5e01b3b5baedfc5efa075fe75e3f871f1",
+  "queries_sha256": "bd5a3fe2892e760cef113a667673100e179b9dafd5a190c477315e5c71b128b3",
+  "query": "CLS + BPE(left visible DNA) + MASK + BPE(right visible DNA) + SEP",
+  "query_name": "fixed-boundary single-base query",
+  "query_selection": "Fixed before evaluating; no calibration, fitting or label-driven selection",
+  "revision": "b5d88cda421f106afef78cd286200a5b5b8f6fea",
+  "script_sha256": "134bc81625872e0981fba4248e651234eb33444f7c799926a4f6ce7c55e94a62",
+  "target_position_zero_based": 600,
+  "target_substitution_invariance_checks": 2048,
+  "token_range": [
+    210,
+    276
+  ],
+  "tokenizer_files": {
+    "config.json": "ba9bdafaff0cc3e30556927474d4a179519a9864012bed2628e9f1bc23c84bfd",
+    "generation_config.json": "c993e393c12525ea015019130f83c90502efaa6de8d019e94856555614d9fae3",
+    "tokenizer.json": "5d178e8ce2ba55df97fff197f4b30f40133b95d7096be398c2df6b526c5d8cd3",
+    "tokenizer_config.json": "f9d18c81f4dd9dd7db02e9f27cc1203228147d890bfce9167c3af6465ff5b769"
+  },
+  "truncation": false,
+  "visible_bases": 1199,
+  "weights_and_computation": "FP32; TF32 disabled; original eager attention, legacy flash path disabled"
+}

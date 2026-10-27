@@ -5,7 +5,7 @@
   "shortName": "DRAFT",
   "expandedName": "DNA Design Readiness Across Functional Tasks",
   "version": "manuscript-1abee7c6",
-  "status": "frozen-manuscript-snapshot",
+  "status": "manuscript-snapshot-with-audited-additions",
   "description": "Eight reported endpoints across five capability categories. Read the raw endpoints alongside a transparent, exploratory reference index.",
   "source": {
     "label": "Current manuscript Table 1",
@@ -16,8 +16,8 @@
     "recordsSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
     "snapshotPath": "provenance/table-1.tex",
     "extractedOn": "2026-10-22",
-    "precision": "Transcribed manuscript display precision. Canonical value and displayValue exactly match Table 1; sourceValue preserves the precise source-linked CSV estimate.",
-    "verification": "All displayed values and missing cells checked against the matching current source CSV; underlying experimental arrays were not rerun.",
+    "precision": "Manuscript display precision; shared checkpoint priors retain their original estimates and intervals.",
+    "verification": "Archived Table 1 and source CSV are preserved. Explicit website additions share the same pinned NTv3 checkpoint priors across downstream interfaces; missing-result explanations were checked against evaluation code and archives.",
     "paperUrl": null,
     "paperUrlStatus": "No verified public DRAFT paper URL was provided in the manuscript. arXiv:2610.11761 belongs to RAGenome and is deliberately excluded.",
     "codeUrl": "https://anonymous.4open.science/r/draft-5709",
@@ -569,14 +569,17 @@
       "notes": [
         "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "context",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
@@ -584,27 +587,33 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "tissue_identification",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "markov0/tissue_identification",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "background",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
@@ -612,46 +621,58 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "repair_percentile",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "markov0/repair_percentile",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "cell_selective",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "markov0/cell_selective",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "markov0",
       "taskId": "atlas_profile",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "markov0/atlas_profile",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "Base composition is a sequence-prior baseline; it does not predict functional outcomes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "evo2_20b",
@@ -733,7 +754,10 @@
       "sourceId": "table-1",
       "sourceRecordId": "evo2_20b/tissue_identification",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "The full-context Evo2 tissue evaluation is incomplete. Partial embeddings cannot supply the full held-out-gene result.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "evo2_20b",
@@ -855,7 +879,10 @@
       "notes": [
         "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "The saved CENO transfer evaluation covers a smaller substitution-only source set. This column requires all 590,104 OpenSplice interventions across 466 held-out genes.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "ceno_1b_1m",
@@ -1152,7 +1179,7 @@
       "taskId": "prior",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
@@ -1160,7 +1187,11 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "DNABERT-2 predicts multi-base tokens. A forced single-base query was tested, but its tokenization mismatch prevents a directly comparable prior score.",
+      "extensionId": "coverage-20261027",
+      "diagnosticSourceId": "dnabert2-prior-diagnostic"
     },
     {
       "modelId": "dnabert2",
@@ -1646,17 +1677,29 @@
     {
       "modelId": "ntv3_100m_native",
       "taskId": "prior",
-      "value": null,
-      "displayValue": "—",
-      "status": "unsupported",
-      "interface": null,
-      "sourceValue": null,
+      "value": 1.492,
+      "displayValue": "1.492",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.492461935201394,
       "sourceId": "table-1",
-      "sourceRecordId": "ntv3_100m_native/prior",
+      "sourceRecordId": "ntv3_100m_post/prior",
       "notes": [
+        "Same checkpoint-level sequence-prior evaluation as the fitted-head row; no additional model run or fitted prior head.",
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.3927389998597406,
+        "high": 1.5916175825667722,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "manuscriptStatus": "unsupported",
+      "sharedFrom": "ntv3_100m_post",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "ntv3_100m_native",
@@ -2143,17 +2186,29 @@
     {
       "modelId": "ntv3_650m_native",
       "taskId": "prior",
-      "value": null,
-      "displayValue": "—",
-      "status": "unsupported",
-      "interface": null,
-      "sourceValue": null,
+      "value": 1.375,
+      "displayValue": "1.375",
+      "status": "evaluated",
+      "interface": "fixed 12% mask; mean individual-query loss across two draws; no ensemble",
+      "sourceValue": 1.3745521953833992,
       "sourceId": "table-1",
-      "sourceRecordId": "ntv3_650m_native/prior",
+      "sourceRecordId": "ntv3_650m_post/prior",
       "notes": [
+        "Same checkpoint-level sequence-prior evaluation as the fitted-head row; no additional model run or fitted prior head.",
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": {
+        "level": 0.95,
+        "low": 1.274789743100344,
+        "high": 1.47500625212311,
+        "type": "reported pointwise bootstrap interval",
+        "samplingUnit": "genomic block",
+        "sourceId": "table-1-records",
+        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+      },
+      "manuscriptStatus": "unsupported",
+      "sharedFrom": "ntv3_650m_post",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "ntv3_650m_native",
@@ -2306,13 +2361,16 @@
       "taskId": "prior",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "alphagenome_fitted/prior",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "AlphaGenome does not provide nucleotide probabilities for this hidden-base task. Fitting its functional readouts does not supply a sequence-prior head.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "alphagenome_fitted",
@@ -2473,7 +2531,10 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "AlphaGenome predicts functional measurements, not nucleotide probabilities for a hidden base.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "alphagenome",
@@ -2634,7 +2695,10 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "Enformer predicts functional measurements, not nucleotide probabilities for a hidden base.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "enformer",
@@ -2649,7 +2713,10 @@
       "notes": [
         "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "Enformer has no native splice output. A splicing predictor fitted to its representations would be a separate model/readout entry.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "enformer",
@@ -2787,7 +2854,10 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "This baseline was trained to predict functional measurements and has no hidden-base probability output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "kmer_3_6",
@@ -2947,7 +3017,10 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "This baseline was trained to predict functional measurements and has no hidden-base probability output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "onehot_resnet",
@@ -3107,7 +3180,10 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "SpliceAI predicts splice sites, not nucleotide probabilities for a hidden base.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
@@ -3145,20 +3221,26 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
       "taskId": "tissue_identification",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "spliceai/tissue_identification",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
@@ -3173,46 +3255,58 @@
       "notes": [
         "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
       ],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unsupported",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
       "taskId": "repair_percentile",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "spliceai/repair_percentile",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
       "taskId": "cell_selective",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "spliceai/cell_selective",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     },
     {
       "modelId": "spliceai",
       "taskId": "atlas_profile",
       "value": null,
       "displayValue": "—",
-      "status": "unevaluated",
+      "status": "unsupported",
       "interface": null,
       "sourceValue": null,
       "sourceId": "table-1",
       "sourceRecordId": "spliceai/atlas_profile",
       "notes": [],
-      "uncertainty": null
+      "uncertainty": null,
+      "manuscriptStatus": "unevaluated",
+      "missingReason": "SpliceAI is a splicing specialist; this endpoint requires a different functional output.",
+      "extensionId": "coverage-20261027"
     }
   ],
   "references": [
@@ -3533,6 +3627,30 @@
       "manuscriptPath": "provenance/experimental-reference-figures-20260923/summary.csv",
       "snapshotPath": "provenance/repair-budget-reference.csv",
       "sha256": "6f2cb289cfebfd538e946193fb49730a88316687740a952f35d6b6d93f979d60"
+    },
+    {
+      "id": "evaluation-updates",
+      "title": "Audited website additions and missing-result explanations",
+      "snapshotPath": "data/evaluation-updates.json",
+      "sha256": "f8af71ef29e1f4d2e0ac58570c68df886a191ca47b1f1f39c08588308a92b70b"
+    },
+    {
+      "id": "ntv3-checkpoints",
+      "title": "Pinned NTv3 checkpoints used by the native-output evaluations",
+      "snapshotPath": "provenance/coverage-20261027/ntv3-native-head-inventory.json",
+      "sha256": "08c1e9b997ebc10669c297fa0343e59786ebb481f5f679b7f5253e4eb7d9bb15"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic",
+      "title": "DNABERT-2 single-base query audit (excluded from scores)",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/README.md",
+      "sha256": "7880ca30ea6bdbbf1cf71c78202e4e3109b546b6910ffa2a535f94439539d7b1"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic-files",
+      "title": "DNABERT-2 diagnostic artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
+      "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
     }
   ],
   "scoring": {
@@ -4128,13 +4246,14 @@
     "endpointCount": 8,
     "categoryCount": 5,
     "experimentalReferenceCells": 7,
-    "evaluatedModelCells": 111,
+    "evaluatedModelCells": 113,
     "datasetGroups": 5
   },
   "limitations": [
     "This site compares the evaluated model–interface pipelines; input context, historical supervision and readout training differ.",
-    "Source data are retrospective experimental evaluations. No new model runs or prospective wet-lab experiments were conducted for the site.",
+    "Results use held-out measurements from assayed libraries; no new prospective wet-lab experiments were conducted for the site.",
     "Source confidence intervals describe individual task estimates. No confidence interval or significance claim is attached to an aggregate index.",
     "Native and fitted outputs are distinct rows; native multi-cell entries still require fitted readouts."
-  ]
+  ],
+  "evaluationUpdateId": "coverage-20261027"
 }

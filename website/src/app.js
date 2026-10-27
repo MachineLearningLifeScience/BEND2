@@ -15,7 +15,7 @@ import { budgetExplorer } from "./budget.js";
 import { explorerRows, taskExplorerChart } from "./explore-charts.js";
 import { pairedChart } from "./paired-chart.js";
 import { designExplorer, DEFAULT_DESIGN_MODELS } from "./design-explorer.js";
-import { measurementDetail, referenceDetail } from "./measurement-detail.js";
+import { measurementDetail, referenceDetail, taskSummary } from "./measurement-detail.js";
 import { initPageNavigation } from "./page-navigation.js";
 import { initOverview } from "./overview.js";
 
@@ -54,22 +54,6 @@ const conciseUnits = {
   repair_percentile: "percentile ↓",
   cell_selective: "log₂ utility ↑",
   atlas_profile: "log₂ gain ↑",
-};
-const refDescriptions = {
-  opensplice:
-    "Agreement between RNA repeat measurements of mutation effects, with the wild-type PSI shared between repeats.",
-  context:
-    "Agreement between cell contrasts reconstructed from disjoint experimental repeat subsets.",
-  tissue_identification:
-    "Tissue identification between two donor halves, averaged over both directions.",
-  background:
-    "HepG2–K562 transfer: agreement of measured background interactions across the two cell types.",
-  repair_percentile:
-    "Choose edits using one set of experimental repeats; evaluate their measured ranks on the other set. Average both directions.",
-  cell_selective:
-    "Choose edits using one set of RNA repeats and evaluate utility on the other. Average both directions.",
-  atlas_profile:
-    "Choose ten enhancers on one RNA repeat and evaluate on the other. Average both directions.",
 };
 let data, lookup, lastFocus, lastFocusVisible, toastTimeout;
 let renderedSearch = location.search;
@@ -211,9 +195,9 @@ function metricButton(model, task) {
     missing = !finite(m?.value),
     special = task.id === "atlas_profile" && model.interface === "native";
   const title = (missing
-    ? m?.status === "unsupported"
+    ? m?.missingReason || (m?.status === "unsupported"
       ? "Not applicable to this interface"
-      : m?.status === "not_evaluated" ? (m.notes?.[0] || "Not evaluated in this submission") : "Result not available"
+      : m?.status === "not_evaluated" ? (m.notes?.[0] || "Not evaluated in this submission") : "Result not available")
     : m.uncertainty
       ? `95% interval: ${fmt(m.uncertainty.low, task.precision)}–${fmt(m.uncertainty.high, task.precision)}. Click for details.`
       : "Click for the evaluation setting and source.") + (special && !missing ? " Fitted head using native-output features." : "") + (m?.verification ? ` ${m.verification.label}.` : "");
@@ -236,6 +220,8 @@ function renderTable() {
     const label = rank ? `${rankLabel}: rank ${rank} among genomic model/readout entries` : `${rankLabel}: no result to rank`;
     return `<span class="model-rank${rank && rank <= 3 ? ` rank-leading rank-${rank}` : ""}${rank ? "" : " rank-unavailable"}" title="${escape(label)}"><span class="sr-only">${escape(label)}</span><span aria-hidden="true">${rank && rank <= 3 ? `<img class="rank-art" src="./assets/ranks/rank-${rank}.svg" alt="" width="40" height="40">` : ""}<span class="rank-number">${rank || "—"}</span></span></span>`;
   };
+  const sortMark = (id) => state.sort === id
+    ? '<span class="sort-order" aria-hidden="true"><i></i><i></i><i></i></span>' : "";
   const maxIndex = Math.max(100, ...data.models.map(m => overallScore(data,m.id)).filter(finite));
   const combinedCell = (m) => {
     const score = overallScore(data,m.id), cov = scoreCoverage(data,m.id);
@@ -243,12 +229,21 @@ function renderTable() {
     const description = `${partial ? 'Partial' : 'Combined'} score: ${fmt(score)}; ${cov.tasks.complete} of ${cov.tasks.total} tasks, ${cov.categories.complete} of ${cov.categories.total} categories`;
     return `<td class="index-cell" title="${description}"><button class="index-score" data-action="score" aria-label="${escape(m.label)}, ${description}">${fmt(score)}</button>${finite(score) ? `<div class="index-bar" aria-hidden="true"><i style="width:${Math.max(0,100*score/maxIndex)}%"></i></div>` : ''}</td>`;
   };
-  let html = `<table class="results-table" aria-label="BEND 2.0 benchmark results" style="--active-category:${colorFor(task)}"><colgroup><col class="model-col"><col class="index-col">${tasks.map(t => `<col class="score-col ${t.id === state.sort ? "active-task" : ""}">`).join("")}</colgroup><thead><tr class="group-row"><th></th><th class="index-group">Overall</th>${data.categories.map((c) => `<th class="group" colspan="${tasks.filter((t) => t.categoryId === c.id).length}" scope="colgroup" style="--category:${c.color}">${shortCategories[c.id]}</th>`).join("")}</tr><tr class="task-row"><th class="model-header" aria-sort="${state.sort === "name" ? (state.direction === "higher" ? "ascending" : "descending") : "none"}"><div class="model-heading"><span class="rank-heading" title="${escape(rankLabel)} ranking">Rank</span><button data-sort="name" aria-label="Sort by model name">Model / readout ${state.sort === "name" ? `<span class="heading-arrow" aria-hidden="true">${state.direction === "higher" ? "↓" : "↑"}</span>` : ""}</button></div></th><th class="index-heading ${state.sort === "index" ? "active-task" : ""}" style="--category:var(--forest)" aria-sort="${state.sort === "index" ? (state.direction === "higher" ? "descending" : "ascending") : "none"}"><button class="task-label" data-sort="index" aria-label="Sort by combined score">Combined<br>score ${state.sort === "index" ? `<span class="heading-arrow" aria-hidden="true">${state.direction === "higher" ? "↓" : "↑"}</span>` : ""}</button><div class="heading-meta"><span>100 = NTv3 ref.</span><button class="task-info" data-action="score" aria-label="About the combined score" title="Combined score definition">${icon("info",12)}</button></div></th>${tasks.map((t) => `<th scope="col" class="metric-heading ${state.sort === t.id ? "active-task" : ""}" style="--category:${colorFor(t)}" aria-sort="${state.sort === t.id ? (state.direction === "higher" ? "descending" : "ascending") : "none"}"><button class="task-label" data-focus-task="${t.id}" aria-pressed="${state.sort === t.id}" aria-label="Sort by ${escape(t.label)}">${headings[t.id].map((label,i) => `${label}${i === headings[t.id].length-1 && state.sort === t.id ? `<span class="heading-arrow" aria-hidden="true">${state.direction === "higher" ? "↓" : "↑"}</span>` : ""}`).join("<br>")}</button><div class="heading-meta"><span>${conciseUnits[t.id]}</span><button class="task-info" data-task="${t.id}" aria-label="About ${escape(t.label)}" title="Task definition">${icon("info",12)}</button></div></th>`).join("")}</tr></thead><tbody>`;
-  const row = (m) => `<tr data-row="${m.id}"><td class="model-cell"><div class="model-identity">${rankMark(m)}<div class="model-description"><button class="model-name" data-model="${m.id}" aria-label="${escape(modelTitle(m))} (${escape(readout(m))})">${escape(modelTitle(m))}</button><span class="model-sub" title="${escape(readout(m))}">${m.origin === "community" ? (m.reviewStatus === "pending" ? "Awaiting review · " : "Community · ") : ""}${escape(readout(m))}</span></div></div></td>${combinedCell(m)}${tasks.map((t) => `<td class="metric-cell ${state.sort === t.id ? "active-task" : ""}">${metricButton(m, t)}</td>`).join("")}</tr>`;
-  html += models.map(row).join("");
-  html += `<tr class="contribution-row"><td colspan="${colCount}"><button class="add-model-button" data-action="submission"><span>＋ Add your model</span><span>Evaluate a task and submit your result ↗</span></button></td></tr>`;
+  let html = `<table class="results-table" aria-label="BEND 2.0 benchmark results" style="--active-category:${colorFor(task)}">
+    <colgroup><col class="model-col"><col class="index-col">${tasks.map(() => '<col class="score-col">').join("")}</colgroup>
+    <thead><tr class="group-row"><th></th><th class="index-group">Overall</th>${data.categories.map((c) => `<th class="group" colspan="${tasks.filter((t) => t.categoryId === c.id).length}" scope="colgroup" style="--category:${c.color}">${shortCategories[c.id]}</th>`).join("")}</tr>
+    <tr class="task-row">
+      <th class="model-header" aria-sort="${state.sort === "name" ? (state.direction === "higher" ? "ascending" : "descending") : "none"}"><div class="model-heading"><span class="rank-heading" title="${escape(rankLabel)} ranking">Rank</span><button data-sort="name" aria-label="Sort by model name"><span class="sort-label">Model / readout</span></button></div>${sortMark("name")}</th>
+      <th class="index-heading" style="--category:var(--forest)" aria-sort="${state.sort === "index" ? (state.direction === "higher" ? "descending" : "ascending") : "none"}"><button class="task-label" data-sort="index" aria-label="Sort by combined score"><span class="sort-label">Combined<br>score</span></button><div class="heading-meta"><span>100 = NTv3 ref.</span><button class="task-info" data-action="score" aria-label="About the combined score" title="Combined score definition">${icon("info",12)}</button></div>${sortMark("index")}</th>
+      ${tasks.map((t) => `<th scope="col" class="metric-heading" style="--category:${colorFor(t)}" aria-sort="${state.sort === t.id ? (state.direction === "higher" ? "descending" : "ascending") : "none"}"><button class="task-label" data-focus-task="${t.id}" aria-label="Sort by ${escape(t.label)}"><span class="sort-label">${headings[t.id].join("<br>")}</span></button><div class="heading-meta"><span>${conciseUnits[t.id]}</span><button class="task-info" data-task="${t.id}" aria-label="About ${escape(t.label)}" title="Task definition">${icon("info",12)}</button></div>${sortMark(t.id)}</th>`).join("")}
+    </tr></thead><tbody>`;
+  const row = (m) => `<tr data-row="${m.id}"><td class="model-cell"><div class="model-identity">${rankMark(m)}<div class="model-description"><button class="model-name" data-model="${m.id}" aria-label="${escape(modelTitle(m))} (${escape(readout(m))})">${escape(modelTitle(m))}</button><span class="model-sub" title="${escape(readout(m))}">${m.origin === "community" ? (m.reviewStatus === "pending" ? "Awaiting review · " : "Community · ") : ""}${escape(readout(m))}</span></div></div></td>${combinedCell(m)}${tasks.map((t) => `<td class="metric-cell">${metricButton(m, t)}</td>`).join("")}</tr>`;
+  const invitationAfter = Math.min(8, models.length);
+  html += models.slice(0, invitationAfter).map(row).join("");
+  html += `<tr class="model-invitation-row"><td colspan="${colCount}"><span class="invitation-slots" style="--task-count:${tasks.length}" aria-hidden="true"><span></span><span class="invitation-combined-slot"><i></i></span>${tasks.map(() => '<span><i></i></span>').join("")}</span><div class="model-invitation"><span class="model-invitation-gutter" aria-hidden="true"><span></span></span><a class="model-invitation-copy" href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer" aria-label="Add your model — evaluation and submission guide"><span class="model-invitation-title">Add your model</span><span class="model-invitation-guide">Submission guide <span aria-hidden="true">↗</span></span></a></div></td></tr>`;
+  html += models.slice(invitationAfter).map(row).join("");
   html += `<tr class="baseline-disclosure-row"><td colspan="${colCount}"><button id="baseline-toggle" class="baseline-disclosure" data-action="baselines" aria-expanded="${state.baselines}" aria-controls="baseline-rows"><span class="baseline-disclosure-label"><span class="disclosure-gutter" aria-hidden="true"><span class="disclosure-mark"></span></span><span>Baselines &amp; specialists</span></span></button></td></tr></tbody><tbody id="baseline-rows" class="${state.baselines ? "is-expanded" : ""}"${state.baselines ? "" : ' inert aria-hidden="true"'}>${base.map(row).join("")}</tbody><tbody>`;
-  html += `<tr class="reference-row"><td class="model-cell"><div class="model-identity"><span class="model-rank-spacer" aria-hidden="true"></span><button class="model-name" data-action="references">Experimental reference</button></div></td><td class="index-cell">—</td>${tasks.map(t => {const r = data.references.find(r => r.taskId === t.id);return `<td class="metric-cell ${t.id === state.sort ? 'active-task' : ''}">${r ? `<button class="score-cell" data-reference="${t.id}" style="--tint:${tint(t,r.value)};--category:${colorFor(t)}" aria-label="${escape(t.label)} experimental reference ${r.displayValue}">${r.displayValue}</button>` : "—"}</td>`;}).join("")}</tr></tbody></table>`;
+  html += `<tr class="reference-row"><td class="model-cell"><div class="model-identity"><span class="model-rank-spacer" aria-hidden="true"></span><button class="model-name" data-action="references">Experimental reference</button></div></td><td class="index-cell">—</td>${tasks.map(t => {const r = data.references.find(r => r.taskId === t.id);return `<td class="metric-cell">${r ? `<button class="score-cell" data-reference="${t.id}" style="--tint:${tint(t,r.value)};--category:${colorFor(t)}" aria-label="${escape(t.label)} experimental reference ${r.displayValue}">${r.displayValue}</button>` : "—"}</td>`;}).join("")}</tr></tbody></table>`;
   $("#table-wrapper").innerHTML = html;
   // Clip cell contents, keeping native table columns and sticky model cells intact.
   $("#baseline-rows").querySelectorAll("td").forEach(cell => {
@@ -262,8 +257,8 @@ function renderTable() {
   });
   updateTableOverflow();
 }
-function dialogFrame(title, eyebrow, body) {
-  return `<div class="dialog-head"><div><span class="eyebrow">${escape(eyebrow)}</span><h2 id="dialog-title">${escape(title)}</h2></div><button class="close-button" data-action="close" aria-label="Close dialog">${icon("close", 23)}</button></div><div class="dialog-body">${body}</div>`;
+function dialogFrame(title, context, body) {
+  return `<div class="dialog-head"><div><h2 id="dialog-title">${escape(title)}</h2>${context ? `<p class="dialog-context">${escape(context)}</p>` : ""}</div><button class="close-button" data-action="close" aria-label="Close dialog">${icon("close", 23)}</button></div><div class="dialog-body">${body}</div>`;
 }
 function openDialog(type, id, extra) {
   if (!$("#detail-dialog").open) {
@@ -274,8 +269,8 @@ function openDialog(type, id, extra) {
   let html = "";
   if (type === "budget")
     html = dialogFrame(
-      "Response matching by testing budget",
-      "Genomic design / Figure 5B",
+      "Targets reached",
+      "",
       budgetExplorer(data, extra || 10),
     );
   if (type === "method") html = methodDialog();
@@ -290,6 +285,7 @@ function openDialog(type, id, extra) {
   $("#dialog-content").innerHTML = html;
   const dialog = $("#detail-dialog");
   dialog.classList.toggle("budget-dialog", type === "budget");
+  dialog.dataset.type = type;
   if (!dialog.open) dialog.showModal();
   dialog.scrollTop = 0;
   dialog.querySelector(".close-button").focus({ preventScroll: true });
@@ -306,20 +302,22 @@ function closeDialog() {
   }
 }
 function scoreDialog() {
-  return dialogFrame("Combined score", "Eight tasks · five categories",
-    `<div class="score-definition"><p class="dialog-lede">NTv3 650M post sets the reference at 100.</p>
-    <p>Each task is normalized between its fixed baseline and NTv3 650M post:</p>
+  return dialogFrame("Combined score", "",
+    `<div class="score-definition"><p>NTv3 650M post sets the reference at 100, giving all eight tasks a common relative scale.</p>
     <div class="score-formula" role="img" aria-label="100 times the result minus baseline, divided by the NTv3 reference minus baseline"><span>100 ×</span><span class="score-fraction"><span>result − baseline</span><span>NTv3 reference − baseline</span></span></div>
-    <p>We average available task scores within each category, then give the available categories equal weight. The five categories are Sequence priors, Function, Context, Interactions and Design.</p>
-    <p>Missing tasks are omitted from the average. Task and category counts are available on hover and in the CSV download. Scores can exceed 100 or fall below zero.</p>
-    <p class="score-definition-note">This combined score is a proposed leaderboard measure; the individual task results come from the manuscript.</p></div>`);
+    <p>We average task scores within each category, then give the available categories equal weight. Missing results are omitted.</p>
+    <details class="dialog-details"><summary>Calculation details</summary><div>
+    <p>The five categories are Sequence priors, Function, Context, Interactions and Design. Missing results never count as zero; task and category coverage is available on hover and in the CSV download.</p>
+    <p>Each task uses a fixed baseline. Scores can exceed 100 or fall below zero. Experimental references are shown separately and do not set the scale.</p>
+    <p>This combined score is a website proposal, not a result reported in the manuscript.</p>
+    <table class="protocol-table"><thead><tr><th>Task</th><th>Baseline</th><th>NTv3 reference</th></tr></thead><tbody>${data.tasks.map((t) => `<tr><td>${escape(t.label)}</td><td>${fmt(t.baseline.value, t.precision)}</td><td>${fmt(raw(data.scoring.referenceModelId, t.id), t.precision)}</td></tr>`).join("")}</tbody></table>
+    </div></details></div>`);
 }
 function methodDialog() {
-  return dialogFrame(
-    "Reading the results",
-    "Methods",
-    `<p class="dialog-lede">Results from the paper and reviewed community submissions across eight tasks.</p><p>Each column uses the task’s original units. Select its heading to sort the models.</p><h3>Readouts</h3><p><strong>Embedding heads</strong> are linear predictors fitted to frozen model representations. <strong>Native outputs</strong> use released functional predictions, with task-specific calibration. For multi-cell design, native outputs are used as features for a fitted head.</p><h3>Measurements</h3><p>Task details show reported 95% confidence intervals where available. Multi-cell RNA repeats are separate experimental measurements; their values are available in the task details.</p><p>Experimental references measure agreement or selection using experimental data. Each task has its own construction, described alongside the result.</p><details class="score-method"><summary>Combined score</summary><p>The combined score uses fixed baselines and NTv3 650M post as a reference. This score is proposed for the website and is not reported in the paper.</p><div class="method-equation">100 × (result − baseline) / (NTv3 reference − baseline)</div><p>Available task scores are averaged within each category, then available categories receive equal weight. Sequence priors are included. Missing tasks are omitted; task and category coverage is available on hover and in the CSV download. The scale is fixed to NTv3 650M post = 100.</p><table class="protocol-table"><thead><tr><th>Task</th><th>Baseline</th><th>NTv3 reference</th></tr></thead><tbody>${data.tasks.filter(t => data.scoring.defaultTaskIds.includes(t.id)).map((t) => `<tr><td>${escape(t.label)}</td><td>${fmt(t.baseline.value, t.precision)}</td><td>${fmt(raw(data.scoring.referenceModelId, t.id), t.precision)}</td></tr>`).join("")}</tbody></table></details><button class="text-action" data-action="sources">Data sources ↗</button>`,
-  );
+  return dialogFrame("Reading the results", "",
+    `<p>The table reports eight task measurements from the paper and reviewed community submissions in their original units.</p>
+    <dl class="dialog-definitions"><div><dt>Fitted readouts</dt><dd>Linear predictors fitted to frozen model representations.</dd></div><div><dt>Native outputs</dt><dd>Released functional predictions, with task-specific calibration. Multi-cell design uses a linear head fitted to those outputs.</dd></div><div><dt>Uncertainty</dt><dd>Reported 95% confidence intervals appear where available. Multi-cell RNA repeats are separate measurements, not confidence intervals.</dd></div><div><dt>Experimental references</dt><dd>Task-specific comparisons using experimental measurements. They are not performance ceilings.</dd></div></dl>
+    <div class="dialog-links"><button data-action="score">Combined score</button><button data-action="sources">Data sources</button></div>`);
 }
 function modelDialog(id) {
   const m = lookup.models.get(id),
@@ -334,15 +332,15 @@ function modelDialog(id) {
     ? `<p class="model-detail-line">Community submission · ${links}</p><details class="score-method"><summary>Model declaration</summary><p>Checkpoint revision: <code>${escape(m.declarations?.revision)}</code></p><p>Training data: ${escape(m.declarations?.training_data)}</p>${m.declarations?.pooling ? `<p>Pooling: ${escape(m.declarations.pooling)}</p>` : ""}${source?.sha256 ? `<p>Evidence SHA256: <code>${escape(source.sha256)}</code></p>` : ""}</details>` : "";
   return dialogFrame(
     modelTitle(m),
-    readout(m),
-    `${contribution}<p>${escape(m.description)}</p><p class="model-detail-line">${escape(m.parameterLabel || "Parameter count not specified")} · ${cov.complete} of ${cov.total} tasks evaluated</p><table class="model-score-table"><tbody>${data.tasks
+    `${readout(m)} · ${cov.complete} of ${cov.total} tasks`,
+    `${contribution}<table class="model-score-table"><tbody>${data.tasks
       .map((t) => {
         const cell = getCell(id, t.id);
         return `<tr><td><button data-cell="${id}:${t.id}"><i class="category-dot" style="--category:${colorFor(t)}"></i>${escape(t.label)}</button></td><td>${escape(cell.displayValue)}</td><td>${conciseUnits[t.id]}</td></tr>`;
       })
       .join(
         "",
-      )}</tbody></table>${m.interface === "native" && (finite(raw(id,"atlas_profile")) || finite(raw(id,"cell_selective"))) ? `<p class="model-detail-line">${finite(raw(id,"atlas_profile")) ? "Multi-cell results use a linear head fitted to native outputs. " : ""}${finite(raw(id,"cell_selective")) ? "Cell-selective results include held-locus calibration." : ""}</p>` : ""}`,
+      )}</tbody></table><details class="dialog-details"><summary>Model details</summary><div><p>${escape(m.description)}</p><p>${escape(m.parameterLabel || "Parameter count not specified")}</p>${m.interface === "native" && (finite(raw(id,"atlas_profile")) || finite(raw(id,"cell_selective"))) ? `<p>${finite(raw(id,"atlas_profile")) ? "Multi-cell results use a linear head fitted to native outputs. " : ""}${finite(raw(id,"cell_selective")) ? "Cell-selective results include held-locus calibration." : ""}</p>` : ""}</div></details>`,
   );
 }
 function taskDialog(id) {
@@ -405,8 +403,10 @@ function taskDialog(id) {
   }
   return dialogFrame(
     t.label,
-    `${cat.label} / ${t.figure}`,
-    `<p class="dialog-lede">${escape(t.description)}</p><div class="detail-tags"><span>${escape(ds?.label || ds?.name || t.datasetId)}</span><span>${escape(t.metric)}</span><span>${t.direction === "higher" ? "Higher" : "Lower"} is better</span></div><p>${escape(t.cohort)}</p>${id === "repair_percentile" ? '<button class="dark-button" data-action="budget">Results by testing budget →</button>' : ""}<div class="task-chart"><div class="chart-axis"><span>${fmt(min, min < 0 ? 1 : 0)}</span><span>${fmt((min + max) / 2, 2)}</span><span>${fmt(max, 2)}</span></div>${chartEntries.map((r) => chartRow(r.model, r.cell, r.kind)).join("")}</div><p class="chart-note">${id === "atlas_profile" ? "The two small markers show RNA measurement repeats 1 and 2. They are not confidence intervals." : "Black whiskers show reported 95% intervals. Gray rows are experimental references or baselines."} Select a row for its result and evaluation details.</p>${t.cautions?.length ? `<div class="method-note">${escape(t.cautions.filter((c) => !c.includes("superseded") && !c.includes("Original confirmatory")).join(" "))}</div>` : ""}<button class="text-action" data-task-category="${t.categoryId}" style="margin-top:20px">See ${cat.label.toLowerCase()} in the table ${icon("arrow", 14)}</button>`,
+    ds?.shortLabel || ds?.label || t.datasetId,
+    `<p>${escape(taskSummary(t))}</p><div class="task-chart"><p class="dialog-plot-label">${escape(t.metric)} · ${t.direction === "higher" ? "Higher" : "Lower"} is better</p><div class="chart-axis"><span>${fmt(min, min < 0 ? 1 : 0)}</span><span>${fmt((min + max) / 2, 2)}</span><span>${fmt(max, 2)}</span></div>${chartEntries.map((r) => chartRow(r.model, r.cell, r.kind)).join("")}</div><p class="chart-note">${id === "atlas_profile" ? "Markers show the two RNA measurements." : "Whiskers show reported 95% confidence intervals."}</p>
+    ${id === "repair_percentile" ? '<div class="dialog-links"><button data-action="budget">Results by testing budget</button></div>' : ""}
+    <details class="dialog-details"><summary>Evaluation details</summary><div><p>${escape(t.description)}</p><p>${escape(t.cohort)}</p>${t.cautions?.filter((c) => !c.includes("superseded") && !c.includes("Original confirmatory")).map(c => `<p>${escape(c)}</p>`).join("") || ""}<p>Gray rows show baselines and experimental references. ${id === "atlas_profile" ? "RNA repeats are separate measurements, not confidence intervals." : "Intervals describe individual estimates, not the significance of differences between models."}</p><p>Manuscript ${escape(t.figure)}. Select a result for its method and source records.</p></div></details>`,
   );
 }
 function cellDialog(modelId, taskId) {
@@ -418,32 +418,14 @@ function referenceDialog(taskId) {
   return dialogFrame(detail.title, detail.eyebrow, detail.body);
 }
 function referencesDialog() {
-  return dialogFrame(
-    "Experimental references",
-    "Measurements alongside predictions",
-    `<p class="dialog-lede">Experimental comparisons based on repeated measurements.</p><p>The gray row contains a task-specific comparison based on measured data. These are not a uniform performance ceiling.</p>${data.tasks
-      .filter((t) => t.reference)
-      .map(
-        (t) =>
-          `<h3><button data-reference="${t.id}" style="font:inherit;padding:0;text-align:left">${escape(t.label)} <span style="color:var(--muted)">${t.reference.value.toFixed(t.precision)}</span></button></h3><p>${escape(refDescriptions[t.id])}</p>`,
-      )
-      .join("")}`,
-  );
+  return dialogFrame("Experimental references", "",
+    `<p>These task-specific comparisons use experimental measurements. They are not performance ceilings.</p><table class="model-score-table"><tbody>${data.tasks.filter(t => t.reference).map(t => `<tr><td><button data-reference="${t.id}">${escape(t.label)}</button></td><td>${fmt(t.reference.value, t.precision)}</td><td>${conciseUnits[t.id]}</td></tr>`).join("")}</tbody></table>`);
 }
 function sourcesDialog() {
-  return dialogFrame(
-    "Data sources",
-    "Data & provenance",
-    `<p class="dialog-lede">This release reproduces the current manuscript’s Table 1.</p><p>Displayed values match the manuscript table precision. The original source estimates and available uncertainty intervals are retained in the downloadable records.</p><div class="source-box">Manuscript snapshot: <code>${data.source.commit}</code><br>Extracted: ${data.source.extractedOn}<br>Table SHA-256: <code>${data.source.tableSha256}</code></div><table class="protocol-table"><tbody>${data.sources
-      .filter((s) => s.snapshotPath)
-      .map(
-        (s) =>
-          `<tr><td>${escape(s.title)}</td><td><a href="./${escape(s.snapshotPath)}" download>Download ↗</a></td></tr>`,
-      )
-      .join(
-        "",
-      )}</tbody></table><p>Model results and experimental references are transcribed from the matched manuscript records; the underlying model evaluations have not been rerun for this website.</p><p><a href="./data/benchmark.json" download>Complete machine-readable benchmark</a> · <a href="./data/sources.md">Source and protocol notes</a></p><h3>Combined score definition</h3><p>The proposed reference index uses fixed anchors and category weights recorded in the dataset.</p>`,
-  );
+  return dialogFrame("Data sources", "",
+    `<p>Results come from manuscript Table 1 and documented website additions. The downloads retain source estimates and available uncertainty intervals.</p>
+    <table class="protocol-table"><tbody><tr><td>Complete benchmark</td><td><a href="./data/benchmark.json" download>JSON ↓</a></td></tr><tr><td>Source and protocol notes</td><td><a href="./data/sources.md">Read notes</a></td></tr>${data.sources.filter(s => s.snapshotPath).map(s => `<tr><td>${escape(s.title)}</td><td><a href="./${escape(s.snapshotPath)}" download>Download ↓</a></td></tr>`).join("")}</tbody></table>
+    <details class="dialog-details"><summary>Provenance</summary><div><p>Published measurements are preserved at manuscript precision. Later evaluations and interface checks are documented separately.</p><dl class="dialog-definitions"><div><dt>Snapshot</dt><dd><code>${escape(data.source.commit)}</code></dd></div><div><dt>Extracted</dt><dd>${escape(data.source.extractedOn)}</dd></div><div><dt>Table SHA-256</dt><dd><code>${escape(data.source.tableSha256)}</code></dd></div></dl></div></details>`);
 }
 function submissionDialog() {
   return dialogFrame(

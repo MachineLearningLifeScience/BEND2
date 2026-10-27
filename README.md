@@ -28,9 +28,9 @@ We built BEND 2.0 to test whether genomic models can guide the design of DNA. Ac
 | AlphaGenome<br><sub>Native&nbsp;outputs</sub> | 129.1 | — | 0.621 | 0.398 | 68.6 | 0.260 | 24.3 | 0.384 | 0.707 |
 | NTv3&nbsp;650M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 100.0 | 1.375 | 0.564 | 0.256 | 56.9 | 0.187 | 30.0 | 0.287 | 0.568 |
 | Enformer<br><sub>Native&nbsp;outputs</sub> | 94.8 | — | — | 0.282 | 31.4 | 0.181 | 31.5 | 0.290 | 0.700 |
-| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 87.6 | — | 0.461 | 0.239 | 45.1 | 0.170 | 29.3 | 0.250 | 0.482 |
+| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 90.1 | 1.375 | 0.461 | 0.239 | 45.1 | 0.170 | 29.3 | 0.250 | 0.482 |
 | NTv3&nbsp;100M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 80.4 | 1.492 | 0.502 | 0.244 | 51.0 | 0.139 | 30.3 | 0.211 | 0.144 |
-| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 61.8 | — | 0.168 | 0.203 | 27.5 | 0.152 | 32.0 | 0.200 | 0.344 |
+| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 65.6 | 1.492 | 0.168 | 0.203 | 27.5 | 0.152 | 32.0 | 0.200 | 0.344 |
 | Evo2&nbsp;20B<br><sub>Fitted&nbsp;readouts</sub> | 38.4 | 1.388 | 0.367 | 0.041 | — | 0.050 | 43.5 | -0.350 | 0.275 |
 | NTv3&nbsp;100M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 32.1 | 1.537 | 0.349 | 0.076 | 7.8 | 0.010 | 47.3 | -0.207 | 0.339 |
 | GENERATORv2<br><sub>Fitted&nbsp;readouts</sub> | 31.5 | 1.711 | 0.388 | 0.066 | 17.6 | 0.046 | 44.7 | -0.256 | 0.234 |

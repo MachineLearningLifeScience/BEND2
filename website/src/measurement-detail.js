@@ -18,14 +18,27 @@ const metrics = {
   atlas_profile: "Gain over random · log₂",
 };
 
+const taskDescriptions = {
+  prior: "Predict a hidden base from its surrounding DNA.",
+  opensplice: "Predict how a mutation changes alternative splicing.",
+  context: "Predict how a mutation’s effect differs between HepG2 and K562.",
+  tissue_identification: "Match a predicted expression profile to the correct tissue among 51 candidates.",
+  background: "Predict how the same mutation’s effect differs between two genetic backgrounds.",
+  repair_percentile: "Choose a single-base edit with an effect as close as possible to the reference edit.",
+  cell_selective: "Choose an edit, or no edit, to increase activity in one cell type while limiting its effect in the other.",
+  atlas_profile: "Choose ten enhancers that are active in the requested cell types and inactive in the others.",
+};
+
+export const taskSummary = (task) => taskDescriptions[task.id] || task.description;
+
 const referenceDescriptions = {
-  opensplice: "Agreement between RNA measurements of mutation effects, averaged within genes. Both measurements share the wild-type splicing estimate.",
+  opensplice: "Agreement between repeated RNA measurements of mutation effects, averaged within genes.",
   context: "Agreement between cell-type contrasts estimated from separate groups of RNA and DNA measurements.",
-  tissue_identification: "Identify each tissue using expression profiles from two separate donor halves, then average both directions.",
+  tissue_identification: "Identify each tissue using expression profiles from separate donor halves, averaging both directions.",
   background: "Agreement between measured background interactions in HepG2 and K562, averaged within regulatory elements.",
-  repair_percentile: "Choose edits using one group of experimental measurements and evaluate their measured ranks using the other. Average both directions.",
-  cell_selective: "Choose cell-selective edits using one group of RNA measurements and evaluate their utility using the other. Average both directions.",
-  atlas_profile: "Choose ten enhancers using one RNA measurement and evaluate their gain using the other. Average both directions across the same sixteen requests.",
+  repair_percentile: "Choose edits using one group of experimental measurements and evaluate their ranks using the other, averaging both directions.",
+  cell_selective: "Choose cell-selective edits using one group of RNA measurements and evaluate their utility using the other, averaging both directions.",
+  atlas_profile: "Choose ten enhancers using one RNA measurement and evaluate their gain using the other, averaging both directions across sixteen requests.",
 };
 
 function readoutLabel(model, task, measured) {
@@ -58,14 +71,22 @@ function repeatData(data, modelId, taskId) {
     : null;
 }
 
-function resultMarkup(task, cell, repeats) {
+function resultMarkup(task, cell) {
   const measured = finite(cell?.value);
   const status = cell?.status === "unsupported"
     ? "Not applicable to this interface" : cell?.status === "not_evaluated"
       ? (cell.notes?.[0] || "Not evaluated in this submission") : "Result not available in this snapshot";
   const uncertainty = measured && cell.uncertainty;
-  const repeatValues = measured ? (repeats?.repeatValues || []).filter(finite) : [];
-  return `${cell?.verification ? `<p class="measurement-verification">${escape(cell.verification.label)}</p>` : ""}<div class="measurement-result${measured ? "" : " is-missing"}"><span class="measurement-value">${escape(cell?.displayValue || "—")}</span><div class="measurement-metric"><span>${escape(metrics[task.id] || task.metric)}</span><small>${measured ? `${task.direction === "lower" ? "Lower" : "Higher"} is better` : escape(status)}</small></div></div>${uncertainty ? `<p class="measurement-uncertainty"><span>${format(100 * uncertainty.level, 0)}% interval</span> <strong>${format(uncertainty.low, task.precision)}–${format(uncertainty.high, task.precision)}</strong></p>` : ""}${repeatValues.length ? `<div class="measurement-repeats"><dl>${repeatValues.map((value, index) => `<div><dt>RNA measurement ${index + 1}</dt><dd>${format(value, task.precision)}</dd></div>`).join("")}</dl><p>Repeat measurements, not confidence intervals.</p></div>` : ""}`;
+  const interval = uncertainty
+    ? ` · ${format(100 * uncertainty.level, 0)}% interval ${format(uncertainty.low, task.precision)}–${format(uncertainty.high, task.precision)}` : "";
+  return `${cell?.verification ? `<p class="measurement-verification">${escape(cell.verification.label)}</p>` : ""}<div class="measurement-result${measured ? "" : " is-missing"}"><span class="measurement-value">${escape(cell?.displayValue || "—")}</span><div class="measurement-metric"><span>${escape(metrics[task.id] || task.metric)}</span><small>${measured ? `${task.direction === "lower" ? "Lower" : "Higher"} is better${interval}` : escape(status)}</small></div></div>`;
+}
+
+function repeatMarkup(task, cell, repeats) {
+  const repeatValues = finite(cell?.value) ? (repeats?.repeatValues || []).filter(finite) : [];
+  const absolute = finite(repeats?.absoluteUtility)
+    ? `<p>Absolute utility: ${format(repeats.absoluteUtility, 3)}. The reported gain subtracts intent-matched random selection.</p>` : "";
+  return `${repeatValues.length ? `<div class="measurement-repeats"><dl>${repeatValues.map((value, index) => `<div><dt>RNA measurement ${index + 1}</dt><dd>${format(value, task.precision)}</dd></div>`).join("")}</dl><p>Repeat measurements, not confidence intervals.</p></div>` : ""}${absolute}`;
 }
 
 function sourceMarkup(data, cell, task) {
@@ -95,10 +116,14 @@ function sourceMarkup(data, cell, task) {
   const source = data.sources?.find((item) => item.id === "table-1-records");
   const path = /^provenance\/[a-z0-9_./-]+$/i.test(source?.snapshotPath || "")
     ? source.snapshotPath : "provenance/table-1-source-records.csv";
-  return `<div class="measurement-source"><p>Manuscript Table 1 · ${escape(task.figure)}<br>Snapshot <code>${escape(data.source?.commit?.slice(0, 8) || "")}</code>${cell?.sourceRecordId ? ` · <code>${escape(cell.sourceRecordId)}</code>` : ""}</p>${finite(cell?.sourceValue) ? `<p>Source estimate: <code>${escape(cell.sourceValue)}</code>. The result above uses manuscript precision.</p>` : ""}<a href="./${escape(path)}" download>Download source records ↓</a></div>`;
+  const shared = cell?.sharedFrom ? "<p>Website addition: this is the same checkpoint-level sequence-prior evaluation reported for the fitted-head row. It uses the model’s nucleotide probabilities and requires no fitted head or new inference.</p>" : "";
+  const diagnostic = data.sources?.find(item => item.id === cell?.diagnosticSourceId);
+  const diagnosticLink = diagnostic && /^provenance\/[a-z0-9_./-]+$/i.test(diagnostic.snapshotPath)
+    ? `<p><a href="./${escape(diagnostic.snapshotPath)}">Read the query audit</a></p>` : "";
+  return `<div class="measurement-source">${shared}${diagnosticLink}<p>Manuscript Table 1 · ${escape(task.figure)}<br>Snapshot <code>${escape(data.source?.commit?.slice(0, 8) || "")}</code>${cell?.sourceRecordId ? ` · <code>${escape(cell.sourceRecordId)}</code>` : ""}</p>${finite(cell?.sourceValue) ? `<p>Source estimate: <code>${escape(cell.sourceValue)}</code>. The result above uses manuscript precision.</p>` : ""}<a href="./${escape(path)}" download>Download source records ↓</a></div>`;
 }
 
-function methodMarkup(data, model, task, cell, repeats) {
+function methodMarkup(data, model, task, dataset, cell, repeats) {
   const measured = finite(cell.value);
   const normalized = measured ? taskScore(data, model.id, task.id) : null;
   const anchor = data.measurements.find((item) => item.modelId === data.scoring.referenceModelId && item.taskId === task.id);
@@ -110,9 +135,9 @@ function methodMarkup(data, model, task, cell, repeats) {
   const normalizedMarkup = measured && inAggregate && finite(normalized)
     ? `<p class="measurement-normalization">Fixed-reference task score: <strong>${format(normalized, 1)}</strong>. Baseline ${format(task.baseline.value, task.precision)}; NTv3 650M post ${format(anchor?.value, task.precision)}. <button data-action="score">Scoring definition ↗</button></p>`
     : "";
-  const absolute = finite(repeats?.absoluteUtility)
-    ? `<p>Absolute utility: ${format(repeats.absoluteUtility, 3)}. The reported gain subtracts intent-matched random selection.</p>` : "";
-  return `<details class="measurement-method"><summary>Method &amp; source<span aria-hidden="true">＋</span></summary><div class="measurement-method-content"><dl>${readout}<div><dt>Evaluation</dt><dd>${escape(task.cohort)}</dd></div>${sampling}</dl>${absolute}${normalizedMarkup}${sourceMarkup(data, cell, task)}</div></details>`;
+  const interfaceNote = measured && task.id === "cell_selective" && model.interface === "native"
+    ? "<p>Native outputs use held-locus calibration.</p>" : "";
+  return `<details class="measurement-method"><summary>Method and source</summary><div class="measurement-method-content"><p>${escape(task.description)}</p><dl><div><dt>Dataset</dt><dd>${escape(dataset?.shortLabel || dataset?.label || task.datasetId)}</dd></div><div><dt>Cohort</dt><dd>${escape(task.cohort)}</dd></div>${readout}${sampling}</dl>${interfaceNote}${repeatMarkup(task, cell, repeats)}${normalizedMarkup}${sourceMarkup(data, cell, task)}</div></details>`;
 }
 
 /** A compact result explanation for the existing dialog frame. */
@@ -124,12 +149,10 @@ export function measurementDetail(data, modelId, taskId) {
   if (!cell) throw new RangeError(`No benchmark record: ${modelId}/${taskId}`);
   const measured = finite(cell.value);
   const repeats = repeatData(data, modelId, taskId);
-  const interfaceNote = measured && taskId === "cell_selective" && model.interface === "native"
-    ? '<p class="measurement-interface">Native outputs use held-locus calibration.</p>' : "";
   return {
     title: task.label,
-    eyebrow: `${model.label.replace(/ · native$/, "")} / ${readoutLabel(model, task, measured)}`,
-    body: `<div class="measurement-detail" style="--measurement-color:${escape(category?.color || "#315a49")}" data-measurement="${escape(modelId)}:${escape(taskId)}" data-status="${escape(cell.status)}">${resultMarkup(task, cell, repeats)}<p class="measurement-explanation">${escape(task.description)}</p>${interfaceNote}<p class="measurement-cohort"><strong>${escape(dataset?.shortLabel || dataset?.label || task.datasetId)}</strong><span>${escape(task.cohort.split(";")[0])}</span></p><button class="measurement-task-link" data-task="${escape(taskId)}">Compare models on this task <span aria-hidden="true">↗</span></button>${methodMarkup(data, model, task, cell, repeats)}</div>`,
+    eyebrow: `${model.label.replace(/ · native$/, "")} · ${readoutLabel(model, task, measured)}`,
+    body: `<div class="measurement-detail" style="--measurement-color:${escape(category?.color || "#315a49")}" data-measurement="${escape(modelId)}:${escape(taskId)}" data-status="${escape(cell.status)}">${resultMarkup(task, cell)}<p class="measurement-explanation">${escape(!measured && cell.missingReason ? cell.missingReason : taskDescriptions[taskId] || task.description)}</p><button class="measurement-task-link" data-task="${escape(taskId)}">Compare models</button>${methodMarkup(data, model, task, dataset, cell, repeats)}</div>`,
   };
 }
 
@@ -148,6 +171,6 @@ export function referenceDetail(data, taskId) {
   return {
     title: task.label,
     eyebrow: taskId === "background" ? "HepG2–K562 transfer" : "Experimental reference",
-    body: `<div class="measurement-detail measurement-reference" style="--measurement-color:#77766f" data-measurement="experimental_reference:${escape(taskId)}" data-status="${escape(reference.status)}">${resultMarkup(task, reference, repeats)}<p class="measurement-explanation">${escape(referenceDescriptions[taskId] || task.description)}</p><p class="measurement-cohort"><strong>${escape(dataset?.shortLabel || dataset?.label || task.datasetId)}</strong><span>${escape(cohort)}</span></p><button class="measurement-task-link" data-task="${escape(taskId)}">Compare models on this task <span aria-hidden="true">↗</span></button><details class="measurement-method"><summary>Method &amp; source<span aria-hidden="true">＋</span></summary><div class="measurement-method-content"><p>${escape(protocolNotes)}</p>${reference.uncertainty ? `<p>Reported pointwise ${format(reference.uncertainty.level * 100, 0)}% bootstrap interval; resampling unit: ${escape(reference.uncertainty.samplingUnit)}.</p>` : ""}<p>Experimental references provide comparisons, not performance ceilings. They do not enter the combined-score normalization.</p>${sourceMarkup(data, reference, task)}</div></details></div>`,
+    body: `<div class="measurement-detail measurement-reference" style="--measurement-color:#77766f" data-measurement="experimental_reference:${escape(taskId)}" data-status="${escape(reference.status)}">${resultMarkup(task, reference)}<p class="measurement-explanation">${escape(referenceDescriptions[taskId] || task.description)}</p><button class="measurement-task-link" data-task="${escape(taskId)}">Compare models</button><details class="measurement-method"><summary>Method and source</summary><div class="measurement-method-content"><dl><div><dt>Dataset</dt><dd>${escape(dataset?.shortLabel || dataset?.label || task.datasetId)}</dd></div><div><dt>Cohort</dt><dd>${escape(cohort)}</dd></div><div><dt>Readout</dt><dd>${escape(reference.interface)}</dd></div>${reference.uncertainty ? `<div><dt>Uncertainty</dt><dd>Reported pointwise ${format(reference.uncertainty.level * 100, 0)}% bootstrap interval; resampling unit: ${escape(reference.uncertainty.samplingUnit)}.</dd></div>` : ""}</dl><p>${escape(protocolNotes)}</p>${repeatMarkup(task, reference, repeats)}<p>Experimental references provide comparisons, not performance ceilings. They do not enter the combined-score normalization.</p>${sourceMarkup(data, reference, task)}</div></details></div>`,
   };
 }
