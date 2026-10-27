@@ -16,7 +16,7 @@ from urllib.parse import urlsplit
 
 from bend2.catalog import CATALOG
 from bend2.datasets import task_identity
-from bend2.results import Run, digest, slug, write_json
+from bend2.results import Run, digest, write_json
 
 SCHEMA_VERSION = 2
 PROTOCOL_VERSION = "bend2-2026-v1"
@@ -209,38 +209,18 @@ def _number(value, label, low=None, high=None):
 
 
 def _model_id(identity):
-    """Identify a checkpoint and inference setup across changes to display metadata.
-
-    New runs use an inference-specific adapter hash. Older runs use the full
-    source hash recorded at evaluation.
-    """
+    """Identify a checkpoint and inference setup independently of display metadata."""
     definition = {
-        key: identity.get(key, "")
+        key: identity[key]
         for key in ("revision", "representation", "pooling", "probability_interface")
     }
-    definition["inference_config"] = identity.get("inference_config", {})
-    definition["adapter"] = {}
-    for capability in sorted(identity.get("capabilities", [])):
-        adapter = identity["adapter"][capability]
-        if adapter.get("inference_sha256"):
-            fingerprint = {"inference_sha256": adapter["inference_sha256"]}
-        else:
-            callable_name = re.sub(
-                r"^_bend2_model_[0-9a-f]+\.", "user_model.", adapter.get("callable", "")
-            )
-            fingerprint = {
-                "callable": callable_name,
-                "source_sha256": adapter["source_sha256"],
-            }
-        definition["adapter"][capability] = fingerprint
+    definition["inference_config"] = identity["inference_config"]
+    definition["adapter"] = {
+        capability: {"inference_sha256": identity["adapter"][capability]["inference_sha256"]}
+        for capability in identity["capabilities"]
+    }
     fingerprint = hashlib.sha256(json.dumps(definition, sort_keys=True).encode()).hexdigest()
     return f"community-{fingerprint[:16]}"
-
-
-def _legacy_model_id(identity):
-    """Recognize unchanged schema-2 records prepared before stable model IDs."""
-    fingerprint = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
-    return f"community-{slug(identity['name'])[:60]}-{fingerprint[:12]}"
 
 
 def _data_summary(data):
@@ -373,10 +353,7 @@ def _validate(data):
         raise ValueError("Acceptance comes from maintainer review and merge, not a JSON flag")
     model = data["model"]
     identity = model["identity"]
-    if (
-        model["id"] not in {_model_id(identity), _legacy_model_id(identity)}
-        or model["name"] != identity["name"]
-    ):
+    if model["id"] != _model_id(identity) or model["name"] != identity["name"]:
         raise ValueError("Model ID and name must match the evaluated model identity")
     for field in ("name", "revision", "training_data"):
         _text(identity[field], f"model {field}")
@@ -415,8 +392,7 @@ def _validate(data):
             raise ValueError(f"Model declares {task} unsupported but supplies a result for it")
     for capability in capabilities:
         _sha(identity["adapter"][capability]["source_sha256"], f"{capability} adapter")
-        if "inference_sha256" in identity["adapter"][capability]:
-            _sha(identity["adapter"][capability]["inference_sha256"], f"{capability} inference")
+        _sha(identity["adapter"][capability]["inference_sha256"], f"{capability} inference")
     if identity["revision"].strip().lower() in {"main", "master", "latest", "head", "default"}:
         raise ValueError("Use an immutable checkpoint revision or weight hash, not a moving branch")
     if any(task != "prior" for task in tasks):
@@ -448,7 +424,7 @@ def _validate(data):
                 _number(value, "Atlas replicate")
             if not math.isclose(sum(repeats) / 2, metric["value"], rel_tol=1e-12, abs_tol=1e-12):
                 raise ValueError("Atlas gain differs from the mean of its measured replicates")
-        _validate_data(task, row["data"])
+        _subset(task_identity(task), row["data"], f"{task}.data")
         required = [f"{task}/{table}.parquet" for table in _TABLES[task]]
         required.append(f"{task}/protocol.json")
         if any(path not in row["files"] for path in required):
@@ -458,10 +434,6 @@ def _validate(data):
             if not parts or parts[0] != task or ".." in parts or "\\" in path:
                 raise ValueError(f"Unsafe evidence path: {path}")
             _sha(checksum, path)
-
-
-def _validate_data(task, data):
-    _subset(task_identity(task), data, f"{task}.data")
 
 
 def _verify_bundle(data, bundle):
@@ -534,7 +506,6 @@ def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=F
     if not directory.is_dir():
         raise ValueError(f"Submission directory does not exist: {directory}")
     paths = sorted(directory.glob("*.json"))
-    scientific_models = {}
     for path in paths:
         data = validate_submission(path)
         from bend2.reviews import validate_review
@@ -557,13 +528,6 @@ def build_leaderboard(base, submissions, output=None, *, reviews=None, preview=F
             raise ValueError(f"Duplicate or reserved leaderboard model ID: {model_id}")
         existing.add(model_id)
         identity = model["identity"]
-        canonical_id = _model_id(identity)
-        if canonical_id in scientific_models:
-            raise ValueError(
-                f"The same model/interface is submitted in {scientific_models[canonical_id]} "
-                f"and {path.name}; combine its tasks into one contribution"
-            )
-        scientific_models[canonical_id] = path.name
         source_id = f"submission-{model_id}"
         capabilities = set(identity.get("capabilities", []))
         interface = "fitted" if "embed" in capabilities else "native"

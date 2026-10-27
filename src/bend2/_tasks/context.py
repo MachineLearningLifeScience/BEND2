@@ -13,7 +13,6 @@ def score(predictions):
     """Aggregate held-out contrasts using the fixed element-level protocol."""
     metric, groups = macro_spearman(predictions, "unit_id", replicates=10000, seed=20260825)
     return TaskResult(
-        "context",
         metric,
         {
             **PROTOCOL,

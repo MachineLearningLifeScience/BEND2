@@ -20,7 +20,6 @@ def score(predictions):
     """Aggregate held-out predictions using the fixed gene-level protocol."""
     metric, groups = macro_spearman(predictions, "gene_id", replicates=2000, seed=20260822)
     return TaskResult(
-        "opensplice",
         metric,
         {
             **PROTOCOL,

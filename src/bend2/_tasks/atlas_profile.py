@@ -151,7 +151,6 @@ def score(data, predictions, losses):
     scores = pd.DataFrame(scores)
     repeats = scores.groupby("replicate").gain.mean()
     return TaskResult(
-        "atlas_profile",
         {
             "name": "held_u_minus_intended_random",
             "value": float(repeats.mean()),

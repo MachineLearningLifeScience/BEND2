@@ -85,7 +85,6 @@ def score(predictions, outcomes):
     groups = cells.groupby("unit_id", as_index=False)[["target", "other"]].mean()
     groups["utility"] = groups.target - groups.other
     return TaskResult(
-        "cell_selective",
         {
             "name": "log2_reporter_utility",
             "value": float(groups.utility.mean()),

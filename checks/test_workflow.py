@@ -22,17 +22,13 @@ def test_offline_atlas_results_and_submission(tmp_path, monkeypatch):
     result = bend2.evaluate(composition(), output=tmp_path / "run", cache_dir=tmp_path / "cache")
     assert result.scores["atlas_profile"] == pytest.approx(-0.7378073152527498, abs=1e-12)
     assert len(bend2.tasks()) == 8
-    assert not result.submission.exists()
     with zipfile.ZipFile(result.bundle()) as archive:
         assert {
             "result.json",
-            "submission.json",
             "atlas_profile/choices.parquet",
         } <= set(archive.namelist())
         assert not any(name.endswith(".html") for name in archive.namelist())
     assert not list(result.directory.rglob("*.html"))
-    submission = json.loads(result.submission.read_text())
-    assert submission["ready_for_review"] and len(submission["coverage"]) == 8
     checksum = digest(result.bundle())
     assert digest(result.bundle()) == checksum
     contribution = result.prepare_submission(
@@ -101,7 +97,6 @@ def test_interrupted_inference_resumes_completed_batches(tmp_path, monkeypatch):
     result = bend2.evaluate(model, **options)
     assert encoder.successful == 7657
     assert result.scores["atlas_profile"] == pytest.approx(-0.7378073152527498, abs=1e-12)
-    assert not result.submission.exists()
     calls = encoder.calls
     monkeypatch.setitem(bend2.catalog.TASK_VERSIONS, "prior", 2)
     bend2.evaluate(model, **options)

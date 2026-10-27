@@ -49,7 +49,7 @@ Inspect the bundle and [source-data terms](data.md) before sharing it.
 
 ## Host evidence elsewhere
 
-Export a completed run to create `submission.json` and `submission.zip`:
+Export a completed run to create `submission.zip`:
 
 ```bash
 bend2 export results/my-model

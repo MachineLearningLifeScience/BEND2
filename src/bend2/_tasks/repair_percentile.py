@@ -48,7 +48,6 @@ def score(candidates):
     )
     interval = mean_interval(groups.candidate_percentile, replicates=10000, seed=20260827)
     return TaskResult(
-        "repair_percentile",
         {
             "name": "measured_rank_percentile",
             "value": float(100 * groups.candidate_percentile.mean()),

@@ -5,7 +5,6 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-import re
 import shutil
 from contextlib import ExitStack
 from datetime import UTC, datetime
@@ -15,24 +14,13 @@ from filelock import FileLock
 
 from bend2 import __version__
 from bend2.catalog import CATALOG
+from bend2.datasets import task_identity
 from bend2.results import Run, digest, write_json
-from bend2.submissions import _PROTOCOLS, _TABLES, _data_summary, _subset, _validate_data
+from bend2.submissions import _PROTOCOLS, _TABLES, _data_summary, _subset
 
 
 def _hash(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
-
-
-def _adapter_identity(result, capability):
-    model = result["identity_spec"]["model"]
-    recorded = result.get("inference_specs", {}).get(capability, {}).get("model", {})
-    semantic = recorded.get("adapter")
-    source = model.get("adapter", {}).get(capability, {})
-    # Older CLI versions gave the same source a different module name in each
-    # directory. Its function name and source digest still identify the code.
-    callable_name = re.sub(r"^_bend2_model_[0-9a-f]+\.", "user_model.", source.get("callable", ""))
-    legacy = {"callable": callable_name, "source_sha256": source.get("source_sha256")}
-    return semantic, source.get("inference_sha256"), legacy
 
 
 def _merge_model(results):
@@ -41,41 +29,23 @@ def _merge_model(results):
     revision = merged.get("revision", "").strip()
     if not revision or revision.lower() in {"main", "master", "latest", "head", "default"}:
         raise ValueError("Declare a stable model revision before combining independent runs")
-    scientific = ("revision", "representation", "pooling", "probability_interface")
-    for index, model in enumerate(models[1:], start=1):
-        for field in scientific:
-            if model.get(field, "") != merged.get(field, ""):
+    for model in models[1:]:
+        for field in merged:
+            if field != "adapter" and model[field] != merged[field]:
                 raise ValueError(f"Cannot combine runs with different model {field}")
-        if model.get("inference_config", {}) != merged.get("inference_config", {}):
-            raise ValueError("Cannot combine runs with different model inference_config")
-        if set(model.get("capabilities", [])) != set(merged.get("capabilities", [])):
-            raise ValueError("Combine runs made with the same model capabilities and adapter")
-        if model.get("unsupported_tasks", {}) != merged.get("unsupported_tasks", {}):
-            raise ValueError("Cannot combine contradictory unsupported-task declarations")
         for capability in merged["capabilities"]:
-            left_semantic, left_digest, left_source = _adapter_identity(results[0], capability)
-            right_semantic, right_digest, right_source = _adapter_identity(results[index], capability)
-            if left_digest and right_digest:
-                same = left_digest == right_digest
-            elif left_semantic is not None and right_semantic is not None:
-                same = left_semantic == right_semantic
-            else:
-                same = left_source == right_source and bool(left_source["source_sha256"])
-            if not same:
+            if (
+                merged["adapter"][capability]["inference_sha256"]
+                != model["adapter"][capability]["inference_sha256"]
+            ):
                 raise ValueError(f"Cannot combine different {capability} adapter implementations")
-        for field in ("name", "training_data", "source"):
-            existing, value = merged.get(field, ""), model.get(field, "")
-            if existing and value and existing != value:
-                raise ValueError(f"Resolve conflicting model {field} declarations before combining")
-            if not existing and value:
-                merged[field] = value
     return merged
 
 
 def _check_task(task, row):
     """Check task protocols, data identities and evidence files."""
     _subset(_PROTOCOLS[task], row["details"], f"{task}.protocol")
-    _validate_data(task, _data_summary(row["data"]))
+    _subset(task_identity(task), _data_summary(row["data"]), f"{task}.data")
     required = [f"{task}/{table}.parquet" for table in _TABLES[task]]
     required.append(f"{task}/protocol.json")
     if any(path not in row["files"] for path in required):

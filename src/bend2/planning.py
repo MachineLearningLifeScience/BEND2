@@ -225,18 +225,9 @@ def plan(model: Model, *, tasks="atlas_profile", cache_dir=None) -> dict:
         for item in prepared
         if item["state"] in {"size_mismatch", "invalid_path"}
     )
-    warnings = [
-        "Existing data are only checked for location and size; evaluation verifies their checksums.",
-        "Download bytes exclude model weights, prepared data and inference/readout storage.",
-        "Existing inference caches are not inspected; input counts describe the complete tasks.",
-    ]
+    warnings = []
     if not model.revision:
         warnings.append("Declare revision= before a long run to enable inference reuse and resume.")
-    if maximum is None and selected:
-        warnings.append(
-            "No base-context limit is declared; check the full input lengths against your adapter. "
-            "Token limits depend on tokenization and are not converted to base limits."
-        )
     return {
         "benchmark": "BEND 2.0",
         "model": model.name,

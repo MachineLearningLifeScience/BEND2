@@ -10,6 +10,7 @@ import platform
 import time
 import uuid
 from datetime import UTC, datetime
+from importlib import import_module
 from pathlib import Path
 
 from filelock import FileLock
@@ -20,7 +21,6 @@ from bend2.catalog import CATALOG, TASK_VERSIONS
 from bend2.model import Model
 from bend2.planning import plan
 from bend2.results import Run, digest, slug, write_json
-from bend2._tasks import run as score
 
 
 def environment():
@@ -156,7 +156,6 @@ def evaluate(
         "protocols": {task: task_protocol(task, runtime) for task in selected},
     }
     run = Run(output)
-    # The OS releases this lock if the process exits.
     with FileLock(output / ".run.lock", timeout=0):
         if (output / "result.json").exists():
             result = run.validate()
@@ -314,7 +313,8 @@ def evaluate(
                         )
                     inference = store.fill(_inputs(task, data), model.embed, batch_size, notify)
                 notify(f"{task}: fitting and scoring the fixed protocol")
-                scored = score(task, data, store, probabilities, shared=shared)
+                task_module = import_module(f"bend2._tasks.{task}")
+                scored = task_module.run(data, store, probabilities, shared=shared)
                 directory = output / task
                 directory.mkdir(exist_ok=True)
                 artifacts = {}

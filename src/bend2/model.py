@@ -39,35 +39,8 @@ class Model:
     _source_file: Path | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self):
-        if not isinstance(self.name, str) or not self.name.strip():
-            raise ValueError("Give your model a nonempty name")
         if self.embed is None and self.probabilities is None:
             raise ValueError("Provide embed=, probabilities=, or both")
-        for key in ("embed", "probabilities"):
-            if getattr(self, key) is not None and not callable(getattr(self, key)):
-                raise TypeError(f"{key} must be callable")
-        for key in (
-            "revision",
-            "training_data",
-            "representation",
-            "pooling",
-            "probability_interface",
-            "source",
-        ):
-            if not isinstance(getattr(self, key), str):
-                raise TypeError(f"{key} must be a string")
-        if not isinstance(self.inference_config, dict):
-            raise TypeError("inference_config must be a JSON object")
-        # Copy declarations so mutating the caller's configuration cannot change a run.
-        self.inference_config = json.loads(json.dumps(self.inference_config, allow_nan=False))
-        from bend2.catalog import CATALOG
-
-        if not isinstance(self.unsupported_tasks, dict) or any(
-            task not in CATALOG or not isinstance(reason, str) or not reason.strip()
-            for task, reason in self.unsupported_tasks.items()
-        ):
-            raise ValueError("unsupported_tasks must map known task IDs to nonempty reasons")
-        self.unsupported_tasks = dict(self.unsupported_tasks)
 
     def metadata(self):
         fields = (

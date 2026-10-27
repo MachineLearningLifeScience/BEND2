@@ -42,7 +42,6 @@ def score(predictions):
     predictions["fold"] = folds
     metric, groups = macro_spearman(predictions, "unit_id", replicates=10000, seed=20260826)
     return TaskResult(
-        "background",
         metric,
         {
             **PROTOCOL,

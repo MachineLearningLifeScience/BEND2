@@ -90,10 +90,6 @@ class Run:
             raise ValueError(f"Result artifact changed: {relative}")
         return pd.read_parquet(path, columns=columns)
 
-    @property
-    def submission(self):
-        return self.directory / "submission.json"
-
     def to_dataframe(self):
         """One row per completed task, with its value, units, direction and any interval."""
         import pandas as pd
@@ -158,86 +154,10 @@ class Run:
                 raise ValueError(f"Recorded benchmark implementation changed: {relative}")
         return data
 
-    def write_submission(self):
-        """Write submission.json from the saved results."""
-        data = self.validate()
-        metadata = data["model"]
-        required = ["revision", "training_data"]
-        if any(task != "prior" for task in data["tasks"]):
-            required += ["representation", "pooling"]
-        if "prior" in data["tasks"]:
-            required += ["probability_interface"]
-        missing = [field for field in required if not metadata.get(field, "").strip()]
-        undefined = [task for task, row in data["tasks"].items() if row["metric"]["value"] is None]
-        ready = (
-            bool(data["tasks"]) and not missing and not undefined and data["status"] == "complete"
-        )
-        model_id = slug(metadata["name"]) + "-" + data["identity"][:8]
-        measurements = []
-        coverage = {
-            task: (
-                "evaluated"
-                if task in data["tasks"]
-                else data.get("skipped", {}).get(
-                    task, "not completed" if task in data["requested_tasks"] else "not requested"
-                )
-            )
-            for task in CATALOG
-        }
-        for task, row in data["tasks"].items():
-            metric = row["metric"]
-            item = {
-                "modelId": model_id,
-                "taskId": task,
-                "value": metric["value"],
-                "sourceValue": metric["value"],
-                "status": "submitted",
-                "interface": metadata.get("probability_interface")
-                if task == "prior"
-                else "fitted; frozen embeddings",
-                "sourceId": "bend2-submission",
-                "sourceRecordId": f"{model_id}/{task}",
-            }
-            if metric.get("ci95"):
-                item["uncertainty"] = {
-                    "level": 0.95,
-                    "low": metric["ci95"][0],
-                    "high": metric["ci95"][1],
-                    "type": "pointwise bootstrap interval",
-                }
-            measurements.append(item)
-        write_json(
-            self.submission,
-            {
-                "schema_version": 1,
-                "benchmark": "BEND 2.0",
-                "review_status": "unreviewed",
-                "ready_for_review": ready,
-                "missing_metadata": missing,
-                "undefined_tasks": undefined,
-                "run_identity": data["identity"],
-                "model": {
-                    "id": model_id,
-                    "label": metadata["name"],
-                    "shortLabel": metadata["name"],
-                    "kind": "submission",
-                    "interface": "sequence",
-                    "description": metadata["representation"],
-                    "declarations": metadata,
-                },
-                "measurements": measurements,
-                "coverage": coverage,
-                "skipped": data.get("skipped", {}),
-                "note": "Candidate rows for maintainer review. Integrity checks do not establish training provenance or absence of label leakage.",
-            },
-        )
-        return self
-
     def bundle(self):
         """Validate and zip the results, declarations and score evidence for review."""
-        self.write_submission()
-        data = self.data
-        files = {"result.json", "submission.json"}
+        data = self.validate()
+        files = {"result.json"}
         files.update(data.get("implementation_files", {}))
         if data.get("adapter_file"):
             files.add("model.py")

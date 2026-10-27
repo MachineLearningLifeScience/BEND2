@@ -10,13 +10,20 @@ import shlex
 import sys
 import time
 import traceback
+from importlib.resources import files
 from pathlib import Path
 
 from bend2 import __version__, evaluate
 from bend2.catalog import tasks
 from bend2.model import Model, composition, uniform
 from bend2.results import Run, slug
-from bend2.templates import TEMPLATES, write_template
+
+_TEMPLATES = {
+    "custom": ("custom.py", "atlas_profile", None),
+    "huggingface": ("huggingface.py", "atlas_profile", "huggingface"),
+    "dnabert2": ("dnabert2.py", "atlas_profile", "reference"),
+    "ntv3-prior": ("ntv3_prior.py", "prior", "reference"),
+}
 
 
 def load_model(spec):
@@ -121,7 +128,7 @@ def main(argv=None):
     init = commands.add_parser("init", help="Create a model adapter")
     init.add_argument("path", nargs="?", default="model.py")
     init.add_argument(
-        "--template", choices=TEMPLATES, default="custom", help="Adapter example to copy"
+        "--template", choices=_TEMPLATES, default="custom", help="Adapter example to copy"
     )
     run = commands.add_parser("run", help="Evaluate a model, print scores and save results")
     run.add_argument(
@@ -242,15 +249,21 @@ def main(argv=None):
                 print(f"{task['id']:24} {task['requires']:14} {task['inputs']}")
             return 0
         if command == "init":
-            path = write_template(args.path, args.template)
-            template = TEMPLATES[args.template]
-            print(f"Created {path}: {template['description']}")
-            if template["extra"]:
+            path = Path(args.path).expanduser()
+            if path.suffix != ".py":
+                raise ValueError("Choose a Python filename ending in .py, for example my_model.py")
+            filename, task, extra = _TEMPLATES[args.template]
+            source = files("bend2").joinpath("_examples", filename).read_bytes()
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("xb") as handle:
+                handle.write(source)
+            print(f"Created {path}")
+            if extra:
                 print(
-                    f'Runtime: pip install "bend2[{template["extra"]}] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"'
+                    f'Runtime: pip install "bend2[{extra}] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"'
                 )
-            print(f"Plan: bend2 plan {shlex.quote(str(path))} --tasks {template['tasks']}")
-            print(f"Run: bend2 run {shlex.quote(str(path))} --tasks {template['tasks']}")
+            print(f"Plan: bend2 plan {shlex.quote(str(path))} --tasks {task}")
+            print(f"Run: bend2 run {shlex.quote(str(path))} --tasks {task}")
             return 0
         if command == "plan":
             from bend2 import plan
@@ -275,14 +288,7 @@ def main(argv=None):
             _show(result)
             return 0
         if command == "export":
-            result = Run(args.directory)
-            print(result.bundle())
-            submission = json.loads(result.submission.read_text())
-            if not submission["ready_for_review"]:
-                print(
-                    "Bundle created for inspection; complete the run and declarations before submitting.",
-                    file=sys.stderr,
-                )
+            print(Run(args.directory).bundle())
             return 0
         if command == "submit":
             if args.github is not None:
@@ -378,7 +384,7 @@ def main(argv=None):
                 preview=args.preview,
             )
             count = sum(model.get("origin") == "community" for model in data["models"])
-            print(f"Built {args.output}: {count} community models; frozen paper rows retained")
+            print(f"Built {args.output}: {count} community models")
             return 0
         model = load_model(args.model)
         output = args.output or Path("results") / slug(model.name)

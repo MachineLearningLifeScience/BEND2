@@ -83,18 +83,7 @@ def record_digest(value):
 
 def _scorer():
     root = Path(__file__).parent
-    names = [
-        "reviews.py",
-        "submissions.py",
-        "datasets.py",
-        "readouts.py",
-        "_linear.py",
-        "catalog.py",
-        "assets.json",
-    ]
-    paths = [root / name for name in names]
-    paths += list((root / "_tasks").glob("*.py"))
-    paths += list((root / "_rescoring").glob("*.py"))
+    paths = [*root.rglob("*.py"), root / "assets.json"]
     return {
         "package_version": __version__,
         "libraries": {
@@ -232,7 +221,7 @@ def validate_review(source, submission):
                 )
             if audit["absolute_tolerance"] != REPRODUCTION_ATOL:
                 raise ValueError("Unexpected reproduction tolerance")
-            if audit["model_id"] != _model_id(data["model"]["identity"]):
+            if audit["model_id"] != data["model"]["id"]:
                 raise ValueError("Reproduction uses a different model or interface")
             _sha(audit["run_identity"], "reproduction run identity")
             _sha(audit["result_sha256"], "reproduction result")
@@ -305,7 +294,7 @@ def record_reproduction(
         raise ValueError(
             "Use original independent task runs for reproduction, not a combined bundle"
         )
-    if _model_id(result["identity_spec"]["model"]) != _model_id(data["model"]["identity"]):
+    if _model_id(result["identity_spec"]["model"]) != data["model"]["id"]:
         raise ValueError(
             "The rerun uses a different checkpoint, adapter or inference configuration"
         )
@@ -324,21 +313,6 @@ def record_reproduction(
     for task in selected:
         if task not in result["tasks"]:
             raise ValueError(f"Independent run has no completed {task} result")
-        _compare_metric(
-            data["tasks"][task]["metric"],
-            result["tasks"][task]["metric"],
-            task,
-            tolerance=REPRODUCTION_ATOL,
-        )
-        if task == "atlas_profile" and any(
-            abs(a - b) > REPRODUCTION_ATOL
-            for a, b in zip(
-                data["tasks"][task]["protocol"]["replicate_values"],
-                result["tasks"][task]["details"]["replicate_values"],
-                strict=True,
-            )
-        ):
-            raise ValueError("Independent Atlas replicate values differ from the submission")
     bundle = rerun.bundle()
     with tempfile.TemporaryDirectory(prefix="bend2-reproduction-") as directory:
         candidate = prepare_submission(

@@ -36,7 +36,7 @@ class _GitHub:
         if not self.executable:
             raise ValueError("Install GitHub CLI from https://cli.github.com and run gh auth login")
 
-    def command(self, arguments, *, payload=None, output=None):
+    def command(self, arguments, *, payload=None):
         environment = os.environ.copy()
         environment.pop("GH_DEBUG", None)
         environment["GH_PROMPT_DISABLED"] = "1"
@@ -45,7 +45,7 @@ class _GitHub:
             response = subprocess.run(
                 [self.executable, *arguments],
                 input=None if payload is None else json.dumps(payload).encode(),
-                stdout=output if output is not None else subprocess.PIPE,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 env=environment,
                 timeout=900,
@@ -86,39 +86,6 @@ class _GitHub:
                 return None
             raise
         return json.loads(raw) if raw else None
-
-
-def _verify_asset(github, repository, asset, expected, size):
-    if asset.get("state") != "uploaded" or asset.get("size") != size:
-        raise ValueError(
-            "The existing evidence asset is incomplete or has a different size; it was not replaced"
-        )
-    recorded = asset.get("digest")
-    if recorded:
-        if recorded != f"sha256:{expected}":
-            raise ValueError(
-                "The existing evidence asset has a different SHA256; it was not replaced"
-            )
-        return
-    # Older release assets may have no server-side digest. Compare their bytes.
-    with tempfile.TemporaryDirectory(prefix="bend2-evidence-") as directory:
-        downloaded = Path(directory) / "submission.zip"
-        with downloaded.open("wb") as output:
-            github.command(
-                [
-                    "api",
-                    "--hostname",
-                    "github.com",
-                    "--header",
-                    "Accept: application/octet-stream",
-                    f"repos/{repository}/releases/assets/{asset['id']}",
-                ],
-                output=output,
-            )
-        if digest(downloaded) != expected:
-            raise ValueError(
-                "The existing evidence download has a different SHA256; it was not replaced"
-            )
 
 
 def _host_evidence(github, repository, metadata, tag, archive, checksum):
@@ -163,7 +130,13 @@ def _host_evidence(github, repository, metadata, tag, archive, checksum):
         raise ValueError(
             "GitHub did not return exactly one submission.zip asset; rerun to inspect the upload"
         )
-    _verify_asset(github, repository, assets[0], checksum, archive.stat().st_size)
+    asset = assets[0]
+    if (
+        asset["state"] != "uploaded"
+        or asset["size"] != archive.stat().st_size
+        or asset["digest"] != f"sha256:{checksum}"
+    ):
+        raise ValueError("The evidence asset does not match the local bundle; it was not replaced")
 
 
 def _contributor_repository_candidate(github, login):
@@ -186,48 +159,36 @@ def _contributor_repository_candidate(github, login):
 
 
 def _create_fork(github, repository):
-    return github.api(
+    created = github.api(
         f"repos/{UPSTREAM}/forks",
         method="POST",
         payload={"name": repository.split("/")[1], "default_branch_only": False},
     )["full_name"]
-
-
-def _contributor_repository(github, login):
-    repository, existing = _contributor_repository_candidate(github, login)
-    if repository == UPSTREAM or existing is not None:
-        return repository
-    return _create_fork(github, repository)
-
-
-def _validate_evidence_repository(metadata):
-    if metadata.get("private") or metadata.get("visibility", "public") != "public":
+    if created.lower() != repository.lower():
         raise ValueError(
-            "Choose a public evidence repository; this command never changes repository visibility"
+            f"GitHub returned an existing fork at {created}. Rerun with --github {created}"
         )
-    if metadata.get("archived") or not metadata.get("permissions", {}).get("push"):
-        raise ValueError("You need write access to an active evidence repository")
-
-
-def _wait_for_evidence_fork(github, repository):
-    """Wait briefly for a newly created fork's metadata and commit objects."""
+    # Fork creation returns before its Git objects are ready.
     for attempt in range(6):
         try:
             metadata = github.api(f"repos/{repository}", optional=True)
-            if metadata is not None:
-                _validate_evidence_repository(metadata)
-                commit = github.api(
-                    f"repos/{repository}/commits/{quote(metadata['default_branch'], safe='')}",
-                    optional=True,
-                )
-                if commit is not None:
-                    return metadata
+            if metadata is not None and github.api(
+                f"repos/{repository}/git/ref/heads/{BASE}", optional=True
+            ) is not None:
+                return metadata
         except _GitHubError as error:
             if error.status not in {404, 409, 422}:
                 raise
         if attempt < 5:
             time.sleep(2)
     raise ValueError("Your BEND fork is still being created. Rerun the same command to continue")
+
+
+def _validate_evidence_repository(metadata):
+    if metadata.get("private") or metadata.get("visibility", "public") != "public":
+        raise ValueError("Choose a public evidence repository")
+    if metadata.get("archived") or not metadata.get("permissions", {}).get("push"):
+        raise ValueError("You need write access to an active evidence repository")
 
 
 def _content(github, repository, path, ref):
@@ -291,31 +252,6 @@ def _publish(
     archive = run.bundle()
     checksum = digest(archive)
     tag = f"bend2-{checksum}"
-    record_path = None
-    # Validate publication declarations as well as the bundle before contacting
-    # GitHub. The default destination needs the authenticated login, so its
-    # temporary candidate uses a placeholder URL that never reaches run files.
-    if evidence_repository is None:
-        with tempfile.TemporaryDirectory(prefix="bend2-submission-preflight-") as directory:
-            prepare_submission(
-                run,
-                f"https://github.com/bend2-submission-placeholder/releases/download/{tag}/submission.zip",
-                output=directory,
-                model_url=model_url,
-                adapter_url=adapter_url,
-                family=family,
-                parameter_label=parameter_label,
-            )
-    else:
-        # Retain local validation before authentication for explicit hosting too.
-        record_path = prepare_submission(
-            run,
-            f"https://github.com/{evidence_repository}/releases/download/{tag}/submission.zip",
-            model_url=model_url,
-            adapter_url=adapter_url,
-            family=family,
-            parameter_label=parameter_label,
-        )
     github = _GitHub()
     login = github.api("user")["login"]
     repository = None
@@ -341,15 +277,14 @@ def _publish(
     evidence_url = (
         f"https://github.com/{evidence_repository}/releases/download/{tag}/submission.zip"
     )
-    if record_path is None:
-        record_path = prepare_submission(
-            run,
-            evidence_url,
-            model_url=model_url,
-            adapter_url=adapter_url,
-            family=family,
-            parameter_label=parameter_label,
-        )
+    record_path = prepare_submission(
+        run,
+        evidence_url,
+        model_url=model_url,
+        adapter_url=adapter_url,
+        family=family,
+        parameter_label=parameter_label,
+    )
     payload = record_path.read_bytes()
     record = json.loads(payload)
     branch = f"bend2/submission-{hashlib.sha256(payload).hexdigest()[:24]}"
@@ -374,18 +309,16 @@ def _publish(
         return state
     if evidence is None:
         notify(f"Creating the BEND contribution fork {repository}")
-        created = _create_fork(github, repository)
-        if created.lower() != repository.lower():
-            raise ValueError(
-                f"GitHub returned an existing fork at {created}. "
-                f"Rerun with --github {created} to use it for evidence"
-            )
-        evidence = _wait_for_evidence_fork(github, repository)
+        evidence = _create_fork(github, repository)
+        _validate_evidence_repository(evidence)
     notify(f"Uploading or verifying evidence in {evidence_repository}")
     _host_evidence(github, evidence_repository, evidence, tag, archive, checksum)
     state["status"] = "evidence_uploaded"
     write_json(journal, state)
-    repository = repository or _contributor_repository(github, login)
+    if repository is None:
+        repository, existing = _contributor_repository_candidate(github, login)
+        if repository != UPSTREAM and existing is None:
+            _create_fork(github, repository)
     state["repository"] = repository
     notify(f"Preparing the submission in {repository}")
     reference = f"repos/{repository}/git/ref/heads/{branch}"
@@ -396,21 +329,11 @@ def _publish(
         if any(item["filename"] != path for item in previous.get("files", [])):
             raise ValueError(f"{branch} contains unrelated changes; it was not modified")
     else:
-        # Fork creation is asynchronous; wait briefly for its object store.
-        for attempt in range(6):
-            try:
-                github.api(
-                    f"repos/{repository}/git/refs",
-                    method="POST",
-                    payload={"ref": f"refs/heads/{branch}", "sha": base},
-                )
-                break
-            except _GitHubError as error:
-                if github.api(reference, optional=True) is not None:
-                    break
-                if error.status not in {404, 409, 422} or attempt == 5:
-                    raise
-                time.sleep(2)
+        github.api(
+            f"repos/{repository}/git/refs",
+            method="POST",
+            payload={"ref": f"refs/heads/{branch}", "sha": base},
+        )
     existing = _content(github, repository, path, branch)
     if not _same_content(existing, payload):
         # Detect manual edits to a branch created by an earlier submission attempt.

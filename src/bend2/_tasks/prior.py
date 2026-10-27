@@ -58,7 +58,6 @@ def run(data, embeddings=None, probabilities=None, *, shared=None):
         predictions[[f"p_{base}" for base in "ACGT"]] = values
     predictions[["recovery_bits", "recovery_accuracy"]] = scores
     return TaskResult(
-        "prior",
         {
             "name": "recovery_bits",
             "value": float(scores[:, 0].mean()),

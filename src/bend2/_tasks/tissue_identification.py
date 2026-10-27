@@ -140,7 +140,6 @@ def summarize(targets, test, prediction, losses):
     queries.insert(0, "predicted_tissue", tissues)
     queries["top1_credit"] = credit
     return TaskResult(
-        "tissue_identification",
         {
             "name": "retrieval_top1",
             "value": float(100 * point) if np.isfinite(point) else None,

@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
-from collections.abc import Mapping
 
 import numpy as np
 
@@ -40,7 +39,7 @@ def validate(value, rows, width=None):
     return value
 
 
-class Embeddings(Mapping):
+class Embeddings:
     """SQLite commits each batch; only sequence hashes and vectors are retained."""
 
     def __init__(self, path):
@@ -53,12 +52,6 @@ class Embeddings(Mapping):
         row = self.db.execute("SELECT length(value) FROM vectors LIMIT 1").fetchone()
         self.width = row[0] // 4 if row else None
 
-    def __len__(self):
-        return self.db.execute("SELECT count(*) FROM vectors").fetchone()[0]
-
-    def __iter__(self):
-        raise TypeError("Look up embeddings by DNA sequence; raw DNA is not retained in the cache")
-
     def __getitem__(self, sequence):
         row = self.db.execute(
             "SELECT value,digest FROM vectors WHERE key=?", (key(sequence),)
@@ -68,10 +61,7 @@ class Embeddings(Mapping):
         value, digest = row
         if hashlib.sha256(value).digest() != digest:
             raise ValueError("Embedding cache checksum mismatch; remove this model cache and rerun")
-        result = np.frombuffer(value, dtype="<f4")
-        if len(result) != self.width or not np.isfinite(result).all():
-            raise ValueError("Invalid cached embedding dimension or values")
-        return result
+        return np.frombuffer(value, dtype="<f4")
 
     def fill(self, sequences, embed, batch_size, progress):
         batch, pending = [], set()
