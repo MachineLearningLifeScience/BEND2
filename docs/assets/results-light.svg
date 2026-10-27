@@ -1,0 +1,350 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="804" viewBox="0 0 1200 804" role="img" aria-labelledby="title desc">
+<title id="title">BEND 2.0 benchmark results</title>
+<desc id="desc">13 model and readout configurations, ordered by the website's combined score, with all 8 task measurements and a separate experimental reference. Daggers mark incomplete coverage. A text version follows the figure in the README.</desc>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;fill:#283b36;font-variant-numeric:tabular-nums}.muted{fill:#61736c}.name{font-size:18px;font-weight:500}.value{font-size:18px}.label{font-size:16px}.small{font-size:14px}</style>
+<rect width="1200" height="804" fill="#ffffff"/>
+<path d="M0 1H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="32" y="83" class="label muted" text-anchor="start">Model / readout</text>
+<text x="274" y="26" class="small muted" text-anchor="middle">Overall</text>
+<text x="274" y="57" class="label" text-anchor="middle">Combined</text>
+<text x="274" y="77" class="label" text-anchor="middle">score ↑</text>
+<path d="M323 1H427" stroke="#9C7524" stroke-width="2"/>
+<text x="375" y="26" class="small" text-anchor="middle" style="fill:#9C7524">Prior</text>
+<path d="M433 1H537" stroke="#2463A6" stroke-width="2"/>
+<text x="485" y="26" class="small" text-anchor="middle" style="fill:#2463A6">Function</text>
+<path d="M543 1H757" stroke="#19836E" stroke-width="2"/>
+<text x="650" y="26" class="small" text-anchor="middle" style="fill:#19836E">Context</text>
+<path d="M763 1H867" stroke="#7956A5" stroke-width="2"/>
+<text x="815" y="26" class="small" text-anchor="middle" style="fill:#7956A5">Interactions</text>
+<path d="M873 1H1197" stroke="#BE4D35" stroke-width="2"/>
+<text x="1035" y="26" class="small" text-anchor="middle" style="fill:#BE4D35">Design</text>
+<text x="375" y="55" class="label" text-anchor="middle">Hidden-base</text>
+<text x="375" y="75" class="label" text-anchor="middle">loss</text>
+<text x="375" y="96" class="small muted" text-anchor="middle">bits ↓</text>
+<text x="485" y="55" class="label" text-anchor="middle">Splicing</text>
+<text x="485" y="75" class="label" text-anchor="middle">effects</text>
+<text x="485" y="96" class="small muted" text-anchor="middle">Spearman ↑</text>
+<text x="595" y="55" class="label" text-anchor="middle">Cell</text>
+<text x="595" y="75" class="label" text-anchor="middle">contrast</text>
+<text x="595" y="96" class="small muted" text-anchor="middle">Spearman ↑</text>
+<text x="705" y="55" class="label" text-anchor="middle">Tissue</text>
+<text x="705" y="75" class="label" text-anchor="middle">identification</text>
+<text x="705" y="96" class="small muted" text-anchor="middle">top-1 % ↑</text>
+<text x="815" y="55" class="label" text-anchor="middle">Background</text>
+<text x="815" y="75" class="label" text-anchor="middle">interaction</text>
+<text x="815" y="96" class="small muted" text-anchor="middle">Spearman ↑</text>
+<text x="925" y="55" class="label" text-anchor="middle">Single-edit</text>
+<text x="925" y="75" class="label" text-anchor="middle">rank</text>
+<text x="925" y="96" class="small muted" text-anchor="middle">percentile ↓</text>
+<text x="1035" y="55" class="label" text-anchor="middle">Cell</text>
+<text x="1035" y="75" class="label" text-anchor="middle">selectivity</text>
+<text x="1035" y="96" class="small muted" text-anchor="middle">log₂ utility ↑</text>
+<text x="1145" y="55" class="label" text-anchor="middle">Multi-cell</text>
+<text x="1145" y="75" class="label" text-anchor="middle">gain</text>
+<text x="1145" y="96" class="small muted" text-anchor="middle">log₂ gain ↑</text>
+<path d="M0 108H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="137" class="small muted" text-anchor="middle">1</text>
+<text x="32" y="129" class="name" text-anchor="start">AlphaGenome</text>
+<text x="32" y="147" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="136" class="value" text-anchor="middle">136.0</text>
+<text x="303.5" y="128" class="small muted" text-anchor="start">†</text>
+<path d="M241 146H307" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="138" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="113" width="104" height="38" fill="#2463A6" opacity="0.1850"/>
+<text x="485" y="138" class="value" text-anchor="middle">0.650</text>
+<rect x="543" y="113" width="104" height="38" fill="#19836E" opacity="0.1850"/>
+<text x="595" y="138" class="value" text-anchor="middle">0.402</text>
+<rect x="653" y="113" width="104" height="38" fill="#19836E" opacity="0.1703"/>
+<text x="705" y="138" class="value" text-anchor="middle">64.7</text>
+<rect x="763" y="113" width="104" height="38" fill="#7956A5" opacity="0.1850"/>
+<text x="815" y="138" class="value" text-anchor="middle">0.269</text>
+<rect x="873" y="113" width="104" height="38" fill="#BE4D35" opacity="0.1715"/>
+<text x="925" y="138" class="value" text-anchor="middle">25.7</text>
+<rect x="983" y="113" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="1035" y="138" class="value" text-anchor="middle">0.515</text>
+<rect x="1093" y="113" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="1145" y="138" class="value" text-anchor="middle">0.833</text>
+<path d="M0 156H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="185" class="small muted" text-anchor="middle">2</text>
+<text x="32" y="177" class="name" text-anchor="start">AlphaGenome</text>
+<text x="32" y="195" class="small muted" text-anchor="start">Native outputs</text>
+<text x="274" y="184" class="value" text-anchor="middle">129.1</text>
+<text x="303.5" y="176" class="small muted" text-anchor="start">†</text>
+<path d="M241 194H303.66761966501696" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="186" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="161" width="104" height="38" fill="#2463A6" opacity="0.1737"/>
+<text x="485" y="186" class="value" text-anchor="middle">0.621</text>
+<rect x="543" y="161" width="104" height="38" fill="#19836E" opacity="0.1825"/>
+<text x="595" y="186" class="value" text-anchor="middle">0.398</text>
+<rect x="653" y="161" width="104" height="38" fill="#19836E" opacity="0.1850"/>
+<text x="705" y="186" class="value" text-anchor="middle">68.6</text>
+<rect x="763" y="161" width="104" height="38" fill="#7956A5" opacity="0.1765"/>
+<text x="815" y="186" class="value" text-anchor="middle">0.260</text>
+<rect x="873" y="161" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="925" y="186" class="value" text-anchor="middle">24.3</text>
+<rect x="983" y="161" width="104" height="38" fill="#BE4D35" opacity="0.1480"/>
+<text x="1035" y="186" class="value" text-anchor="middle">0.384</text>
+<rect x="1093" y="161" width="104" height="38" fill="#BE4D35" opacity="0.1628"/>
+<text x="1145" y="186" class="value" text-anchor="middle">0.707</text>
+<path d="M0 204H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="233" class="small muted" text-anchor="middle">3</text>
+<text x="32" y="225" class="name" text-anchor="start">NTv3 650M post</text>
+<text x="32" y="243" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="232" class="value" text-anchor="middle">100.0</text>
+<path d="M241 242H289.5372616101251" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="209" width="104" height="38" fill="#9C7524" opacity="0.1850"/>
+<text x="375" y="234" class="value" text-anchor="middle">1.375</text>
+<rect x="433" y="209" width="104" height="38" fill="#2463A6" opacity="0.1525"/>
+<text x="485" y="234" class="value" text-anchor="middle">0.564</text>
+<rect x="543" y="209" width="104" height="38" fill="#19836E" opacity="0.1027"/>
+<text x="595" y="234" class="value" text-anchor="middle">0.256</text>
+<rect x="653" y="209" width="104" height="38" fill="#19836E" opacity="0.1425"/>
+<text x="705" y="234" class="value" text-anchor="middle">56.9</text>
+<rect x="763" y="209" width="104" height="38" fill="#7956A5" opacity="0.1144"/>
+<text x="815" y="234" class="value" text-anchor="middle">0.187</text>
+<rect x="873" y="209" width="104" height="38" fill="#BE4D35" opacity="0.1329"/>
+<text x="925" y="234" class="value" text-anchor="middle">30.0</text>
+<rect x="983" y="209" width="104" height="38" fill="#BE4D35" opacity="0.1231"/>
+<text x="1035" y="234" class="value" text-anchor="middle">0.287</text>
+<rect x="1093" y="209" width="104" height="38" fill="#BE4D35" opacity="0.1398"/>
+<text x="1145" y="234" class="value" text-anchor="middle">0.568</text>
+<path d="M0 252H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="281" class="small muted" text-anchor="middle">4</text>
+<text x="32" y="273" class="name" text-anchor="start">Enformer</text>
+<text x="32" y="291" class="small muted" text-anchor="start">Native outputs</text>
+<text x="274" y="280" class="value" text-anchor="middle">94.8</text>
+<text x="298.4" y="272" class="small muted" text-anchor="start">†</text>
+<path d="M241 290H286.99019008246927" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="282" class="value muted" text-anchor="middle">—</text>
+<text x="485" y="282" class="value muted" text-anchor="middle">—</text>
+<rect x="543" y="257" width="104" height="38" fill="#19836E" opacity="0.1157"/>
+<text x="595" y="282" class="value" text-anchor="middle">0.282</text>
+<rect x="653" y="257" width="104" height="38" fill="#19836E" opacity="0.0683"/>
+<text x="705" y="282" class="value" text-anchor="middle">31.4</text>
+<rect x="763" y="257" width="104" height="38" fill="#7956A5" opacity="0.1099"/>
+<text x="815" y="282" class="value" text-anchor="middle">0.181</text>
+<rect x="873" y="257" width="104" height="38" fill="#BE4D35" opacity="0.1205"/>
+<text x="925" y="282" class="value" text-anchor="middle">31.5</text>
+<rect x="983" y="257" width="104" height="38" fill="#BE4D35" opacity="0.1238"/>
+<text x="1035" y="282" class="value" text-anchor="middle">0.290</text>
+<rect x="1093" y="257" width="104" height="38" fill="#BE4D35" opacity="0.1616"/>
+<text x="1145" y="282" class="value" text-anchor="middle">0.700</text>
+<path d="M0 300H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="329" class="small muted" text-anchor="middle">5</text>
+<text x="32" y="321" class="name" text-anchor="start">NTv3 650M post</text>
+<text x="32" y="339" class="small muted" text-anchor="start">Native outputs</text>
+<text x="274" y="328" class="value" text-anchor="middle">87.6</text>
+<text x="298.4" y="320" class="small muted" text-anchor="start">†</text>
+<path d="M241 338H283.5198079318411" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="330" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="305" width="104" height="38" fill="#2463A6" opacity="0.1173"/>
+<text x="485" y="330" class="value" text-anchor="middle">0.461</text>
+<rect x="543" y="305" width="104" height="38" fill="#19836E" opacity="0.0946"/>
+<text x="595" y="330" class="value" text-anchor="middle">0.239</text>
+<rect x="653" y="305" width="104" height="38" fill="#19836E" opacity="0.1048"/>
+<text x="705" y="330" class="value" text-anchor="middle">45.1</text>
+<rect x="763" y="305" width="104" height="38" fill="#7956A5" opacity="0.1018"/>
+<text x="815" y="330" class="value" text-anchor="middle">0.170</text>
+<rect x="873" y="305" width="104" height="38" fill="#BE4D35" opacity="0.1389"/>
+<text x="925" y="330" class="value" text-anchor="middle">29.3</text>
+<rect x="983" y="305" width="104" height="38" fill="#BE4D35" opacity="0.1141"/>
+<text x="1035" y="330" class="value" text-anchor="middle">0.250</text>
+<rect x="1093" y="305" width="104" height="38" fill="#BE4D35" opacity="0.1264"/>
+<text x="1145" y="330" class="value" text-anchor="middle">0.482</text>
+<path d="M0 348H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="377" class="small muted" text-anchor="middle">6</text>
+<text x="32" y="369" class="name" text-anchor="start">NTv3 100M post</text>
+<text x="32" y="387" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="376" class="value" text-anchor="middle">80.4</text>
+<path d="M241 386H280.01261940650954" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="353" width="104" height="38" fill="#9C7524" opacity="0.1380"/>
+<text x="375" y="378" class="value" text-anchor="middle">1.492</text>
+<rect x="433" y="353" width="104" height="38" fill="#2463A6" opacity="0.1308"/>
+<text x="485" y="378" class="value" text-anchor="middle">0.502</text>
+<rect x="543" y="353" width="104" height="38" fill="#19836E" opacity="0.0970"/>
+<text x="595" y="378" class="value" text-anchor="middle">0.244</text>
+<rect x="653" y="353" width="104" height="38" fill="#19836E" opacity="0.1230"/>
+<text x="705" y="378" class="value" text-anchor="middle">51.0</text>
+<rect x="763" y="353" width="104" height="38" fill="#7956A5" opacity="0.0806"/>
+<text x="815" y="378" class="value" text-anchor="middle">0.139</text>
+<rect x="873" y="353" width="104" height="38" fill="#BE4D35" opacity="0.1303"/>
+<text x="925" y="378" class="value" text-anchor="middle">30.3</text>
+<rect x="983" y="353" width="104" height="38" fill="#BE4D35" opacity="0.1050"/>
+<text x="1035" y="378" class="value" text-anchor="middle">0.211</text>
+<rect x="1093" y="353" width="104" height="38" fill="#BE4D35" opacity="0.0799"/>
+<text x="1145" y="378" class="value" text-anchor="middle">0.144</text>
+<path d="M0 396H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="425" class="small muted" text-anchor="middle">7</text>
+<text x="32" y="417" class="name" text-anchor="start">NTv3 100M post</text>
+<text x="32" y="435" class="small muted" text-anchor="start">Native outputs</text>
+<text x="274" y="424" class="value" text-anchor="middle">61.8</text>
+<text x="298.4" y="416" class="small muted" text-anchor="start">†</text>
+<path d="M241 434H271.0177296040008" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="426" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="401" width="104" height="38" fill="#2463A6" opacity="0.0434"/>
+<text x="485" y="426" class="value" text-anchor="middle">0.168</text>
+<rect x="543" y="401" width="104" height="38" fill="#19836E" opacity="0.0786"/>
+<text x="595" y="426" class="value" text-anchor="middle">0.203</text>
+<rect x="653" y="401" width="104" height="38" fill="#19836E" opacity="0.0595"/>
+<text x="705" y="426" class="value" text-anchor="middle">27.5</text>
+<rect x="763" y="401" width="104" height="38" fill="#7956A5" opacity="0.0892"/>
+<text x="815" y="426" class="value" text-anchor="middle">0.152</text>
+<rect x="873" y="401" width="104" height="38" fill="#BE4D35" opacity="0.1165"/>
+<text x="925" y="426" class="value" text-anchor="middle">32.0</text>
+<rect x="983" y="401" width="104" height="38" fill="#BE4D35" opacity="0.1025"/>
+<text x="1035" y="426" class="value" text-anchor="middle">0.200</text>
+<rect x="1093" y="401" width="104" height="38" fill="#BE4D35" opacity="0.1061"/>
+<text x="1145" y="426" class="value" text-anchor="middle">0.344</text>
+<path d="M0 444H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="473" class="small muted" text-anchor="middle">8</text>
+<text x="32" y="465" class="name" text-anchor="start">Evo2 20B</text>
+<text x="32" y="483" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="472" class="value" text-anchor="middle">38.4</text>
+<text x="298.4" y="464" class="small muted" text-anchor="start">†</text>
+<path d="M241 482H259.63594523491196" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="449" width="104" height="38" fill="#9C7524" opacity="0.1795"/>
+<text x="375" y="474" class="value" text-anchor="middle">1.388</text>
+<rect x="433" y="449" width="104" height="38" fill="#2463A6" opacity="0.0891"/>
+<text x="485" y="474" class="value" text-anchor="middle">0.367</text>
+<rect x="543" y="449" width="104" height="38" fill="#19836E" opacity="0.0291"/>
+<text x="595" y="474" class="value" text-anchor="middle">0.041</text>
+<text x="705" y="474" class="value muted" text-anchor="middle">—</text>
+<rect x="763" y="449" width="104" height="38" fill="#7956A5" opacity="0.0358"/>
+<text x="815" y="474" class="value" text-anchor="middle">0.050</text>
+<rect x="873" y="449" width="104" height="38" fill="#BE4D35" opacity="0.0440"/>
+<text x="925" y="474" class="value" text-anchor="middle">43.5</text>
+<rect x="983" y="449" width="104" height="38" fill="#BE4D35" opacity="0.0250"/>
+<text x="1035" y="474" class="value" text-anchor="middle">-0.350</text>
+<rect x="1093" y="449" width="104" height="38" fill="#BE4D35" opacity="0.0967"/>
+<text x="1145" y="474" class="value" text-anchor="middle">0.275</text>
+<path d="M0 492H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="521" class="small muted" text-anchor="middle">9</text>
+<text x="32" y="513" class="name" text-anchor="start">NTv3 100M pre</text>
+<text x="32" y="531" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="520" class="value" text-anchor="middle">32.1</text>
+<path d="M241 530H256.59914845124604" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="497" width="104" height="38" fill="#9C7524" opacity="0.1216"/>
+<text x="375" y="522" class="value" text-anchor="middle">1.537</text>
+<rect x="433" y="497" width="104" height="38" fill="#2463A6" opacity="0.0842"/>
+<text x="485" y="522" class="value" text-anchor="middle">0.349</text>
+<rect x="543" y="497" width="104" height="38" fill="#19836E" opacity="0.0361"/>
+<text x="595" y="522" class="value" text-anchor="middle">0.076</text>
+<rect x="653" y="497" width="104" height="38" fill="#19836E" opacity="0.0283"/>
+<text x="705" y="522" class="value" text-anchor="middle">7.8</text>
+<rect x="763" y="497" width="104" height="38" fill="#7956A5" opacity="0.0258"/>
+<text x="815" y="522" class="value" text-anchor="middle">0.010</text>
+<rect x="873" y="497" width="104" height="38" fill="#BE4D35" opacity="0.0303"/>
+<text x="925" y="522" class="value" text-anchor="middle">47.3</text>
+<rect x="983" y="497" width="104" height="38" fill="#BE4D35" opacity="0.0340"/>
+<text x="1035" y="522" class="value" text-anchor="middle">-0.207</text>
+<rect x="1093" y="497" width="104" height="38" fill="#BE4D35" opacity="0.1054"/>
+<text x="1145" y="522" class="value" text-anchor="middle">0.339</text>
+<path d="M0 540H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="569" class="small muted" text-anchor="middle">10</text>
+<text x="32" y="561" class="name" text-anchor="start">GENERATORv2</text>
+<text x="32" y="579" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="568" class="value" text-anchor="middle">31.5</text>
+<path d="M241 578H256.2655949475251" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="545" width="104" height="38" fill="#9C7524" opacity="0.0679"/>
+<text x="375" y="570" class="value" text-anchor="middle">1.711</text>
+<rect x="433" y="545" width="104" height="38" fill="#2463A6" opacity="0.0951"/>
+<text x="485" y="570" class="value" text-anchor="middle">0.388</text>
+<rect x="543" y="545" width="104" height="38" fill="#19836E" opacity="0.0339"/>
+<text x="595" y="570" class="value" text-anchor="middle">0.066</text>
+<rect x="653" y="545" width="104" height="38" fill="#19836E" opacity="0.0407"/>
+<text x="705" y="570" class="value" text-anchor="middle">17.6</text>
+<rect x="763" y="545" width="104" height="38" fill="#7956A5" opacity="0.0345"/>
+<text x="815" y="570" class="value" text-anchor="middle">0.046</text>
+<rect x="873" y="545" width="104" height="38" fill="#BE4D35" opacity="0.0390"/>
+<text x="925" y="570" class="value" text-anchor="middle">44.7</text>
+<rect x="983" y="545" width="104" height="38" fill="#BE4D35" opacity="0.0296"/>
+<text x="1035" y="570" class="value" text-anchor="middle">-0.256</text>
+<rect x="1093" y="545" width="104" height="38" fill="#BE4D35" opacity="0.0913"/>
+<text x="1145" y="570" class="value" text-anchor="middle">0.234</text>
+<path d="M0 588H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="617" class="small muted" text-anchor="middle">11</text>
+<text x="32" y="609" class="name" text-anchor="start">NTv3 650M pre</text>
+<text x="32" y="627" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="616" class="value" text-anchor="middle">29.4</text>
+<path d="M241 626H255.27587622433106" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="593" width="104" height="38" fill="#9C7524" opacity="0.1554"/>
+<text x="375" y="618" class="value" text-anchor="middle">1.447</text>
+<rect x="433" y="593" width="104" height="38" fill="#2463A6" opacity="0.0468"/>
+<text x="485" y="618" class="value" text-anchor="middle">0.187</text>
+<rect x="543" y="593" width="104" height="38" fill="#19836E" opacity="0.0254"/>
+<text x="595" y="618" class="value" text-anchor="middle">0.010</text>
+<rect x="653" y="593" width="104" height="38" fill="#19836E" opacity="0.0283"/>
+<text x="705" y="618" class="value" text-anchor="middle">7.8</text>
+<rect x="763" y="593" width="104" height="38" fill="#7956A5" opacity="0.0257"/>
+<text x="815" y="618" class="value" text-anchor="middle">0.009</text>
+<rect x="873" y="593" width="104" height="38" fill="#BE4D35" opacity="0.0250"/>
+<text x="925" y="618" class="value" text-anchor="middle">50.4</text>
+<rect x="983" y="593" width="104" height="38" fill="#BE4D35" opacity="0.0527"/>
+<text x="1035" y="618" class="value" text-anchor="middle">-0.061</text>
+<rect x="1093" y="593" width="104" height="38" fill="#BE4D35" opacity="0.1095"/>
+<text x="1145" y="618" class="value" text-anchor="middle">0.368</text>
+<path d="M0 636H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="665" class="small muted" text-anchor="middle">12</text>
+<text x="32" y="657" class="name" text-anchor="start">DNABERT-2</text>
+<text x="32" y="675" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="664" class="value" text-anchor="middle">11.3</text>
+<text x="298.4" y="656" class="small muted" text-anchor="start">†</text>
+<path d="M241 674H246.4800917636184" stroke="#61736c" stroke-width="1.5"/>
+<text x="375" y="666" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="641" width="104" height="38" fill="#2463A6" opacity="0.0489"/>
+<text x="485" y="666" class="value" text-anchor="middle">0.198</text>
+<rect x="543" y="641" width="104" height="38" fill="#19836E" opacity="0.0361"/>
+<text x="595" y="666" class="value" text-anchor="middle">0.076</text>
+<rect x="653" y="641" width="104" height="38" fill="#19836E" opacity="0.0267"/>
+<text x="705" y="666" class="value" text-anchor="middle">5.9</text>
+<rect x="763" y="641" width="104" height="38" fill="#7956A5" opacity="0.0275"/>
+<text x="815" y="666" class="value" text-anchor="middle">0.020</text>
+<rect x="873" y="641" width="104" height="38" fill="#BE4D35" opacity="0.0272"/>
+<text x="925" y="666" class="value" text-anchor="middle">48.6</text>
+<rect x="983" y="641" width="104" height="38" fill="#BE4D35" opacity="0.0266"/>
+<text x="1035" y="666" class="value" text-anchor="middle">-0.302</text>
+<rect x="1093" y="641" width="104" height="38" fill="#BE4D35" opacity="0.0911"/>
+<text x="1145" y="666" class="value" text-anchor="middle">0.233</text>
+<path d="M0 684H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="15" y="713" class="small muted" text-anchor="middle">13</text>
+<text x="32" y="705" class="name" text-anchor="start">CENO 1B</text>
+<text x="32" y="723" class="small muted" text-anchor="start">Fitted readouts</text>
+<text x="274" y="712" class="value" text-anchor="middle">5.3</text>
+<text x="293.3" y="704" class="small muted" text-anchor="start">†</text>
+<path d="M241 722H243.58074626221247" stroke="#61736c" stroke-width="1.5"/>
+<rect x="323" y="689" width="104" height="38" fill="#9C7524" opacity="0.1174"/>
+<text x="375" y="714" class="value" text-anchor="middle">1.549</text>
+<text x="485" y="714" class="value muted" text-anchor="middle">—</text>
+<rect x="543" y="689" width="104" height="38" fill="#19836E" opacity="0.0284"/>
+<text x="595" y="714" class="value" text-anchor="middle">0.036</text>
+<rect x="653" y="689" width="104" height="38" fill="#19836E" opacity="0.0302"/>
+<text x="705" y="714" class="value" text-anchor="middle">9.8</text>
+<rect x="763" y="689" width="104" height="38" fill="#7956A5" opacity="0.0258"/>
+<text x="815" y="714" class="value" text-anchor="middle">0.010</text>
+<rect x="873" y="689" width="104" height="38" fill="#BE4D35" opacity="0.0267"/>
+<text x="925" y="714" class="value" text-anchor="middle">48.9</text>
+<rect x="983" y="689" width="104" height="38" fill="#BE4D35" opacity="0.0258"/>
+<text x="1035" y="714" class="value" text-anchor="middle">-0.318</text>
+<rect x="1093" y="689" width="104" height="38" fill="#BE4D35" opacity="0.0250"/>
+<text x="1145" y="714" class="value" text-anchor="middle">-0.581</text>
+<path d="M0 732H1200" stroke="#d8dfda" stroke-width="1"/>
+<path d="M0 748H1200" stroke="#d8dfda" stroke-width="1"/>
+<text x="32" y="777" class="label" text-anchor="start">Experimental reference</text>
+<text x="274" y="778" class="value muted" text-anchor="middle">—</text>
+<text x="375" y="778" class="value muted" text-anchor="middle">—</text>
+<rect x="433" y="753" width="104" height="38" fill="#2463A6" opacity="0.1850"/>
+<text x="485" y="778" class="value" text-anchor="middle">0.809</text>
+<rect x="543" y="753" width="104" height="38" fill="#19836E" opacity="0.1850"/>
+<text x="595" y="778" class="value" text-anchor="middle">0.594</text>
+<rect x="653" y="753" width="104" height="38" fill="#19836E" opacity="0.1850"/>
+<text x="705" y="778" class="value" text-anchor="middle">99.0</text>
+<rect x="763" y="753" width="104" height="38" fill="#7956A5" opacity="0.1850"/>
+<text x="815" y="778" class="value" text-anchor="middle">0.421</text>
+<rect x="873" y="753" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="925" y="778" class="value" text-anchor="middle">11.8</text>
+<rect x="983" y="753" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="1035" y="778" class="value" text-anchor="middle">0.962</text>
+<rect x="1093" y="753" width="104" height="38" fill="#BE4D35" opacity="0.1850"/>
+<text x="1145" y="778" class="value" text-anchor="middle">1.602</text>
+<path d="M0 796H1200" stroke="#d8dfda" stroke-width="1"/>
+</svg>

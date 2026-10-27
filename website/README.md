@@ -35,6 +35,17 @@ The generated `data/benchmark.json` combines these inputs; always rebuild from
 For PR previews, set `BEND2_PREVIEW_SUBMISSIONS=1`; all community results are
 then labelled **Awaiting review**, including those with proposed receipts.
 
+## README results
+
+After rebuilding the reviewed leaderboard data, refresh the README table with:
+
+```bash
+node website/scripts/readme-results.mjs
+```
+
+Run this from the repository root. It updates the light and dark figures and
+the text table from the same measurements and scoring code used by the website.
+
 ## Publication and review
 
 Deploy from the publication branch after the
