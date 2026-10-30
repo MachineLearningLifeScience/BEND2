@@ -1,7 +1,12 @@
 # Data, downloads, and attribution
 
-BEND 2.0 includes the smaller datasets and downloads larger source files when
-needed. Your adapter loads or downloads model weights.
+BEND 2.0 includes the smaller datasets and downloads larger files from the
+[BEND 2.0 release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)
+when needed. Downloads use the fixed data revision
+`0c1dda471ad13c6126c2cd00cb3fa34852e70673`, with the original filenames, sizes
+and checksums. The mirror contains unchanged source files; the original hosts
+are retained in the manifest for attribution and are not needed for downloads.
+Your adapter loads or downloads model weights separately.
 
 ## Cache and offline use
 
@@ -13,14 +18,31 @@ are saved separately in the result directory.
 For a machine without internet access, predownload the following files into one
 directory and set `BEND2_ASSET_DIR` to that directory:
 
-| Local filename | Upstream source |
+| Local filename | Frozen download |
 |---|---|
-| `opensplice.tsv.gz` | [OpenSplice version 5 experimental master table](https://ndownloader.figshare.com/files/64886694) |
-| `siraj.zip` | [Siraj saturation-mutagenesis archive](https://zenodo.org/api/records/15297965/files/data_satmut.zip/content) |
-| `hg38.2bit` | [UCSC hg38 reference genome](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit) |
+| `opensplice.tsv.gz` | [OpenSplice version 5 experimental master table](https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/opensplice.tsv.gz) |
+| `siraj.zip` | [Siraj saturation-mutagenesis archive](https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/siraj.zip) |
+| `hg38.2bit` | [UCSC hg38 reference genome](https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/hg38.2bit) |
 
 Only the files needed by your tasks are required. Offline files are verified
 like downloads. You can also populate a cache on one machine and copy it to another.
+
+With the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/guides/cli),
+you can fetch all three files in one command:
+
+```bash
+hf download yhsure/BEND2 data/opensplice.tsv.gz data/siraj.zip data/hg38.2bit \
+  --repo-type dataset --revision 0c1dda471ad13c6126c2cd00cb3fa34852e70673 \
+  --local-dir bend2-data
+export BEND2_ASSET_DIR="$PWD/bend2-data/data"
+```
+
+Omit filenames for tasks you will not run. `BEND2_ASSET_DIR` points directly to
+the directory containing those files; it does not replace the small datasets
+bundled with the package. A missing file is downloaded when its task runs.
+
+Changing the download host does not change the benchmark data or invalidate
+existing verified caches and compatible runs.
 
 For wide embeddings, readout fitting needs temporary disk space under
 `<cache>/readouts/`: roughly `4 × number_of_records × embedding_width` bytes,

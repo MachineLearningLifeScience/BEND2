@@ -54,6 +54,11 @@ python -m pip install "bend2 @ git+https://github.com/yhsure/genomic-bending.git
 The repository currently requires GitHub access; the package is not yet on PyPI.
 Install your model's framework and weights separately.
 
+Small datasets are included with the package. Larger files download from the
+[BEND 2.0 data release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)
+when needed, with fixed versions and checksum checks. See
+[data and offline use](docs/data.md) to download them in advance.
+
 ### Connect an encoder
 
 Save this as `my_model.py`, replacing `your_encoder` with your model's inference:
@@ -173,4 +178,4 @@ until you choose to share them.
 
 **[Prepare a submission →](docs/submitting.md)**
 
-[Data & licenses](docs/data.md) · [Contributing](CONTRIBUTING.md) · [Citation](CITATION.cff)
+[Data on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2) · [Data & licenses](docs/data.md) · [Contributing](CONTRIBUTING.md) · [Citation](CITATION.cff)

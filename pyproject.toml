@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "bend2"
 version = "0.2.0.dev0"
 description = "BEND 2.0 — benchmark the capabilities needed to design DNA"
-readme = "README.md"
+readme = "README-pypi.md"
 requires-python = ">=3.11"
 license = "MIT AND CC-BY-4.0 AND CC-BY-NC-4.0"
 license-files = ["LICENSE", "docs/data.md"]
@@ -23,6 +23,7 @@ dev = ["build>=1.2", "twine>=6", "pytest>=8", "ruff>=0.9"]
 Repository = "https://github.com/yhsure/genomic-bending/tree/benchmark"
 Documentation = "https://github.com/yhsure/genomic-bending/blob/benchmark/README.md"
 Issues = "https://github.com/yhsure/genomic-bending/issues"
+Data = "https://huggingface.co/datasets/yhsure/BEND2"
 
 [project.scripts]
 bend2 = "bend2.cli:main"

@@ -117,19 +117,22 @@
       "protocol": "GENCODE v39 gene-level TSS coordinates; 131,072 bp reference-forward hg38 windows; no reverse complement. Frozen sequence/target row order."
     },
     "opensplice.tsv.gz": {
-      "url": "https://ndownloader.figshare.com/files/64886694",
+      "url": "https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/opensplice.tsv.gz",
+      "upstream_url": "https://ndownloader.figshare.com/files/64886694",
       "bytes": 425453242,
       "md5": "374443aa36bc1070dfd36318d8e77c59",
       "source": "opensplice"
     },
     "siraj.zip": {
-      "url": "https://zenodo.org/api/records/15297965/files/data_satmut.zip/content",
+      "url": "https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/siraj.zip",
+      "upstream_url": "https://zenodo.org/api/records/15297965/files/data_satmut.zip/content",
       "bytes": 93320206,
       "md5": "0043848d7658ac5cf402634b9685102e",
       "source": "siraj"
     },
     "hg38.2bit": {
-      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit",
+      "url": "https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/data/hg38.2bit",
+      "upstream_url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.2bit",
       "bytes": 835393456,
       "sha256": "1f67aaa17a77b327738fe750ab37430a85dddf73c7d9189385ad1839259acec0",
       "source": "genome"
