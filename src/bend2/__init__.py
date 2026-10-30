@@ -1,6 +1,6 @@
 """BEND 2.0: a benchmark for DNA models."""
 
-__version__ = "0.2.0.dev0"
+__version__ = "1.0.0"
 
 from bend2.catalog import tasks
 from bend2.model import Model
