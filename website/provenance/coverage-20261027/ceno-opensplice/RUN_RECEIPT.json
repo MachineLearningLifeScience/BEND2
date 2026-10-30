@@ -1,0 +1,29 @@
+{
+  "accepted_ci95": [
+    0.28159746286866255,
+    0.30892280281213297
+  ],
+  "accepted_leaderboard_value": 0.29544350315143425,
+  "accepted_protocol": "Published five-gene-fold Ridge(alpha=10,solver=lsqr,tol=1e-4) pipeline",
+  "converged_sensitivity_value": 0.3032053323835355,
+  "convergence_cpu_job": "23222148",
+  "exact_executed_source_sha256": {
+    "code/extract_full.py": "a3f16806c1a63a14949da11e8a5648da52b684a27a22d4f9a72f887d5b21ea12",
+    "cpu/code/convergence_audit.py": "dc6b2559245dc7a16c6c75a6d0b40ac3c089e493d2fbe80cdecd3b3ac2ba1a2d",
+    "cpu/code/finalize.py": "4a9f83af88a132fbf97da6e9376425ab3b12daa6690ad6d75a4622e9fc3cc55b",
+    "cpu/code/finalize_full.py": "c09cc0a3547909026162417c2d2b6b84b19862fa5547549f1a77a4b7760cac5e",
+    "cpu/code/genomic_bending/cli.py": "8b389ab6a2d8e9172a3203a96267aade9d68ffa9cb6cb6dd65f1e28153c85098",
+    "cpu/code/genomic_bending/eval/bootstrap.py": "212aa883ee230c21d7607bcc73efd458ff6ba31c517790ecb9e1bf415e6813e6",
+    "cpu/code/genomic_bending/eval/metrics.py": "9a7d6ebcbb5c0b6be88efec2f73d27dac8d9fa240ba7ca6d14fd8791e423e743",
+    "cpu/code/genomic_bending/models/embeddings.py": "380d62ee7fb596157f95081dbedfcd2146f702d7672d5437294f7a845e0169bc",
+    "cpu/code/readout_checks.py": "93d2f72b0dccaaaea6a4a7ef764c285bbbc5a7f2118bf883b12003f7b4741284",
+    "cpu/code/release_summary.py": "343db09864c96fd146ab98137c17efe915234b59bcaccef8f6f1f6562635fd39"
+  },
+  "gpu_array_job": "23220802",
+  "implementation_error_found": false,
+  "note": "CPU job ID in original PRIMARY_RESULT.json is null because the container used --cleanenv. This separate receipt resolves the job identity from Slurm without changing the original artifact.",
+  "primary_and_sensitivity_cpu_job": "23220803",
+  "scheduler_sha256": "b5df6e2f426c8225b2462c9207e5a134245d0d5d6d0beb11bd52b503d65f9c10",
+  "sensitivity_is_separate": true,
+  "status": "completed_and_independently_verified"
+}

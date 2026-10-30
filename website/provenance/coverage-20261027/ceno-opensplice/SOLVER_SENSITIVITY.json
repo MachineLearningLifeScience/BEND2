@@ -1,0 +1,20 @@
+{
+  "difference_ci95": [
+    0.006238271472757451,
+    0.00927199033627416
+  ],
+  "material_change": true,
+  "material_change_threshold": 0.001,
+  "note": "Sensitivity check only. Primary uses the unmodified CLI default tolerance; no result is selected or substituted based on this check.",
+  "prediction_difference_max": 36.0601034703289,
+  "prediction_difference_rms": 1.5375101880328266,
+  "primary_macro_spearman": 0.29544350315143425,
+  "primary_predictions_sha256": "9571ee29b67334d9fa8b14b48132028f1a0f98eac69fe09410c53cf5574786e0",
+  "primary_result_preserved": true,
+  "primary_tolerance": 0.0001,
+  "script_sha256": "93d2f72b0dccaaaea6a4a7ef764c285bbbc5a7f2118bf883b12003f7b4741284",
+  "strict_macro_spearman": 0.3032190559721294,
+  "strict_minus_primary": 0.007775552820695064,
+  "strict_predictions_sha256": "815b4d7bf879d97f883303f713a7f818c24d2464c6618588e955678c0c766d8a",
+  "strict_tolerance": 1e-06
+}

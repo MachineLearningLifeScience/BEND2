@@ -1,0 +1,98 @@
+{
+  "protocol_sha256": "870a5670887876b3987a36c10aff73736599e86bde00dac42b849607f821c1f7",
+  "script_sha256": "a3f16806c1a63a14949da11e8a5648da52b684a27a22d4f9a72f887d5b21ea12",
+  "model_revision": "fa8089cb4c9e22665190a2a7514a6346ec37d95d",
+  "model_weights_sha256": "267eb0f5723f862d6fd35483e2d49a8d41f448e3904591c3a95e8e607c7b851e",
+  "model_code_sha256": "1e40bebffc63540d932b040a68d847b3afdae2c479308dad5d7c0cf903e77848",
+  "torch": "2.7.1+rocm6.2.4",
+  "device": "AMD Instinct MI250X",
+  "loading": {
+    "missing_keys": [],
+    "unexpected_keys": [],
+    "mismatched_keys": [],
+    "error_msgs": []
+  },
+  "rank": 0,
+  "workers": 1,
+  "batch_size": 32,
+  "precision": "float32",
+  "autocast": false,
+  "tf32": false,
+  "controls": {
+    "pairs": 6,
+    "types": {
+      "sub": 2,
+      "\u22061nt": 1,
+      "\u22063nt": 1,
+      "\u22066nt": 1,
+      "\u220621nt": 1
+    },
+    "native_embedding_relative_l2": 1.4863493255637127e-06,
+    "native_delta_relative_l2": 4.315305293262053e-05,
+    "singleton_embedding_relative_l2": 1.932732819222335e-06,
+    "singleton_delta_relative_l2": 8.147634967001986e-05,
+    "permutation_embedding_relative_l2": 1.928377456244665e-06,
+    "permutation_delta_relative_l2": 8.082462614407422e-05,
+    "padding_embedding_relative_l2": 1.1164999024725562e-06,
+    "padding_delta_relative_l2": 4.482245712516464e-05,
+    "embedding_limit": 0.005,
+    "delta_limit": 0.02
+  },
+  "implementation_calls": {
+    "cuda_kernels_forward": 255,
+    "torch_forward": 204
+  },
+  "per_pair_delta_relative_l2": {
+    "native": [
+      4.753719443721851e-05,
+      0.00021747813177547007,
+      2.3211732351892615e-05,
+      5.9468493406615675e-05,
+      1.589385566652273e-05,
+      3.448417958852146e-05
+    ],
+    "singleton": [
+      2.418597362726047e-05,
+      0.00018632531830419446,
+      2.24527390280655e-05,
+      8.431832136254977e-05,
+      3.5353458988774564e-05,
+      9.751225956519482e-05
+    ],
+    "permutation": [
+      2.4619711577186764e-05,
+      0.0001449976136705177,
+      1.6073509425246995e-05,
+      4.969474801690411e-05,
+      1.7426579167654823e-05,
+      9.892950714244458e-05
+    ],
+    "padding": [
+      3.330121782217148e-05,
+      0.00011561678916315952,
+      1.4514725558285535e-05,
+      5.5874306397525496e-05,
+      2.7211829168468597e-05,
+      4.9590025445860145e-05
+    ]
+  },
+  "native_controls_sha256": "ab6abb03e3e996dfe01e0cfa433a0438f5b5bfc717bb8a4684e3076f4307718d",
+  "benchmarks": [
+    {
+      "batch": 32,
+      "sequences_per_second": 53.891815311168294,
+      "peak_gb": 5.98536192
+    },
+    {
+      "batch": 64,
+      "sequences_per_second": 54.296887288781235,
+      "peak_gb": 6.773195264
+    },
+    {
+      "batch": 128,
+      "sequences_per_second": 68.79906524999798,
+      "peak_gb": 8.333789696
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,21 @@
+{
+  "canonical_sha256": "5a985adef68b1fe9fc947e23313dfae2e292e0e6081f697eca5c7f0fb1274d4c",
+  "checkpoint_revision": "fa8089cb4c9e22665190a2a7514a6346ec37d95d",
+  "complete_files": "FULL-COMPLETE-{rank:03d}.json",
+  "computation": "Uniform FP32 weights and operations on LUMI; no BF16 autocast; released CENO eager attention",
+  "full_length_range": [
+    77,
+    245
+  ],
+  "full_rows": 590104,
+  "full_sha256": "d7ebc7373b031c9c7f6b067f4cff1941a3b7806f37341af8312c42b43b6901db",
+  "full_unique": 590703,
+  "genes": 466,
+  "index": "zero-based index into sorted full.parquet sequence column",
+  "input_target_labels_used": false,
+  "old_cuda_cache": "Diagnostic comparison only; no cached CUDA embeddings enter this matrix",
+  "output_shards": "full-shards/part-{workers}-{rank}-{start:06d}.npz",
+  "preparation_script_sha256": "e5e951ba88c0de2a2bc686bd325196f8d8ca64a317e489aac5e4847a6bed0ff2",
+  "representation": "1024-dimensional final hidden mean over non-special tokens",
+  "storage": "float32"
+}

@@ -35,8 +35,8 @@ We built BEND 2.0 to test whether genomic models can guide the design of DNA. Ac
 | NTv3&nbsp;100M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 32.1 | 1.537 | 0.349 | 0.076 | 7.8 | 0.010 | 47.3 | -0.207 | 0.339 |
 | GENERATORv2<br><sub>Fitted&nbsp;readouts</sub> | 31.5 | 1.711 | 0.388 | 0.066 | 17.6 | 0.046 | 44.7 | -0.256 | 0.234 |
 | NTv3&nbsp;650M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 29.4 | 1.447 | 0.187 | 0.010 | 7.8 | 0.009 | 50.4 | -0.061 | 0.368 |
+| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 14.7 | 1.549 | 0.295 | 0.036 | 9.8 | 0.010 | 48.9 | -0.318 | -0.581 |
 | DNABERT-2<br><sub>Fitted&nbsp;readouts</sub> | 11.3 | — | 0.198 | 0.076 | 5.9 | 0.020 | 48.6 | -0.302 | 0.233 |
-| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 5.3 | 1.549 | — | 0.036 | 9.8 | 0.010 | 48.9 | -0.318 | -0.581 |
 | Experimental&nbsp;reference | — | — | 0.809 | 0.594 | 99.0 | 0.421 | 11.8 | 0.962 | 1.602 |
 
 </details>

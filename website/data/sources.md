@@ -10,7 +10,7 @@ This directory preserves the manuscript's **Table 1**, with audited website addi
 - Records SHA-256: `332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28`.
 - The exact copied source files and their hashes are listed in [the audit](../provenance/audit.json).
 
-`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 manuscript model values, two shared checkpoint priors added on the website, and seven experimental-reference values. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
+`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 manuscript model values, two shared checkpoint priors, one new CENO evaluation, and seven experimental-reference values. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
 
 ## Values and interfaces
 
@@ -24,7 +24,9 @@ Source confidence intervals are retained only when a matching CSV row supplies b
 
 The two post-trained NTv3 checkpoints already had hidden-base evaluations. Their native-functional rows now show the same values (100M: 1.492; 650M: 1.375), with identical source estimates and intervals. Checkpoint revisions were checked against the native-head inventory; `sharedFrom` identifies each source row. These are shared measurements, not new inference runs. Their combined scores now include the Prior category.
 
-AlphaGenome has no nucleotide-probability head, including when its functional representations receive fitted readouts. Enformer has neither nucleotide probabilities nor native splice outputs. CENO's archived splicing transfer used only substitutions and cannot fill the full OpenSplice endpoint. Evo2 tissue embeddings remain incomplete and are pending at the user's request. Missing-cell dialogs give these reasons.
+CENO's missing full OpenSplice evaluation is now complete: **0.2954435032 Spearman**, with a 95% gene-bootstrap interval of **0.2815974629–0.3089228028**. All 590,703 sequence embeddings were recomputed uniformly in FP32, covering 590,104 interventions and 466 genes. The original five gene folds and readout settings are unchanged. Independent checks verified the model implementation, feature coverage, predictions, correlations and intervals. The [evaluation archive](../provenance/coverage-20261027/ceno-opensplice/README.md) includes the executed code and checksums. A separate converged ridge solve gives 0.303205; the table retains the published solver tolerance for consistency with the existing rows.
+
+AlphaGenome has no nucleotide-probability head, including when its functional representations receive fitted readouts. Enformer has neither nucleotide probabilities nor native splice outputs. Evo2 tissue embeddings remain incomplete and are pending at the user's request. Missing-cell dialogs give these reasons.
 
 DNABERT-2's older prior experiments scored entire BPE tokens. A new, explicitly defined single-base query was evaluated on LUMI using all 512 frozen genomic blocks. It forces singleton outputs where native tokenization uses multi-base tokens in all 512 cases, retaining a median 0.000002964 of the original vocabulary probability mass before renormalization. The resulting 6.203 bits/base is archived as a query diagnostic, **excluded from the table and combined score**. This is an interface limitation, not a conclusion about the model's sequence knowledge. The [query audit](../provenance/coverage-20261027/dnabert2-prior/README.md) includes source code, probabilities, checkpoint hashes and numerical checks.
 
@@ -68,7 +70,9 @@ Official capability colors are copied from `capability-style.tex`: sequence prio
 
 ## Links and reproduction
 
-No verified public DRAFT paper URL is supplied by the manuscript. **Do not use arXiv:2610.11761**: that page was checked and identifies *RAGenome: Scaling Retrieval-Based Genomic Language Models to Long Contexts*, a different paper. The code URL in the manuscript is `https://anonymous.4open.science/r/draft-5709`; its availability is not asserted here. Dataset links come directly from the manuscript bibliography and are labeled as such in the JSON.
+The public [BEND 2.0 dataset release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2) provides the evaluation data. The files in this directory preserve the website’s result snapshot and provenance. Original dataset references remain linked on the site for attribution.
+
+No verified public BEND 2.0 paper URL is available. **Do not use arXiv:2610.11761**: it identifies *RAGenome: Scaling Retrieval-Based Genomic Language Models to Long Contexts*, a different paper. The manuscript points to the planned `machinelearninglifescience/BEND2` repository; the current working code is on [yhsure/genomic-bending’s benchmark branch](https://github.com/yhsure/genomic-bending/tree/benchmark). Original dataset links come from the manuscript bibliography.
 
 To reproduce the snapshot, run:
 

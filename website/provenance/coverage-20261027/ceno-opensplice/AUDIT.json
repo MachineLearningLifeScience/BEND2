@@ -1,0 +1,38 @@
+{
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 20260822,
+    "type": "percentile",
+    "unit": "gene"
+  },
+  "canonical_sha256": "5a985adef68b1fe9fc947e23313dfae2e292e0e6081f697eca5c7f0fb1274d4c",
+  "ci95": [
+    0.28159746286866255,
+    0.30892280281213297
+  ],
+  "embedding_archive_sha256": "b9a827e5a06fbd21d2987d97ca28c62a916ac5c15d8cb3b84846794564c3898b",
+  "environment": {
+    "numpy": "2.2.6",
+    "pandas": "3.0.5",
+    "python": "3.12.11",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.0"
+  },
+  "features": "ALT\u2212REF float32 embeddings + sequence length difference + train-fitted context and intervention-type one-hot encoders",
+  "folds": "GroupKFold(5),gene_id.astype(str),no shuffle; exactly replayed",
+  "implementation_sha256": {
+    "cli.py": "8b389ab6a2d8e9172a3203a96267aade9d68ffa9cb6cb6dd65f1e28153c85098",
+    "eval/bootstrap.py": "212aa883ee230c21d7607bcc73efd458ff6ba31c517790ecb9e1bf415e6813e6",
+    "eval/metrics.py": "9a7d6ebcbb5c0b6be88efec2f73d27dac8d9fa240ba7ca6d14fd8791e423e743",
+    "models/embeddings.py": "380d62ee7fb596157f95081dbedfcd2146f702d7672d5437294f7a845e0169bc"
+  },
+  "macro_spearman": 0.29544350315143425,
+  "n_correlation_eligible_genes": 466,
+  "n_genes": 466,
+  "n_records": 590104,
+  "predictions_sha256": "9571ee29b67334d9fa8b14b48132028f1a0f98eac69fe09410c53cf5574786e0",
+  "regressor": "Ridge(alpha=10,solver=lsqr,fit_intercept=True); no scaling or normalization",
+  "result_sha256": "5a9f1df32a63a4af28e47d6a0d6435c25ebaff21e9f5edfe8fc0d9975ffef607",
+  "status": "passed",
+  "target": "raw delta_y; all SNVs and deletions"
+}

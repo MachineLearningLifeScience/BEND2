@@ -1,0 +1,28 @@
+{
+  "modelId": "ceno_1b_1m",
+  "taskId": "opensplice",
+  "evaluatedOn": "2026-10-27",
+  "sourceValue": 0.29544350315143425,
+  "interface": "Embedding-fitted linear head",
+  "verificationStatus": "passed",
+  "uncertainty": {
+    "level": 0.95,
+    "low": 0.28159746286866255,
+    "high": 0.30892280281213297,
+    "type": "pointwise percentile bootstrap interval",
+    "samplingUnit": "gene",
+    "sourceId": "ceno-full-opensplice",
+    "replicates": 2000,
+    "seed": 20260822
+  },
+  "notes": [
+    "All embeddings were recomputed uniformly in FP32; the published gene splits and readout settings are unchanged.",
+    "The table retains the published solver tolerance (1e-4). A converged solution gives 0.303 and is archived as a separate numerical check."
+  ],
+  "checkpointRevision": "fa8089cb4c9e22665190a2a7514a6346ec37d95d",
+  "checkpointSha256": "267eb0f5723f862d6fd35483e2d49a8d41f448e3904591c3a95e8e607c7b851e",
+  "primaryRecord": "PRIMARY_RESULT.json",
+  "auditRecord": "AUDIT.json",
+  "artifactManifest": "SHA256SUMS.json",
+  "documentation": "README.md"
+}

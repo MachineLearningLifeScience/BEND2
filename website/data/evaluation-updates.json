@@ -48,12 +48,6 @@
       "diagnosticSourceId": "dnabert2-prior-diagnostic"
     },
     {
-      "modelId": "ceno_1b_1m",
-      "taskId": "opensplice",
-      "status": "unevaluated",
-      "reason": "The saved CENO transfer evaluation covers a smaller substitution-only source set. This column requires all 590,104 OpenSplice interventions across 466 held-out genes."
-    },
-    {
       "modelId": "evo2_20b",
       "taskId": "tissue_identification",
       "status": "unevaluated",
@@ -168,6 +162,31 @@
       "title": "DNABERT-2 diagnostic artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
       "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
+    },
+    {
+      "id": "ceno-full-opensplice",
+      "title": "CENO full OpenSplice evaluation",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/entry.json",
+      "sha256": "489a42519dd6e9267ce1eff84cba8c25c9bb5feb863b15e44996cf2d5bdc7d11"
+    },
+    {
+      "id": "ceno-full-opensplice-methods",
+      "title": "CENO evaluation protocol and numerical checks",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/README.md",
+      "sha256": "d0a373d57344d76116720fd8bbbc4d946ebddc33e26c5b440a5d7b1517d46e7a"
+    },
+    {
+      "id": "ceno-full-opensplice-files",
+      "title": "CENO evaluation artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
+      "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
+    }
+  ],
+  "evaluations": [
+    {
+      "modelId": "ceno_1b_1m",
+      "taskId": "opensplice",
+      "sourceId": "ceno-full-opensplice"
     }
   ]
 }

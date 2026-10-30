@@ -90,6 +90,11 @@ function repeatMarkup(task, cell, repeats) {
 }
 
 function sourceMarkup(data, cell, task) {
+  if (cell?.evaluationSourceId) {
+    const evaluation = data.sources?.find(item => item.id === cell.evaluationSourceId);
+    if (evaluation && /^provenance\/[a-z0-9_./-]+$/i.test(evaluation.snapshotPath))
+      return `<div class="measurement-source"><p>Website evaluation · ${escape(cell.evaluatedOn)}</p>${(cell.notes || []).map(note => `<p>${escape(note)}</p>`).join("")}<p>Source estimate: <code>${escape(cell.sourceValue)}</code>. Displayed at the table’s precision.</p><a href="./${escape(evaluation.snapshotPath)}" download>Download evaluation record ↓</a></div>`;
+  }
   const contribution = data.sources?.find((item) => item.id === cell?.sourceId && item.submissionPath);
   if (contribution) {
     let evidenceURL = "";

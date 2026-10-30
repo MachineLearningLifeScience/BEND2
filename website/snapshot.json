@@ -5,7 +5,7 @@
   "reference_data": {
     "source_path": "data/benchmark.json",
     "imported_path": "data/benchmark.paper.json",
-    "sha256": "9bec13a18466753a019023565f37753d6a6e4514d47d93164e5f6141379d4bcf"
+    "sha256": "807d7b62e9487f3888a7b1e893bbc43b53b6b37742673bedbebe92cb1dd11f7a"
   },
   "files": {
     "assets/bend2.bib": "4b3ad80080b0ddfdb2bd6effa68e6065b0eda79b632f6a715a194950b68c3624",
@@ -19,13 +19,44 @@
     "assets/ranks/rank-2.svg": "8517bec18afce3d6db09ef09076fa3c56c0a58c73bf089906771c262c4502214",
     "assets/ranks/rank-3.svg": "6e1bb0a985692d5eb0efbbfd121ed80314b3fd6a20d31ff3d429d0e3a7ed03db",
     "assets/social-preview.png": "ac883d18b38b57f7106ed76a9f1a4d106b324323a15d479b5c56adaa2ef77e1d",
-    "data/evaluation-updates.json": "f8af71ef29e1f4d2e0ac58570c68df886a191ca47b1f1f39c08588308a92b70b",
-    "data/sources.md": "efa981ee7f11f10cb30120e076c3d45d6c792ea6a3494912fc7d90bbc393021d",
-    "index.html": "fca0810d5da59bd386fdb5d866399deaaaefbab1e5bd46aafd450509f3f646e6",
+    "data/evaluation-updates.json": "dced1d5d992b449e5c1d2a93989f6df09c155488d99fa119660f0e271c0a807b",
+    "data/sources.md": "c6fb0a46cfda089d89153b6c7fb82cdc40e5c15685f557abb833cd18559c5486",
+    "index.html": "b6e7f01cc69bf18672cd5bf5204a46d92f5f533aabb4b6f9b773d0115edf843b",
     "provenance/atlas-frontier.csv": "aaca65313920ce54a843ea80e44c7ccbb527a69d3fb919f8fcf6e44ec8a214e3",
-    "provenance/audit.json": "aca92db625bbb7b711c895ee22a554ba4a385f42f5d18efdb273c4e51b6e83c7",
+    "provenance/audit.json": "ab74e8a17087963c55f576bd882469f850f33b90f60ae01b7d0e3526a8783aff",
     "provenance/capability-style.tex": "126b52a55ec956e95ab5ff21f051b88bdede0f68bd4512b132cec874b7f5c5a9",
     "provenance/cell-selective-methods.tex": "a4e0c471d98e9d61d1c193ee11e0fb189671d89f16d6c8e304395c56e8e65bdb",
+    "provenance/coverage-20261027/ceno-opensplice/ARCHIVED_FOLDS.json": "0656d97fb021a3a1565367afb751a244707cbafddf9546897e700ce33464aacf",
+    "provenance/coverage-20261027/ceno-opensplice/AUDIT.json": "3752e298a826cf5e353f878a0b8500d0acbb07e56ec2b66bd5faee6905800a59",
+    "provenance/coverage-20261027/ceno-opensplice/FULL_PROTOCOL.json": "870a5670887876b3987a36c10aff73736599e86bde00dac42b849607f821c1f7",
+    "provenance/coverage-20261027/ceno-opensplice/PRIMARY_RESULT.json": "46d64a12940647c97cceabca86d2f1263b473d9785f538d40067e258b7391473",
+    "provenance/coverage-20261027/ceno-opensplice/README.md": "d0a373d57344d76116720fd8bbbc4d946ebddc33e26c5b440a5d7b1517d46e7a",
+    "provenance/coverage-20261027/ceno-opensplice/RUN_RECEIPT.json": "da4223eb7fa5f13c321629f4fcff4db457b69afc7792782569272c10c1d456af",
+    "provenance/coverage-20261027/ceno-opensplice/SCHEDULER.txt": "b5df6e2f426c8225b2462c9207e5a134245d0d5d6d0beb11bd52b503d65f9c10",
+    "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73",
+    "provenance/coverage-20261027/ceno-opensplice/SOLVER_SENSITIVITY.json": "d38ff1872ccce79bbd6f40da2b4b4d6a09b4c82cf381c43a5322b79c4b0a64e3",
+    "provenance/coverage-20261027/ceno-opensplice/convergence/RESULT.json": "2acce7e107acb9dabd5ec14af02485884d1526acd17d2e11b617782f732ebe9e",
+    "provenance/coverage-20261027/ceno-opensplice/convergence/fold-diagnostics.json": "25daf7f98629796c463e9f006488370b3ab7c61b530da9e39509580449762275",
+    "provenance/coverage-20261027/ceno-opensplice/convergence/per-gene.csv": "95accf9e3b72a736fa1571ff753ab8f3eeb9336e28c7232ab3094dbf3027a8d8",
+    "provenance/coverage-20261027/ceno-opensplice/convergence/tight-lsqr-telemetry.json": "e64cc81f849aa9ecefca1b6717449bf0d91737e094ad3f45a8fcc94a792e7c06",
+    "provenance/coverage-20261027/ceno-opensplice/entry.json": "489a42519dd6e9267ce1eff84cba8c25c9bb5feb863b15e44996cf2d5bdc7d11",
+    "provenance/coverage-20261027/ceno-opensplice/full-pilot.json": "b2b7dbb464783c82982eaedd27f76d0a0982bcc7453ac60bcb06ca502e73f571",
+    "provenance/coverage-20261027/ceno-opensplice/opensplice_ceno_1b_1m.per_gene.csv": "6e7d162f50ecc521580d7bacfadf36c73eeb940c5529df17246cbf50cffbfca4",
+    "provenance/coverage-20261027/ceno-opensplice/opensplice_ceno_1b_1m_pretrained_gene_cv.json": "5a9f1df32a63a4af28e47d6a0d6435c25ebaff21e9f5edfe8fc0d9975ffef607",
+    "provenance/coverage-20261027/ceno-opensplice/opensplice_ceno_full.json": "a5e14dd66b0b74a80a32f0108be4e5336b9a0adb332c85f6fee68ae659f9cb9e",
+    "provenance/coverage-20261027/ceno-opensplice/primary-solver-telemetry.json": "efcab23b031524a8b7c99714c96ae59d95a39cee6346c5536c56ff960067e237",
+    "provenance/coverage-20261027/ceno-opensplice/sources/convergence_audit.py": "dc6b2559245dc7a16c6c75a6d0b40ac3c089e493d2fbe80cdecd3b3ac2ba1a2d",
+    "provenance/coverage-20261027/ceno-opensplice/sources/extract_full.py": "a3f16806c1a63a14949da11e8a5648da52b684a27a22d4f9a72f887d5b21ea12",
+    "provenance/coverage-20261027/ceno-opensplice/sources/finalize.py": "4a9f83af88a132fbf97da6e9376425ab3b12daa6690ad6d75a4622e9fc3cc55b",
+    "provenance/coverage-20261027/ceno-opensplice/sources/finalize_full.py": "c09cc0a3547909026162417c2d2b6b84b19862fa5547549f1a77a4b7760cac5e",
+    "provenance/coverage-20261027/ceno-opensplice/sources/genomic_bending/cli.py": "8b389ab6a2d8e9172a3203a96267aade9d68ffa9cb6cb6dd65f1e28153c85098",
+    "provenance/coverage-20261027/ceno-opensplice/sources/genomic_bending/eval/bootstrap.py": "212aa883ee230c21d7607bcc73efd458ff6ba31c517790ecb9e1bf415e6813e6",
+    "provenance/coverage-20261027/ceno-opensplice/sources/genomic_bending/eval/metrics.py": "9a7d6ebcbb5c0b6be88efec2f73d27dac8d9fa240ba7ca6d14fd8791e423e743",
+    "provenance/coverage-20261027/ceno-opensplice/sources/genomic_bending/models/embeddings.py": "380d62ee7fb596157f95081dbedfcd2146f702d7672d5437294f7a845e0169bc",
+    "provenance/coverage-20261027/ceno-opensplice/sources/readout_checks.py": "93d2f72b0dccaaaea6a4a7ef764c285bbbc5a7f2118bf883b12003f7b4741284",
+    "provenance/coverage-20261027/ceno-opensplice/sources/release_summary.py": "343db09864c96fd146ab98137c17efe915234b59bcaccef8f6f1f6562635fd39",
+    "provenance/coverage-20261027/ceno-opensplice/strict-solver-telemetry.json": "13b56bb89104d95c516e69b44ff0f243de2f1c52657a483688af8e8d28675dae",
+    "provenance/coverage-20261027/ceno-opensplice/tolerance-sensitivity.per_gene.csv": "024969be9da9ed6faecfdf9c545d1c6a6ed8fe2defd04a0d83424dedec5f2111",
     "provenance/coverage-20261027/dnabert2-prior/PROTOCOL.json": "05002ea040cadfae2513405271783e262e3af07a450dd6f2c797075eebdd548f",
     "provenance/coverage-20261027/dnabert2-prior/README.md": "7880ca30ea6bdbbf1cf71c78202e4e3109b546b6910ffa2a535f94439539d7b1",
     "provenance/coverage-20261027/dnabert2-prior/RESULT.json": "037d6572ee5bf12a16b8cb0adb9932162ae83b8338d9dc984e2eb5fbc2f1db98",
@@ -71,7 +102,7 @@
     "src/hero-surface.js": "649860687cfc97d06fbf1f45996217db35b24c88ed60c2a00c94a861a03f14e3",
     "src/icons.js": "15dd41a16ef52af342b152c4130acc4a951e61e967d35edcd005c42a12962f6c",
     "src/measurement-detail.css": "1c8a65bb30bdf5466872c85a947a52bf986e12007e82227d34a6d2765bbe0390",
-    "src/measurement-detail.js": "07ac31b089f55d5b4587476153b5aa1411860fd59068b6889e976f2a0de7be8f",
+    "src/measurement-detail.js": "8cb34c26e9a9f5b5c51a36901f826d00a5036a13b3bf57634db13c57f7ebde43",
     "src/navigation.css": "78cc681a028a413d5320dba1486dd5d2d0232f4c3679f61a4b13e4c79ceab04c",
     "src/overview-score-chart.css": "61475c996835e7d5040a1c9f417e06db317431900af610de941958d64f59f1d1",
     "src/overview-score-chart.js": "7084352bdaae9b65afcdd123f22d10ad40bf28499e2b0d6685cac64d937ca055",
@@ -87,5 +118,20 @@
     "src/table-headings.css": "1ab64c3e928d3753948e1dce9e08d1b5ad4978603ee11d6292768c96eece920a",
     "src/table-headings.js": "15056f15d1cfea526f8ef9c1b556817342918fe7d56a3db62e84466210a95156",
     "src/table-tint.js": "2268c999528d56b67257ddc0e5a51be36a86b498fd91830b11e1d73668df5b04"
-  }
+  },
+  "updates": [
+    {
+      "source_commit": "060db398a91b92540bf5d52acc70ebbd19696f63",
+      "description": "Selective update: public data link, source documentation and completed CENO OpenSplice evaluation. The files map records the latest imported source hashes; adapted submission support is retained.",
+      "paths": [
+        "index.html",
+        "data/benchmark.json",
+        "data/evaluation-updates.json",
+        "data/sources.md",
+        "provenance/audit.json",
+        "provenance/coverage-20261027/ceno-opensplice/",
+        "src/measurement-detail.js"
+      ]
+    }
+  ]
 }

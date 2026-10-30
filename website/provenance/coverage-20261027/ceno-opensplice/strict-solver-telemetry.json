@@ -1,0 +1,90 @@
+{
+  "calls": [
+    {
+      "atol": 1e-06,
+      "btol": 1e-06,
+      "condition_estimate": 9811.1746101091,
+      "iter_lim": null,
+      "iterations": 102,
+      "normal_equation_residual_norm": 283.2635497372536,
+      "operator_norm": 20839.91097326573,
+      "regularized_residual_norm": 14188.421821558544,
+      "residual_norm": 14024.76981419882,
+      "shape": [
+        472081,
+        1031
+      ],
+      "solution_norm": 680.7234477132497,
+      "stop_code": 2
+    },
+    {
+      "atol": 1e-06,
+      "btol": 1e-06,
+      "condition_estimate": 10067.528452070606,
+      "iter_lim": null,
+      "iterations": 104,
+      "normal_equation_residual_norm": 220.2674075546373,
+      "operator_norm": 20802.648073435863,
+      "regularized_residual_norm": 14085.502563352513,
+      "residual_norm": 13924.132085745256,
+      "shape": [
+        472092,
+        1031
+      ],
+      "solution_norm": 673.0517932125041,
+      "stop_code": 2
+    },
+    {
+      "atol": 1e-06,
+      "btol": 1e-06,
+      "condition_estimate": 10402.271469067286,
+      "iter_lim": null,
+      "iterations": 106,
+      "normal_equation_residual_norm": 242.96226684439014,
+      "operator_norm": 21294.49857088916,
+      "regularized_residual_norm": 14141.543547608595,
+      "residual_norm": 13983.868270868987,
+      "shape": [
+        472093,
+        1031
+      ],
+      "solution_norm": 666.7077546273107,
+      "stop_code": 2
+    },
+    {
+      "atol": 1e-06,
+      "btol": 1e-06,
+      "condition_estimate": 10435.803867375027,
+      "iter_lim": null,
+      "iterations": 107,
+      "normal_equation_residual_norm": 183.52910158373408,
+      "operator_norm": 21311.679673952276,
+      "regularized_residual_norm": 13989.241725313072,
+      "residual_norm": 13824.337150244774,
+      "shape": [
+        472090,
+        1031
+      ],
+      "solution_norm": 677.8347477810213,
+      "stop_code": 2
+    },
+    {
+      "atol": 1e-06,
+      "btol": 1e-06,
+      "condition_estimate": 10178.101402519385,
+      "iter_lim": null,
+      "iterations": 106,
+      "normal_equation_residual_norm": 181.84431867751934,
+      "operator_norm": 20822.39860050533,
+      "regularized_residual_norm": 14065.751289313652,
+      "residual_norm": 13906.152049104518,
+      "shape": [
+        472060,
+        1031
+      ],
+      "solution_norm": 668.7974661353854,
+      "stop_code": 2
+    }
+  ],
+  "note": "Transparent observer; original LSQR arguments and return value unchanged"
+}

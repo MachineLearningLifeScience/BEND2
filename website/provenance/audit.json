@@ -5,7 +5,7 @@
   "sourceWorkingTreeClean": true,
   "tableSha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471",
   "csvSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
-  "benchmarkSha256": "9bec13a18466753a019023565f37753d6a6e4514d47d93164e5f6141379d4bcf",
+  "benchmarkSha256": "807d7b62e9487f3888a7b1e893bbc43b53b6b37742673bedbebe92cb1dd11f7a",
   "checkedCells": 144,
   "publishedNonMissingCells": 118,
   "checks": [
@@ -116,7 +116,7 @@
       "id": "evaluation-updates",
       "title": "Audited website additions and missing-result explanations",
       "snapshotPath": "data/evaluation-updates.json",
-      "sha256": "f8af71ef29e1f4d2e0ac58570c68df886a191ca47b1f1f39c08588308a92b70b"
+      "sha256": "dced1d5d992b449e5c1d2a93989f6df09c155488d99fa119660f0e271c0a807b"
     },
     {
       "id": "ntv3-checkpoints",
@@ -135,8 +135,27 @@
       "title": "DNABERT-2 diagnostic artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
       "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
+    },
+    {
+      "id": "ceno-full-opensplice",
+      "title": "CENO full OpenSplice evaluation",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/entry.json",
+      "sha256": "489a42519dd6e9267ce1eff84cba8c25c9bb5feb863b15e44996cf2d5bdc7d11"
+    },
+    {
+      "id": "ceno-full-opensplice-methods",
+      "title": "CENO evaluation protocol and numerical checks",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/README.md",
+      "sha256": "d0a373d57344d76116720fd8bbbc4d946ebddc33e26c5b440a5d7b1517d46e7a"
+    },
+    {
+      "id": "ceno-full-opensplice-files",
+      "title": "CENO evaluation artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
+      "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
     }
   ],
   "extensionId": "coverage-20261027",
-  "sharedCheckpointCells": 2
+  "sharedCheckpointCells": 2,
+  "newEvaluationCells": 1
 }

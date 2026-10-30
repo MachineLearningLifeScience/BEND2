@@ -24,6 +24,10 @@ link in `index.html` when the publication URL is available.
 
 ## Leaderboard data
 
+The public [BEND 2.0 data release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)
+provides the evaluation data. It is linked under Code & data, separately from
+the downloadable results; original dataset links remain under Data sources.
+
 The build reads:
 
 - `data/benchmark.paper.json`: the archived paper results and documented additions.
@@ -37,6 +41,8 @@ does not apply that record again.
 The two native NTv3 rows share their parent checkpoints’ sequence-prior evaluations,
 using the same recorded estimates and intervals. The archived manuscript table is
 unchanged; the additions and diagnostic sources are documented separately.
+The completed CENO OpenSplice evaluation is included with its source record and
+gene-bootstrap interval in `provenance/coverage-20261027/ceno-opensplice/`.
 
 The generated `data/benchmark.json` combines these inputs; always rebuild from
 `benchmark.paper.json`. Every published submission must have a matching review.

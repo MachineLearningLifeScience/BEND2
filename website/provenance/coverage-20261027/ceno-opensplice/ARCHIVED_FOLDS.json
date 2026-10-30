@@ -1,0 +1,24 @@
+{
+  "archived_foldmap_sha256": "83c66ba32fb6ad0552932c4eb053bd719ae7380c1bea3674410a78cd3cf6de7a",
+  "canonical_sha256": "5a985adef68b1fe9fc947e23313dfae2e292e0e6081f697eca5c7f0fb1274d4c",
+  "fold_rows": [
+    118023,
+    118012,
+    118011,
+    118014,
+    118044
+  ],
+  "genes": 466,
+  "original_provenance": {
+    "foldmap_sha256": "83c66ba32fb6ad0552932c4eb053bd719ae7380c1bea3674410a78cd3cf6de7a",
+    "genes": 466,
+    "records": 590104,
+    "source_macro_spearman": 0.5643109042285411,
+    "source_predictions": "/e/project1/e-dev-2026d02-064/_abj/gimbench/results/opensplice_ntv3_650m_post_pretrained_gene_cv.predictions.parquet",
+    "source_predictions_sha256": "f8d78691fb58582784eea36dd245d4f0f785ede6c37a14fa0044c54bfe04c588",
+    "source_result": "/e/project1/e-dev-2026d02-064/_abj/gimbench/results/opensplice_ntv3_650m_post_pretrained_gene_cv.json",
+    "source_result_sha256": "96a50f8cda8b52408e651c65cc7f3be5cd4c3b69473a0a0a4d77dfc57d913a2f"
+  },
+  "records": 590104,
+  "status": "passed"
+}

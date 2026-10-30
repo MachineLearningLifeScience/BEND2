@@ -16,8 +16,8 @@
     "recordsSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
     "snapshotPath": "provenance/table-1.tex",
     "extractedOn": "2026-10-22",
-    "precision": "Manuscript display precision; shared checkpoint priors retain their original estimates and intervals.",
-    "verification": "Archived Table 1 and source CSV are preserved. Explicit website additions share the same pinned NTv3 checkpoint priors across downstream interfaces; missing-result explanations were checked against evaluation code and archives.",
+    "precision": "Manuscript display precision; precise source estimates and available intervals are retained for archived and newly evaluated entries.",
+    "verification": "Archived Table 1 and source CSV are preserved. Shared checkpoint priors and newly evaluated entries have explicit source mappings in data/evaluation-updates.json; missing-result explanations were checked against evaluation code and archives.",
     "paperUrl": null,
     "paperUrlStatus": "No verified public DRAFT paper URL was provided in the manuscript. arXiv:2610.11761 belongs to RAGenome and is deliberately excluded.",
     "codeUrl": "https://anonymous.4open.science/r/draft-5709",
@@ -869,20 +869,31 @@
     {
       "modelId": "ceno_1b_1m",
       "taskId": "opensplice",
-      "value": null,
-      "displayValue": "—",
-      "status": "unevaluated",
-      "interface": null,
-      "sourceValue": null,
-      "sourceId": "table-1",
+      "value": 0.295,
+      "displayValue": "0.295",
+      "status": "evaluated",
+      "interface": "Embedding-fitted linear head",
+      "sourceValue": 0.29544350315143425,
+      "sourceId": "ceno-full-opensplice",
       "sourceRecordId": "ceno_1b_1m/opensplice",
       "notes": [
-        "No matching full OpenSplice gene-held-out result available; transfer scores not substituted."
+        "All embeddings were recomputed uniformly in FP32; the published gene splits and readout settings are unchanged.",
+        "The table retains the published solver tolerance (1e-4). A converged solution gives 0.303 and is archived as a separate numerical check."
       ],
-      "uncertainty": null,
+      "uncertainty": {
+        "level": 0.95,
+        "low": 0.28159746286866255,
+        "high": 0.30892280281213297,
+        "type": "pointwise percentile bootstrap interval",
+        "samplingUnit": "gene",
+        "sourceId": "ceno-full-opensplice",
+        "replicates": 2000,
+        "seed": 20260822
+      },
       "manuscriptStatus": "unevaluated",
-      "missingReason": "The saved CENO transfer evaluation covers a smaller substitution-only source set. This column requires all 590,104 OpenSplice interventions across 466 held-out genes.",
-      "extensionId": "coverage-20261027"
+      "extensionId": "coverage-20261027",
+      "evaluatedOn": "2026-10-27",
+      "evaluationSourceId": "ceno-full-opensplice"
     },
     {
       "modelId": "ceno_1b_1m",
@@ -3632,7 +3643,7 @@
       "id": "evaluation-updates",
       "title": "Audited website additions and missing-result explanations",
       "snapshotPath": "data/evaluation-updates.json",
-      "sha256": "f8af71ef29e1f4d2e0ac58570c68df886a191ca47b1f1f39c08588308a92b70b"
+      "sha256": "dced1d5d992b449e5c1d2a93989f6df09c155488d99fa119660f0e271c0a807b"
     },
     {
       "id": "ntv3-checkpoints",
@@ -3651,6 +3662,24 @@
       "title": "DNABERT-2 diagnostic artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
       "sha256": "9e7c1cdec20b1c037ba0405d3b17a9f5daa083553ed75afa58066292856ed2d9"
+    },
+    {
+      "id": "ceno-full-opensplice",
+      "title": "CENO full OpenSplice evaluation",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/entry.json",
+      "sha256": "489a42519dd6e9267ce1eff84cba8c25c9bb5feb863b15e44996cf2d5bdc7d11"
+    },
+    {
+      "id": "ceno-full-opensplice-methods",
+      "title": "CENO evaluation protocol and numerical checks",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/README.md",
+      "sha256": "d0a373d57344d76116720fd8bbbc4d946ebddc33e26c5b440a5d7b1517d46e7a"
+    },
+    {
+      "id": "ceno-full-opensplice-files",
+      "title": "CENO evaluation artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
+      "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
     }
   ],
   "scoring": {
@@ -4246,7 +4275,7 @@
     "endpointCount": 8,
     "categoryCount": 5,
     "experimentalReferenceCells": 7,
-    "evaluatedModelCells": 113,
+    "evaluatedModelCells": 114,
     "datasetGroups": 5
   },
   "limitations": [

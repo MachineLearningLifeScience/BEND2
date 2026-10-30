@@ -1,0 +1,182 @@
+[
+  {
+    "cholesky": {
+      "gradient_norm": 2.0306407224089333e-08,
+      "gradient_relative_to_rhs": 1.0077405423970783e-15,
+      "intercept_gradient": -5.311449058353901e-10,
+      "normal_equation_relative_backward_error": 5.625340142131429e-19,
+      "objective": 201310242.47149774
+    },
+    "coefficient_relative_l2": 1.0662487633016153e-06,
+    "condition_number": 2050724.9790884105,
+    "features": 1031,
+    "fold": 0,
+    "lsqr": {
+      "gradient_norm": 0.04565453150637898,
+      "gradient_relative_to_rhs": 2.26568500451031e-09,
+      "intercept_gradient": -6.803020369261503e-10,
+      "normal_equation_relative_backward_error": 3.2638630607406453e-12,
+      "objective": 201310242.47150865
+    },
+    "lsqr_iterations": [
+      246
+    ],
+    "lsqr_tolerance": 1e-10,
+    "normal_equation_dtype": "float64",
+    "prediction_max_abs_difference": 3.931228047804325e-05,
+    "prediction_relative_l2": 3.1809180467627157e-07,
+    "regularized_eigenvalue_range": [
+      9.99999999975266,
+      20507249.79037688
+    ],
+    "ridge_alpha": 10.0,
+    "seconds": 239.4003841690719,
+    "source_design_dtype": "float64",
+    "test_rows": 118023,
+    "training_rows": 472081
+  },
+  {
+    "cholesky": {
+      "gradient_norm": 7.563776848875299e-09,
+      "gradient_relative_to_rhs": 3.819229625025961e-16,
+      "intercept_gradient": -1.2648797564907e-09,
+      "normal_equation_relative_backward_error": 2.520659987726289e-19,
+      "objective": 198400766.82595673
+    },
+    "coefficient_relative_l2": 9.15413434770064e-07,
+    "condition_number": 2043164.6378086263,
+    "features": 1031,
+    "fold": 1,
+    "lsqr": {
+      "gradient_norm": 0.02305218928362901,
+      "gradient_relative_to_rhs": 1.1639899747552375e-09,
+      "intercept_gradient": -1.9572325982153416e-09,
+      "normal_equation_relative_backward_error": 1.6733339103682376e-12,
+      "objective": 198400766.8259642
+    },
+    "lsqr_iterations": [
+      249
+    ],
+    "lsqr_tolerance": 1e-10,
+    "normal_equation_dtype": "float64",
+    "prediction_max_abs_difference": 2.8876939065725082e-05,
+    "prediction_relative_l2": 2.783852465012774e-07,
+    "regularized_eigenvalue_range": [
+      9.999999999595545,
+      20431646.377259895
+    ],
+    "ridge_alpha": 10.0,
+    "seconds": 245.50897365808487,
+    "source_design_dtype": "float64",
+    "test_rows": 118012,
+    "training_rows": 472092
+  },
+  {
+    "cholesky": {
+      "gradient_norm": 1.2493660546949653e-08,
+      "gradient_relative_to_rhs": 6.306169128179046e-16,
+      "intercept_gradient": -5.743459041696042e-10,
+      "normal_equation_relative_backward_error": 6.178909193003967e-19,
+      "objective": 199982766.11614424
+    },
+    "coefficient_relative_l2": 1.4102709779589823e-06,
+    "condition_number": 2044427.963637317,
+    "features": 1031,
+    "fold": 2,
+    "lsqr": {
+      "gradient_norm": 0.04163268448434894,
+      "gradient_relative_to_rhs": 2.1014077390040335e-09,
+      "intercept_gradient": -3.738023224286735e-10,
+      "normal_equation_relative_backward_error": 3.0490963401333665e-12,
+      "objective": 199982766.11616197
+    },
+    "lsqr_iterations": [
+      245
+    ],
+    "lsqr_tolerance": 1e-10,
+    "normal_equation_dtype": "float64",
+    "prediction_max_abs_difference": 4.673322281689707e-05,
+    "prediction_relative_l2": 4.0978421172421824e-07,
+    "regularized_eigenvalue_range": [
+      9.999999999932768,
+      20444279.63623572
+    ],
+    "ridge_alpha": 10.0,
+    "seconds": 246.03017475805245,
+    "source_design_dtype": "float64",
+    "test_rows": 118011,
+    "training_rows": 472093
+  },
+  {
+    "cholesky": {
+      "gradient_norm": 1.3714463920212092e-08,
+      "gradient_relative_to_rhs": 6.903353161659882e-16,
+      "intercept_gradient": -5.920810508541763e-10,
+      "normal_equation_relative_backward_error": 3.6157138985677196e-19,
+      "objective": 195698384.31673074
+    },
+    "coefficient_relative_l2": 1.0314892300821631e-06,
+    "condition_number": 2048194.6204363497,
+    "features": 1031,
+    "fold": 3,
+    "lsqr": {
+      "gradient_norm": 0.036834880249587885,
+      "gradient_relative_to_rhs": 1.8541314375082378e-09,
+      "intercept_gradient": 1.7462298274040222e-10,
+      "normal_equation_relative_backward_error": 2.648610264246645e-12,
+      "objective": 195698384.31674045
+    },
+    "lsqr_iterations": [
+      240
+    ],
+    "lsqr_tolerance": 1e-10,
+    "normal_equation_dtype": "float64",
+    "prediction_max_abs_difference": 5.1201231045183704e-05,
+    "prediction_relative_l2": 3.8234042817485744e-07,
+    "regularized_eigenvalue_range": [
+      9.999999999889543,
+      20481946.20413726
+    ],
+    "ridge_alpha": 10.0,
+    "seconds": 241.60758009005804,
+    "source_design_dtype": "float64",
+    "test_rows": 118014,
+    "training_rows": 472090
+  },
+  {
+    "cholesky": {
+      "gradient_norm": 5.858303605229702e-09,
+      "gradient_relative_to_rhs": 2.993887649648794e-16,
+      "intercept_gradient": 1.3092176232021302e-09,
+      "normal_equation_relative_backward_error": 3.9238041698391917e-19,
+      "objective": 197844833.45340785
+    },
+    "coefficient_relative_l2": 9.767721291840938e-07,
+    "condition_number": 2047032.4065836784,
+    "features": 1031,
+    "fold": 4,
+    "lsqr": {
+      "gradient_norm": 0.026288975143066773,
+      "gradient_relative_to_rhs": 1.3434987891801016e-09,
+      "intercept_gradient": 4.938556230627e-10,
+      "normal_equation_relative_backward_error": 1.9169003488105755e-12,
+      "objective": 197844833.45341676
+    },
+    "lsqr_iterations": [
+      246
+    ],
+    "lsqr_tolerance": 1e-10,
+    "normal_equation_dtype": "float64",
+    "prediction_max_abs_difference": 3.0924796089237816e-05,
+    "prediction_relative_l2": 2.986912394933924e-07,
+    "regularized_eigenvalue_range": [
+      9.999999999966631,
+      20470324.065768477
+    ],
+    "ridge_alpha": 10.0,
+    "seconds": 246.52215691807214,
+    "source_design_dtype": "float64",
+    "test_rows": 118044,
+    "training_rows": 472060
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 20260822,
+    "type": "percentile",
+    "unit": "gene"
+  },
+  "canonical_sha256": "5a985adef68b1fe9fc947e23313dfae2e292e0e6081f697eca5c7f0fb1274d4c",
+  "checkpoint_revision": "fa8089cb4c9e22665190a2a7514a6346ec37d95d",
+  "ci95": [
+    0.28159746286866255,
+    0.30892280281213297
+  ],
+  "correlation_eligible_genes": 466,
+  "embedding_archive_sha256": "b9a827e5a06fbd21d2987d97ca28c62a916ac5c15d8cb3b84846794564c3898b",
+  "environment": {
+    "numpy": "2.2.6",
+    "pandas": "3.0.5",
+    "python": "3.12.11",
+    "scipy": "1.18.1",
+    "sklearn": "1.9.0"
+  },
+  "extraction_script_sha256": "a3f16806c1a63a14949da11e8a5648da52b684a27a22d4f9a72f887d5b21ea12",
+  "genes": 466,
+  "higher_is_better": true,
+  "interface": "embedding-fitted linear head",
+  "jobs": {
+    "cpu": null,
+    "gpu_production": "23220802"
+  },
+  "manifest": {
+    "code/extract_full.py": "a3f16806c1a63a14949da11e8a5648da52b684a27a22d4f9a72f887d5b21ea12",
+    "cpu/code/finalize.py": "4a9f83af88a132fbf97da6e9376425ab3b12daa6690ad6d75a4622e9fc3cc55b",
+    "cpu/code/finalize_full.py": "c09cc0a3547909026162417c2d2b6b84b19862fa5547549f1a77a4b7760cac5e",
+    "cpu/code/readout_checks.py": "93d2f72b0dccaaaea6a4a7ef764c285bbbc5a7f2118bf883b12003f7b4741284",
+    "cpu/code/release_summary.py": "343db09864c96fd146ab98137c17efe915234b59bcaccef8f6f1f6562635fd39",
+    "cpu/inputs/opensplice_ceno_full.json": "a5e14dd66b0b74a80a32f0108be4e5336b9a0adb332c85f6fee68ae659f9cb9e",
+    "cpu/results/ARCHIVED_FOLDS.json": "0656d97fb021a3a1565367afb751a244707cbafddf9546897e700ce33464aacf",
+    "cpu/results/AUDIT.json": "3752e298a826cf5e353f878a0b8500d0acbb07e56ec2b66bd5faee6905800a59",
+    "cpu/results/SOLVER_SENSITIVITY.json": "d38ff1872ccce79bbd6f40da2b4b4d6a09b4c82cf381c43a5322b79c4b0a64e3",
+    "cpu/results/opensplice_ceno_1b_1m.per_gene.csv": "6e7d162f50ecc521580d7bacfadf36c73eeb940c5529df17246cbf50cffbfca4",
+    "cpu/results/opensplice_ceno_1b_1m_pretrained_gene_cv.json": "5a9f1df32a63a4af28e47d6a0d6435c25ebaff21e9f5edfe8fc0d9975ffef607",
+    "cpu/results/primary-solver-telemetry.json": "efcab23b031524a8b7c99714c96ae59d95a39cee6346c5536c56ff960067e237",
+    "cpu/results/strict-solver-telemetry.json": "13b56bb89104d95c516e69b44ff0f243de2f1c52657a483688af8e8d28675dae",
+    "cpu/results/tolerance-sensitivity.per_gene.csv": "024969be9da9ed6faecfdf9c545d1c6a6ed8fe2defd04a0d83424dedec5f2111",
+    "full-pilot.json": "b2b7dbb464783c82982eaedd27f76d0a0982bcc7453ac60bcb06ca502e73f571",
+    "prepared/FULL_PROTOCOL.json": "870a5670887876b3987a36c10aff73736599e86bde00dac42b849607f821c1f7"
+  },
+  "metric": "macro-gene Spearman",
+  "model": "CENO-1B-1m",
+  "model_code_sha256": "1e40bebffc63540d932b040a68d847b3afdae2c479308dad5d7c0cf903e77848",
+  "passed_checks": [
+    "released native versus accelerated FP32 control",
+    "individual, permutation and padding controls",
+    "all-sequence finite coverage",
+    "archived fold-map identity",
+    "independent macro Spearman and bootstrap"
+  ],
+  "predictions_sha256": "9571ee29b67334d9fa8b14b48132028f1a0f98eac69fe09410c53cf5574786e0",
+  "primary_solver_iterations": [
+    34,
+    34,
+    34,
+    36,
+    34
+  ],
+  "primary_solver_stop_codes": [
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "readout": {
+    "features": "ALT\u2212REF float32 embeddings + sequence length difference + train-fitted context and intervention-type one-hot encoders",
+    "folds": "5 whole-gene GroupKFold; exact archived NTv3 assignments verified",
+    "intercept": true,
+    "normalization": "none",
+    "primary_tolerance": 0.0001,
+    "ridge_alpha": 10,
+    "solver": "lsqr",
+    "target": "raw delta_y"
+  },
+  "readout_source_sha256": {
+    "cli.py": "8b389ab6a2d8e9172a3203a96267aade9d68ffa9cb6cb6dd65f1e28153c85098",
+    "eval/bootstrap.py": "212aa883ee230c21d7607bcc73efd458ff6ba31c517790ecb9e1bf415e6813e6",
+    "eval/metrics.py": "9a7d6ebcbb5c0b6be88efec2f73d27dac8d9fa240ba7ca6d14fd8791e423e743",
+    "models/embeddings.py": "380d62ee7fb596157f95081dbedfcd2146f702d7672d5437294f7a845e0169bc"
+  },
+  "records": 590104,
+  "representation": {
+    "autocast": false,
+    "dimensions": 1024,
+    "layer": "final",
+    "origin": "All sequences freshly computed uniformly; historical CUDA cache excluded",
+    "pooling": "mean_non_special_tokens",
+    "precision": "FP32",
+    "projection": null,
+    "tf32": false
+  },
+  "sensitivity": {
+    "material_change": true,
+    "separate_from_primary": true,
+    "strict_macro_spearman": 0.3032190559721294,
+    "strict_minus_primary": 0.007775552820695064,
+    "strict_tolerance": 1e-06
+  },
+  "task": "OpenSplice held-out genes",
+  "unique_sequences": 590703,
+  "value": 0.29544350315143425,
+  "weights_sha256": "267eb0f5723f862d6fd35483e2d49a8d41f448e3904591c3a95e8e607c7b851e"
+}

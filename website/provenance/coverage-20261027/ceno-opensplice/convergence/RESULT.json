@@ -1,0 +1,42 @@
+{
+  "all_cholesky_backward_errors_below_1e12": true,
+  "cholesky_minus_primary": 0.007761829232101209,
+  "difference_ci95": [
+    0.006221492707439817,
+    0.009249761552984731
+  ],
+  "embedding_archive_sha256": "b9a827e5a06fbd21d2987d97ca28c62a916ac5c15d8cb3b84846794564c3898b",
+  "genes": 466,
+  "max_cholesky_lsqr_correlation_difference": 2.5358365025231894e-05,
+  "max_fold_prediction_relative_l2": 4.0978421172421824e-07,
+  "predictions_sha256": "3ffa7a2cb87b685d1ae2701f682a8f870be578dd819c9bd3abde74658629732b",
+  "primary_predictions_sha256": "9571ee29b67334d9fa8b14b48132028f1a0f98eac69fe09410c53cf5574786e0",
+  "primary_unchanged": true,
+  "protocol": "Same features, alpha=10, intercept and archived folds; only numerical solver changed",
+  "records": 590104,
+  "script_sha256": "dc6b2559245dc7a16c6c75a6d0b40ac3c089e493d2fbe80cdecd3b3ac2ba1a2d",
+  "status": "completed",
+  "summary": {
+    "cholesky": {
+      "ci95": [
+        0.2889293270550951,
+        0.3168961423577468
+      ],
+      "macro_spearman": 0.3032053323835355
+    },
+    "lsqr_1e10": {
+      "ci95": [
+        0.2889292702203051,
+        0.3168960460247135
+      ],
+      "macro_spearman": 0.303205296653024
+    },
+    "primary": {
+      "ci95": [
+        0.28159746286866255,
+        0.30892280281213297
+      ],
+      "macro_spearman": 0.29544350315143425
+    }
+  }
+}
