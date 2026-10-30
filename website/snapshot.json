@@ -107,7 +107,7 @@
     "src/overview-score-chart.css": "61475c996835e7d5040a1c9f417e06db317431900af610de941958d64f59f1d1",
     "src/overview-score-chart.js": "7084352bdaae9b65afcdd123f22d10ad40bf28499e2b0d6685cac64d937ca055",
     "src/overview.css": "65e49f647e995d2a1919b9f47b610c39d5cef7aca082d68dd162e77c71827d4f",
-    "src/overview.js": "0664dff596d0a62895937764afc36226df93fcc81418357e53520d0a66804e55",
+    "src/overview.js": "580721553e84b69a72f09f25a2dd03827510dffa720d7a0ec6a084edfbd8581b",
     "src/page-navigation.js": "547b90a2e1841e415b5bf05ab807cc07b4676ee12fac3bb0f1f6d496f167e650",
     "src/paired-chart.js": "0cbaa3e68eb065bba6aacfe7a5d1522e45185edc5d9ed3e899dba5fa5c65c26b",
     "src/react-bits-LICENSE.md": "4bdd1fa59a6b7d5954bc3b213dbc34e455c635a94bbcecf9293553797d0fad02",
@@ -136,6 +136,13 @@
     {
       "source_commit": "b56ff0bb11c1b23e40e95efd7274f0081cfb3132",
       "description": "Clarify the genomic design caption to specify a target response.",
+      "paths": [
+        "src/overview.js"
+      ]
+    },
+    {
+      "source_commit": "e0b5c5e48e00d1d8971eed731e62f37f684d24d1",
+      "description": "Restore the previous website genomic design caption; documentation graphics keep the target-response wording.",
       "paths": [
         "src/overview.js"
       ]

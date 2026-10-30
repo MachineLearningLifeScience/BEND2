@@ -28,7 +28,7 @@ const categories = [
   },
   {
     id:"design", label:"Genomic design", color:"#BE4D35",
-    text:"Select DNA for a target response.",
+    text:"Find edits or sequences with a chosen effect.",
     equation:'<span class="overview-equation-prefix">Matching:</span> min |Δ − Δ<sub>ref</sub>|',
     equationLabel:"For response matching, minimise the absolute difference between a candidate’s predicted edit effect and the reference edit’s predicted effect.",
   },
