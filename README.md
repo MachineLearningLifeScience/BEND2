@@ -6,7 +6,7 @@ We built BEND 2.0 to test whether genomic models can guide the design of DNA. Ac
   <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/assets/capabilities-narrow-dark.svg">
   <source media="(max-width: 600px)" srcset="docs/assets/capabilities-narrow-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/capabilities-wide-dark.svg">
-  <img src="docs/assets/capabilities-wide-light.svg" alt="Five capabilities: recover a hidden base; predict an edit’s effect; account for cells and tissues; account for DNA background; select DNA for a target.">
+  <img src="docs/assets/capabilities-wide-light.svg" alt="Five capabilities: recover a hidden base; predict an edit’s effect; account for cells and tissues; account for DNA background; select DNA for a target response.">
 </picture>
 
 <!-- BEGIN GENERATED RESULTS: node website/scripts/readme-results.mjs -->

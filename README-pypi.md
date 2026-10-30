@@ -5,7 +5,7 @@ Across eight tasks, we examine how they predict sequence function, account for
 cell type and genetic background, and choose sequences that produce a desired
 response.
 
-![Five capabilities: sequence priors, functional prediction, biological context, genetic interactions and genomic design](https://huggingface.co/datasets/yhsure/BEND2/resolve/0c1dda471ad13c6126c2cd00cb3fa34852e70673/media/capabilities-wide-light.svg)
+![Five capabilities: sequence priors, functional prediction, biological context, genetic interactions and genomic design](https://huggingface.co/datasets/yhsure/BEND2/resolve/d187d3a2fe4fe091da76a50cc280986b6783425c/media/capabilities-wide-light.svg)
 
 BEND prepares the data, fits linear readouts to your model's frozen embeddings,
 and reports task scores and predictions. Python 3.11 or later is required.
