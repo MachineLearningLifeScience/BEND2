@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use BEND 2.0, cite the benchmark and acknowledge the datasets used by your selected tasks."
 type: software
 title: "BEND 2.0"
-version: "1.0.0"
+version: "1.0.1"
 date-released: 2026-11-02
 abstract: "A benchmark of genomic models across sequence priors, functional prediction, biological context, genetic interactions, and genomic design."
 url: "https://machinelearninglifescience.github.io/BEND2/"
@@ -14,10 +14,10 @@ preferred-citation:
   authors:
     - family-names: "Bjerregaard"
       given-names: "Andreas"
-    - family-names: "Brilli"
-      given-names: "Dionysia Danai"
     - family-names: "DeVries"
       given-names: "Rachael"
+    - family-names: "Brilli"
+      given-names: "Dionysia Danai"
     - family-names: "Antoniadis"
       given-names: "Panagiotis"
     - family-names: "Li"

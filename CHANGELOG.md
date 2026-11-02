@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-11-02
+
+Correct the preferred paper citation to place Rachael DeVries before Dionysia
+Danai Brilli. Evaluation code, data and scores are unchanged.
+
 ## 1.0.0 — 2026-11-02
 
 Initial standalone release of BEND 2.0.
