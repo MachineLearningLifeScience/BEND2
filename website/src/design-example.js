@@ -75,22 +75,22 @@ export function createDesignExample(host) {
       // First show five independent sequences, then measure them in rank order.
       const measurements=alternatives.map((_,i)=>ramp(p,i===0?.63:.70+(i-1)*(.115/3),i===0?.70:.755+(i-1)*(.115/3)));
       const landed=measurements.map(t=>ramp(t,.94,1));
-      const {source}=reference.draw(p,W,H,small,{
+      const {source,referenceY}=reference.draw(p,W,H,small,{
         rowY,labelX:labelRight,x0,valueX,targetY,
       });
       const {open}=assay.draw(p,W,H,source,{x0,x1,valueX,rowY,measurements});
-      show(field,ramp(p,.65,.70));
-      const bandReveal=ramp(p,.65,.70),axisGrowth=ramp(p,.845,.87);
+      show(field,1);
+      const bandReveal=ramp(p,.65,.70),bandCompletion=ramp(p,.845,.87);
       // Follow each sequence's conversion to a measurement without a second,
       // late easing pass that would make the guide extend in sudden bursts.
       const measuredDepth=measurements.reduce((sum,t)=>sum+t,0);
-      const bandBottom=mix(targetY+rowGap*measuredDepth+12*bandReveal,axisY,axisGrowth);
+      const bandBottom=mix(targetY+rowGap*measuredDepth+12*bandReveal,axisY,bandCompletion);
       attrs(band,{x:valueX(.67),y:targetY,width:valueX(.73)-valueX(.67),height:Math.max(0,bandBottom-targetY),opacity:bandReveal});
-      attrs(rule,{x1:targetX,x2:targetX,y1:targetY,y2:bandBottom,opacity:bandReveal*.5});
-      attrs(axis,{transform:`translate(0,${axisY})`,opacity:axisGrowth});
-      attrs(axisPath,{d:`M ${mix(targetX,x0,axisGrowth)},0 H ${mix(targetX,x1,axisGrowth)}`});
+      attrs(rule,{x1:targetX,x2:targetX,y1:referenceY,y2:axisY,opacity:.5});
+      attrs(axis,{transform:`translate(0,${axisY})`,opacity:1});
+      attrs(axisPath,{d:`M ${x0},0 H ${x1}`});
       attrs(axisTitle,{x:(x0+x1)/2});
-      ticks.forEach((tick,i)=>attrs(tick,{transform:`translate(${valueX([0,.5,1][i])},0)`,opacity:ramp(axisGrowth,.5,1)}));
+      ticks.forEach((tick,i)=>attrs(tick,{transform:`translate(${valueX([0,.5,1][i])},0)`,opacity:1}));
 
       alternatives.forEach((a,i)=>{
         const trace=traces[i];

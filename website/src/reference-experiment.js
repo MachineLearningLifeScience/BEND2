@@ -56,7 +56,8 @@ export function createReferenceExperiment(host,original,alternatives) {
   return {
     draw(p,W,H,small,comparison) {
       const referenceEdit=ramp(p,.025,.105);
-      const edit=referenceEdit*(1-ramp(p,.28,.325));
+      // Restore the parent gradually before proposing independent single edits.
+      const edit=referenceEdit*(1-ramp(p,.27,.325));
       const spacing=small?Math.min(46,(W-56)/5):Math.min(104,(W-80)/6);
       // Scale down continuously on short screens instead of halving the DNA
       // at one height threshold when the caption needs more room.
@@ -77,11 +78,11 @@ export function createReferenceExperiment(host,original,alternatives) {
         const turn=isReference?edit:proposal?ramp(p,start,start+duration):0;
         const acquired=proposal?ramp(p,start-.018,start+.008):1;
         const settled=proposal?ramp(p,start+duration*.7,start+duration+.026):0;
-        const focus=isReference?1-ramp(p,.31,.35):acquired*(1-settled*.76)*(1-ramp(p,.53,.55));
+        const focus=isReference?1-ramp(p,.325,.36):acquired*(1-settled*.76)*(1-ramp(p,.53,.55));
         const initialOpacity=isReference?1:Math.max(.15,.62-Math.abs(site-7)*.07);
         attrs(locus.node,{transform:`translate(${x},${y})`,'font-size':size});
         const handover=1-ramp(p,.55,.57);
-        const letterOpacity=proposal?mix(initialOpacity,.96-settled*.12,acquired)*handover:isReference?1-.87*ramp(p,.31,.35):initialOpacity;
+        const letterOpacity=proposal?mix(initialOpacity,.96-settled*.12,acquired)*handover:isReference?1-.87*ramp(p,.325,.36):initialOpacity;
         attrs(locus.letters,{opacity:letterOpacity});
         attrs(locus.before,{y:size*.33-turn*size*1.12,'font-size':size});
         if(!locus.after)return;
@@ -113,8 +114,8 @@ export function createReferenceExperiment(host,original,alternatives) {
       const referenceLabel=1-ramp(transfer,.08,.3)+ramp(transfer,.78,1);
       const referenceY=mix(chartY+rowGap,comparison.targetY,transfer);
       attrs(assay,{opacity:1});
-      // Carry the heading with the reference, then hand it to the completed axis.
-      attrs(assayTitle,{x:comparison.x0,y:mix(chartY-24,comparison.targetY-(small?18:24),transfer),opacity:1-ramp(p,.845,.87)});
+      // Keep a heading above the measurements as well as the bottom axis label.
+      attrs(assayTitle,{x:comparison.x0,y:mix(chartY-24,comparison.targetY-(small?18:24),transfer),opacity:1});
       attrs(assayOrigin,{x1:comparison.x0,x2:comparison.x0,y1:chartY-9,y2:chartY+rowGap*editedReveal+9,opacity:originalReveal*originalExit});
       [[assayRows[0],1,chartY,originalReveal,originalExit],[assayRows[1],.70,referenceY,editedReveal,1]].forEach(([row,value,y,reveal,opacity])=>{
         const end=mix(comparison.x0,comparison.valueX(value),reveal);

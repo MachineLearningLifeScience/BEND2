@@ -20,26 +20,26 @@ if (passage) {
   // throughout .125–.25; model proposals and completed plots also get reading holds.
   const timeline = [
     [0,0], [12,.025], [56,.105], [68,.125], [90,.25],
-    [114,.33], [268,.53], [284,.53],
+    [146,.33], [300,.53], [316,.53],
     // Read five independent single-edit sequences before measuring them.
     // Pause again on the first result before testing the remaining four.
-    [344,.63], [364,.63], [410,.70], [426,.70], [550,.87],
+    [376,.63], [396,.63], [442,.70], [458,.70], [582,.87],
   ];
   const [exampleDistance, exampleEnd] = timeline.at(-1);
   const pacing = { example:exampleDistance, comparison:60, handoff:90, results:100 };
   const handoffStart = pacing.example + pacing.comparison;
   const resultsReady = handoffStart + pacing.handoff;
   const scrollLength = resultsReady + pacing.results;
-  let frame = 0, travel = 1, navHeight = 76, visible = true, focusResults = false, firstChart = true;
+  let frame = 0, scrollFrame = 0, travel = 1, navHeight = 76, visible = true, focusResults = false, firstChart = true;
   let renderedProgress = NaN, renderedStatic = false;
   let resultsInert, diagramInert, cueOpacity, skipOpacity, frameHeight = 1, transportLength, transport, moving;
   const displayValues = new WeakMap();
   let activeStep = -1;
   const steps = [
-    { start:0, name:'set the target', cue:'We start with a measured edit. Its RNA activity sets the target.', progress:.1875 },
-    { start:114, name:'predict matching edits', cue:'We ask the model for other edits with a similar effect.', progress:.53 },
-    { start:284, name:'test the edits', cue:'We test the edits in rank order to find one that matches the target.', progress:.63 },
-    { start:handoffStart + pacing.handoff * .40, name:'benchmark results', cue:'We compare the fraction of targets reached with each model’s top 1, 5, 10 or 25 edits.', fade:6 },
+    { start:0, name:'set the target', cue:'We start with an edit whose effect on RNA activity has been measured.', progress:.1875 },
+    { start:90, name:'predict matching edits', cue:'We ask the model for other edits with a similar effect.', progress:.53 },
+    { start:316, name:'test the edits', cue:'We test those edits to see how close they come to the target.', progress:.63 },
+    { start:handoffStart + pacing.handoff * .40, name:'benchmark results', cue:'We repeat this across hundreds of targets to find out which models reach target responses with the fewest trials.', fade:6 },
   ];
   const clamp = n => Math.max(0, Math.min(1, n));
   const smooth = n => { const p = clamp(n); return p * p * (3 - 2 * p); };
@@ -111,6 +111,7 @@ if (passage) {
     }
   }
   function measure() {
+    stopScroll();
     scrollArea.style.setProperty('--passage-travel', `${scrollLength}svh`);
     navHeight = parseFloat(getComputedStyle(stage).top) || 0;
     travel = Math.max(1, scrollArea.offsetHeight - stage.offsetHeight);
@@ -177,9 +178,24 @@ if (passage) {
     }
   }
   function wake() { if (!frame && visible && !document.hidden) frame = requestAnimationFrame(draw); }
+  function stopScroll() { cancelAnimationFrame(scrollFrame); scrollFrame = 0; }
   function goToProgress(progress, animate = false) {
     measure();
-    window.scrollTo({ top:scrollArea.getBoundingClientRect().top + scrollY - navHeight + travel * progress, behavior:animate && !reducedMotion.matches ? 'smooth' : 'instant' });
+    const from = scrollY;
+    const to = scrollArea.getBoundingClientRect().top + from - navHeight + travel * progress;
+    if (animate && !reducedMotion.matches) {
+      // Browser smooth scrolling rushes several scenes into less than a second.
+      // Only the step buttons use this timing; manual scrolling stays untouched.
+      const duration = Math.min(3200, Math.max(900, Math.abs(to-from) / innerHeight * 1100));
+      const start = performance.now();
+      function advance(now) {
+        const t = clamp((now-start) / duration);
+        window.scrollTo({ top:from+(to-from)*smooth(t), behavior:'instant' });
+        wake();
+        scrollFrame = t < 1 ? requestAnimationFrame(advance) : 0;
+      }
+      scrollFrame = requestAnimationFrame(advance);
+    } else window.scrollTo({ top:to, behavior:'instant' });
     wake();
   }
   function goToResults(skip = false) {
@@ -206,7 +222,14 @@ if (passage) {
     firstChart=false;
     requestAnimationFrame(() => { measure(); if(initial) followHash(); });
   });
-  window.addEventListener('hashchange', followHash);
+  window.addEventListener('hashchange', () => { stopScroll(); followHash(); });
+  window.addEventListener('popstate', stopScroll);
+  window.addEventListener('pointerdown', stopScroll, { passive:true });
+  window.addEventListener('wheel', stopScroll, { passive:true });
+  window.addEventListener('touchstart', stopScroll, { passive:true });
+  window.addEventListener('keydown', event => {
+    if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End','Escape',' '].includes(event.key)) stopScroll();
+  });
   window.addEventListener('scroll', wake, { passive:true });
   window.addEventListener('resize', measure, { passive:true });
   new ResizeObserver(measure).observe(scrollArea);
@@ -218,10 +241,10 @@ if (passage) {
   staticLayout.addEventListener('change', measure);
   reducedMotion.addEventListener('change', measure);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { cancelAnimationFrame(frame); frame = 0; }
+    if (document.hidden) { stopScroll(); cancelAnimationFrame(frame); frame = 0; }
     else wake();
   });
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); frame = 0; });
+  window.addEventListener('pagehide', () => { stopScroll(); cancelAnimationFrame(frame); frame = 0; });
   window.addEventListener('pageshow', measure);
   document.fonts.ready.then(() => { measure(); followHash(); });
   measure();
