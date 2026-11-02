@@ -10,7 +10,7 @@ This directory preserves the manuscript's **Table 1**, with audited website addi
 - Records SHA-256: `332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28`.
 - The exact copied source files and their hashes are listed in [the audit](../provenance/audit.json).
 
-`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 manuscript model values, two shared checkpoint priors, one new CENO evaluation, and seven experimental-reference values. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
+`benchmark.json` contains 17 model/interface rows, eight endpoints, five capability categories, 111 manuscript model values, two shared checkpoint priors, new CENO OpenSplice and Evo2 tissue-identification evaluations, and seven experimental-reference values. That gives 115 evaluated model cells out of 136. The five dataset groups represented here are GRCh38, OpenSplice, Siraj, GTEx and the enhancer Atlas: one reference genome and four experimental resources. The manuscript's broader experiments include additional datasets.
 
 ## Values and interfaces
 
@@ -26,11 +26,19 @@ The two post-trained NTv3 checkpoints already had hidden-base evaluations. Their
 
 CENO's missing full OpenSplice evaluation is now complete: **0.2954435032 Spearman**, with a 95% gene-bootstrap interval of **0.2815974629–0.3089228028**. All 590,703 sequence embeddings were recomputed uniformly in FP32, covering 590,104 interventions and 466 genes. The original five gene folds and readout settings are unchanged. Independent checks verified the model implementation, feature coverage, predictions, correlations and intervals. The [evaluation archive](../provenance/coverage-20261027/ceno-opensplice/README.md) includes the executed code and checksums. A separate converged ridge solve gives 0.303205; the table retains the published solver tolerance for consistency with the existing rows.
 
-AlphaGenome has no nucleotide-probability head, including when its functional representations receive fitted readouts. Enformer has neither nucleotide probabilities nor native splice outputs. Evo2 tissue embeddings remain incomplete and are pending at the user's request. Missing-cell dialogs give these reasons.
+AlphaGenome has no nucleotide-probability head, including when its functional representations receive fitted readouts. Enformer has neither nucleotide probabilities nor native splice outputs. Missing-cell dialogs give these reasons.
 
 DNABERT-2's older prior experiments scored entire BPE tokens. A new, explicitly defined single-base query was evaluated on LUMI using all 512 frozen genomic blocks. It forces singleton outputs where native tokenization uses multi-base tokens in all 512 cases, retaining a median 0.000002964 of the original vocabulary probability mass before renormalization. The resulting 6.203 bits/base is archived as a query diagnostic, **excluded from the table and combined score**. This is an interface limitation, not a conclusion about the model's sequence knowledge. The [query audit](../provenance/coverage-20261027/dnabert2-prior/README.md) includes source code, probabilities, checkpoint hashes and numerical checks.
 
 `evaluation_updates.py` applies the documented additions after a snapshot build and can also be run independently. It never edits the archived manuscript CSV or LaTeX table.
+
+## Evo2 completion, 2 November 2026
+
+The accepted native-FP8 Evo2 20B return supplies **21.568627450980394% tissue identification**, displayed as **21.6%**: 11 of 51 tissue profiles matched over 5,782 held-out genes. All 19,282 feature rows are complete and the original 4,489 rows are unchanged. The full 131,072-bp context, representation, training/validation/test cohort and readout selection protocol are unchanged; continuation used a documented two-H100 block-sharding and state adapter. Independent CPU fitting and SciPy ranks reproduce the result. The [compact evaluation archive](../provenance/evo2-tissue-20261102/README.md) preserves protocols, code, numerical and extraction reviews, raw results and hashes without duplicating the large arrays.
+
+Tissue-identification intervals remain omitted from all website cells and CSV exports. Evo2's original returned bounds are retained in the archive as `sourceCI`, with `uncertainty: null`; improved intervals are deferred. Its maximum- and random-tissue-contrast source results are archived but do not add tasks to the core table. Evo2 now has all eight task values and all five categories; its combined score is recomputed by the existing fixed-anchor machinery.
+
+The 13 foundation-model/readout rows now contain 99 of 104 task values. Their five missing cells are unsupported interfaces: prior loss for DNABERT-2, AlphaGenome fitted, AlphaGenome native and Enformer, plus native splicing for Enformer. No core-table model cell remains marked unevaluated. Including baseline and specialist rows, all 21 remaining missing model cells are unsupported; they are not unfinished jobs.
 
 ## Reference-index audit
 

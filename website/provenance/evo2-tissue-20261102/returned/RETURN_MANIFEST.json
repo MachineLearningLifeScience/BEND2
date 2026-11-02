@@ -1,0 +1,129 @@
+{
+  "files": [
+    {
+      "path": "extraction/.writer.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "extraction/COMPLETE.json",
+      "bytes": 152,
+      "sha256": "62087ba175b1b2a94c51df08899423ffc9a74eb4403458c0235ec370660c7634"
+    },
+    {
+      "path": "extraction/ENVIRONMENT.json",
+      "bytes": 835,
+      "sha256": "e12788fb21cdf82f3cc6712902afe4aa178e1fd93d43bada1e2f1137ea3adfcf"
+    },
+    {
+      "path": "extraction/LOCAL_ADAPTATION.json",
+      "bytes": 2657,
+      "sha256": "70e09db8890038977c5b5393cc902f389eee8f5d0d28720cd47d268e09e78080"
+    },
+    {
+      "path": "extraction/RESUME_VALIDATION.json",
+      "bytes": 296,
+      "sha256": "60db042fc263e85cd3891daba0de24e9847a795d1285a702913556d694526a4e"
+    },
+    {
+      "path": "extraction/completed.npy",
+      "bytes": 19410,
+      "sha256": "4b0e8f0c6d7055236d1ed0bc544fe459fe864d6900e5c762dcb25365930b4def"
+    },
+    {
+      "path": "extraction/embeddings.npy",
+      "bytes": 19744896,
+      "sha256": "bae44454fc4206358b52753e43ac0ae28824bcf2a4e726ff5324273ef54e0c6e"
+    },
+    {
+      "path": "extraction/environment-991772.json",
+      "bytes": 835,
+      "sha256": "38ccfbde10bae970e6ee8de35da61b081f83560a445d38987c3d015d00823972"
+    },
+    {
+      "path": "extraction/environment-994437.json",
+      "bytes": 835,
+      "sha256": "e12788fb21cdf82f3cc6712902afe4aa178e1fd93d43bada1e2f1137ea3adfcf"
+    },
+    {
+      "path": "extraction/multi_gpu_state.py",
+      "bytes": 2752,
+      "sha256": "a58075036809151c85adb7c4db64ffb68ef8913c812f6515c6034311ffc843ea"
+    },
+    {
+      "path": "extraction/progress.json",
+      "bytes": 254,
+      "sha256": "ee3ce2baec2ff8d3a2d1343328a247759dd9c624423510b39e76933dc5670888"
+    },
+    {
+      "path": "extraction/protocol.json",
+      "bytes": 1485,
+      "sha256": "45e22b53cc4e7a9342188ab3afc4eae5c9d6a6231caced9e5e888aa7c1dd3f37"
+    },
+    {
+      "path": "extraction/resume_state.pt",
+      "bytes": 76521,
+      "sha256": "1a78ed0b928f654473059678ef2125577339d45b1e26b0737307fa2e7dec80ea"
+    },
+    {
+      "path": "extraction/run_evo2_local.py",
+      "bytes": 19697,
+      "sha256": "57aea8293303d2675912cfccced3919c1cff9613b3e2bf53b522549294306b39"
+    },
+    {
+      "path": "final_evaluation/COMPLETE.json",
+      "bytes": 3498,
+      "sha256": "9fe4c9e405d81a46b0b1e6a05b0083db5f1262c96783758d5c441192b80baf39"
+    },
+    {
+      "path": "final_evaluation/evaluation/evo2_20b_bootstrap.npz",
+      "bytes": 261040,
+      "sha256": "cef1b5e661df497ce1186efd14b6d04a7e74a57e4cf13859780a29fa8026431b"
+    },
+    {
+      "path": "final_evaluation/evaluation/paired_differences.csv",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "final_evaluation/evaluation/protocol.json",
+      "bytes": 1464,
+      "sha256": "ae7ddf09d09693a691161c7d956778fac9e3b3cb598610fa2d28713d10649550"
+    },
+    {
+      "path": "final_evaluation/evaluation/results.csv",
+      "bytes": 441,
+      "sha256": "01abdc4f950d81a431ca4b7f0589325af6a5ce2f263fb3b3266da5795b5bb5ed"
+    },
+    {
+      "path": "final_evaluation/evo2_20b/complete.json",
+      "bytes": 133,
+      "sha256": "17bde501e03bd7c3cbb64b59abafeb0a5956fc38ac671b5db2f09092b7d52b2d"
+    },
+    {
+      "path": "final_evaluation/evo2_20b/fit.npz",
+      "bytes": 219440,
+      "sha256": "26b822b85ef053e8d9dd1f8616abcd1014185c8e0ba399d41c80492977831656"
+    },
+    {
+      "path": "final_evaluation/evo2_20b/predictions.npz",
+      "bytes": 9726446,
+      "sha256": "2bc8dc8eac1ee64585f333611f56e8f31fefe65913149835c30cdb1ab17a26d1"
+    },
+    {
+      "path": "final_evaluation/evo2_20b/protocol.json",
+      "bytes": 1354,
+      "sha256": "69561ec094d48669bfc8985cc74cd0d3ef7c7224f589807a744e79b63cf8f97f"
+    },
+    {
+      "path": "final_evaluation/evo2_20b/retrieval_confusion.csv",
+      "bytes": 50922,
+      "sha256": "54a680cd8302989b71b9d4b5aab1f3aeb6b76ff1ec4c13dea46c0b3b0bb059ba"
+    },
+    {
+      "path": "final_evaluation/independent-audit.json",
+      "bytes": 1409,
+      "sha256": "d4381f8643dccab919506dee9be12dd1f9caf1b0905cf029ac28a432c5173589"
+    }
+  ]
+}

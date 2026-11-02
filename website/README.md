@@ -43,6 +43,11 @@ using the same recorded estimates and intervals. The archived manuscript table i
 unchanged; the additions and diagnostic sources are documented separately.
 The completed CENO OpenSplice evaluation is included with its source record and
 gene-bootstrap interval in `provenance/coverage-20261027/ceno-opensplice/`.
+The completed Evo2 tissue-identification evaluation identifies 11 of 51 tissues
+(21.6%) over 5,782 held-out genes. Its native-FP8 extraction, independent audit,
+source records and checksums are archived in `provenance/evo2-tissue-20261102/`.
+Tissue-identification intervals remain omitted across all models; the returned
+Evo2 bounds are retained as provenance. Evo2 now has all eight task values.
 
 The generated `data/benchmark.json` combines these inputs; always rebuild from
 `benchmark.paper.json`. Every published submission must have a matching review.

@@ -1,0 +1,47 @@
+{
+  "modelId": "evo2_20b",
+  "taskId": "tissue_identification",
+  "evaluatedOn": "2026-10-31",
+  "verifiedOn": "2026-11-02",
+  "sourceValue": 21.568627450980394,
+  "unit": "%",
+  "interface": "Embedding-fitted linear head",
+  "verificationStatus": "passed",
+  "uncertainty": null,
+  "sourceCI": {
+    "level": 0.95,
+    "low": 0.0784313725490196,
+    "high": 0.21568627450980393,
+    "unit": "fraction",
+    "type": "returned percentile bootstrap interval",
+    "samplingUnit": "held-out gene",
+    "replicates": 10000,
+    "seed": 20260917,
+    "record": "returned/final_evaluation/evaluation/results.csv",
+    "metric": "retrieval_top1",
+    "note": "Archived provenance only. Tissue-identification intervals are omitted from website displays and CSV result exports for all models; no replacement interval is introduced."
+  },
+  "notes": [
+    "Completed native-FP8 extraction with the original 131,072-bp context and 512-dimensional features; continuation used two H100 GPUs with the documented block-sharding and state adapter.",
+    "Correctly identifies 11 of 51 tissue profiles across 5,782 held-out genes. Training-only standardization and ridge fitting, with alpha 1 selected on validation genes, were independently reproduced.",
+    "All 19,282 feature rows are complete and all 4,489 original rows are unchanged. The shared cohort and its previously documented eight pseudoautosomal duplicate windows are unchanged."
+  ],
+  "cohort": {
+    "trainingGenes": 12146,
+    "validationGenes": 1350,
+    "testGenes": 5782,
+    "tissues": 51,
+    "correctTissues": 11
+  },
+  "checkpointRevision": "8b0f0a9a70c66367ed181a17d049b95699a28fed",
+  "checkpointSha256": "979b345dc700a9cae6b63f570d9b3f438e31a68dd8dc0bc0d8d2a0fcd3caf791",
+  "archiveSha256": "4572ece88daa9f448ca9b7d81a2182d5ca26e5b5287e6798aa38ef1c2cb8c253",
+  "primaryRecord": "returned/final_evaluation/evaluation/results.csv",
+  "primaryMetric": "retrieval_top1",
+  "primaryScale": 100,
+  "primaryPercentRecord": "returned/final_evaluation/independent-audit.json",
+  "auditRecord": "audit/independent-replay.json",
+  "extractionReview": "audit/extraction-review.md",
+  "artifactManifest": "SHA256SUMS.json",
+  "documentation": "README.md"
+}

@@ -1,0 +1,37 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-6.8.0-100-generic-x86_64-with-glibc2.39",
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "transformer_engine": "2.18.0",
+    "transformer_engine_torch": "2.18.0",
+    "flash_attn": "2.8.0.post2",
+    "numpy": "2.5.2",
+    "einops": "0.8.2"
+  },
+  "torch_cuda": "13.0",
+  "differences": {},
+  "gpu": "NVIDIA H100 80GB HBM3",
+  "gpu_total_memory": 85017493504,
+  "compute_capability": [
+    9,
+    0
+  ],
+  "native_fp8": true,
+  "process_id": 994437,
+  "started_unix": 1793273983.7125354,
+  "multi_gpu_shard": true,
+  "gpu_count": 2,
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA H100 80GB HBM3",
+      "memory": 85017493504
+    },
+    {
+      "index": 1,
+      "name": "NVIDIA H100 80GB HBM3",
+      "memory": 85017493504
+    }
+  ]
+}

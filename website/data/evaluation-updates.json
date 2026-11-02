@@ -1,6 +1,6 @@
 {
   "id": "coverage-20261027",
-  "checkedOn": "2026-10-27",
+  "checkedOn": "2026-11-02",
   "sharedPriors": [
     {
       "modelId": "ntv3_100m_native",
@@ -46,12 +46,6 @@
       "status": "unsupported",
       "reason": "DNABERT-2 predicts multi-base tokens. A forced single-base query was tested, but its tokenization mismatch prevents a directly comparable prior score.",
       "diagnosticSourceId": "dnabert2-prior-diagnostic"
-    },
-    {
-      "modelId": "evo2_20b",
-      "taskId": "tissue_identification",
-      "status": "unevaluated",
-      "reason": "The full-context Evo2 tissue evaluation is incomplete. Partial embeddings cannot supply the full held-out-gene result."
     },
     {
       "modelId": "markov0",
@@ -180,6 +174,24 @@
       "title": "CENO evaluation artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
       "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
+    },
+    {
+      "id": "evo2-tissue-identification",
+      "title": "Evo2 completed tissue-identification evaluation",
+      "snapshotPath": "provenance/evo2-tissue-20261102/entry.json",
+      "sha256": "6b1be888062990288244e8657a1462103e2aba687aca9152ee73496a0105766b"
+    },
+    {
+      "id": "evo2-tissue-identification-methods",
+      "title": "Evo2 extraction and independent evaluation checks",
+      "snapshotPath": "provenance/evo2-tissue-20261102/README.md",
+      "sha256": "7adc9a70eda713700bd91e5eaa23cc54cedb46ad6e5ffd5cb665a93e36b162cc"
+    },
+    {
+      "id": "evo2-tissue-identification-files",
+      "title": "Evo2 evaluation artifact checksums",
+      "snapshotPath": "provenance/evo2-tissue-20261102/SHA256SUMS.json",
+      "sha256": "a43ae2b3e1594858e8bd37f78165790cf5b63344394c6780f4faf9bc06180051"
     }
   ],
   "evaluations": [
@@ -187,6 +199,11 @@
       "modelId": "ceno_1b_1m",
       "taskId": "opensplice",
       "sourceId": "ceno-full-opensplice"
+    },
+    {
+      "modelId": "evo2_20b",
+      "taskId": "tissue_identification",
+      "sourceId": "evo2-tissue-identification"
     }
   ]
 }

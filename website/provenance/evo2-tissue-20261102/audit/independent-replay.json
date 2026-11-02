@@ -1,0 +1,140 @@
+{
+  "date": "2026-11-02",
+  "status": "passed_numerical_replay",
+  "source_zip": "/Users/fvk220/Downloads/evo2-results.zip",
+  "source_zip_sha256": "4572ece88daa9f448ca9b7d81a2182d5ca26e5b5287e6798aa38ef1c2cb8c253",
+  "manifest_files_verified": 25,
+  "original_evaluation_scripts_match": {
+    "evaluate_evo2.py": true,
+    "finalize_evo2.py": true,
+    "fit_gtex_ridge.py": true,
+    "gtex_metrics.py": true,
+    "independent_audit.py": true,
+    "replay_fixture.py": true,
+    "self_test.py": true
+  },
+  "embedding_shape": [
+    19282,
+    512
+  ],
+  "all_genes_complete": true,
+  "finite_and_nonzero_rows": true,
+  "n_train": 12146,
+  "n_validation": 1350,
+  "n_test": 5782,
+  "n_tissues": 51,
+  "exact_gene_and_tissue_order": true,
+  "no_test_index_fit_overlap": true,
+  "selected_alpha": 1.0,
+  "validation": [
+    {
+      "alpha": 10000.0,
+      "validation_standardized_mse": 0.853451887123895
+    },
+    {
+      "alpha": 1000.0,
+      "validation_standardized_mse": 0.8093289534984055
+    },
+    {
+      "alpha": 100.0,
+      "validation_standardized_mse": 0.7754949875677765
+    },
+    {
+      "alpha": 10.0,
+      "validation_standardized_mse": 0.7534581772012492
+    },
+    {
+      "alpha": 1.0,
+      "validation_standardized_mse": 0.7507698414609356
+    },
+    {
+      "alpha": 0.1,
+      "validation_standardized_mse": 0.7529945920268238
+    }
+  ],
+  "max_prediction_error": 6.95432156305742e-10,
+  "results": [
+    {
+      "metric": "maximum_contrast_spearman",
+      "value": 0.6051213729723149,
+      "low": 0.5933823690297655,
+      "high": 0.6167224321096094
+    },
+    {
+      "metric": "random_contrast_spearman",
+      "value": 0.4689191485650731,
+      "low": 0.4603320393173467,
+      "high": 0.47736393539754396
+    },
+    {
+      "metric": "retrieval_top1",
+      "value": 0.21568627450980393,
+      "low": 0.0784313725490196,
+      "high": 0.21568627450980393
+    }
+  ],
+  "bootstrap_replicates": 10000,
+  "bootstrap_independent_expanded_replays": 33,
+  "bootstrap_indices": [
+    0,
+    1,
+    265,
+    482,
+    951,
+    1266,
+    1952,
+    2013,
+    2564,
+    3104,
+    3540,
+    4203,
+    4328,
+    4450,
+    5578,
+    5698,
+    6561,
+    6838,
+    6859,
+    6873,
+    6997,
+    7091,
+    7284,
+    7459,
+    8150,
+    8351,
+    8585,
+    8716,
+    8801,
+    8840,
+    9510,
+    9808,
+    9999
+  ],
+  "bootstrap_max_replay_error": 1.1102230246251565e-16,
+  "confidence_intervals_recomputed_from_all_returned_draws": true,
+  "correct_tissues": [
+    "Adrenal_Gland",
+    "Brain_Cerebellar_Hemisphere",
+    "Brain_Cerebellum",
+    "Kidney_Medulla",
+    "Muscle_Skeletal",
+    "Ovary",
+    "Pancreas",
+    "Skin_Not_Sun_Exposed_Suprapubic",
+    "Stomach",
+    "Testis",
+    "Whole_Blood"
+  ],
+  "random_tissue_id_percent": 1.9607843137254901,
+  "precision": "native FP8, original snapshot continued across two H100 GPUs",
+  "extraction_audit": "See extraction-review.md for independent model-use review",
+  "limitations": [
+    "GPU inference was not rerun locally; extraction was reviewed separately from this CPU audit.",
+    "Confidence intervals resample held-out genes, not donors or tissues.",
+    "The inherited split includes eight held-out pseudoautosomal windows identical to train/validation windows; this is common to the supplied evaluation."
+  ],
+  "runtime": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1"
+  }
+}

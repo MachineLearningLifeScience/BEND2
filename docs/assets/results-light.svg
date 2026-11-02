@@ -196,15 +196,16 @@
 <text x="15" y="473" class="small muted" text-anchor="middle">8</text>
 <text x="32" y="465" class="name" text-anchor="start">Evo2 20B</text>
 <text x="32" y="483" class="small muted" text-anchor="start">Fitted readouts</text>
-<text x="274" y="472" class="value" text-anchor="middle">38.4</text>
-<path d="M241 482H259.63594523491196" stroke="#61736c" stroke-width="1.5"/>
+<text x="274" y="472" class="value" text-anchor="middle">40.4</text>
+<path d="M241 482H260.5936604723716" stroke="#61736c" stroke-width="1.5"/>
 <rect x="323" y="449" width="104" height="38" fill="#9C7524" opacity="0.1795"/>
 <text x="375" y="474" class="value" text-anchor="middle">1.388</text>
 <rect x="433" y="449" width="104" height="38" fill="#2463A6" opacity="0.0891"/>
 <text x="485" y="474" class="value" text-anchor="middle">0.367</text>
 <rect x="543" y="449" width="104" height="38" fill="#19836E" opacity="0.0291"/>
 <text x="595" y="474" class="value" text-anchor="middle">0.041</text>
-<text x="705" y="474" class="value muted" text-anchor="middle">—</text>
+<rect x="653" y="449" width="104" height="38" fill="#19836E" opacity="0.0477"/>
+<text x="705" y="474" class="value" text-anchor="middle">21.6</text>
 <rect x="763" y="449" width="104" height="38" fill="#7956A5" opacity="0.0358"/>
 <text x="815" y="474" class="value" text-anchor="middle">0.050</text>
 <rect x="873" y="449" width="104" height="38" fill="#BE4D35" opacity="0.0427"/>

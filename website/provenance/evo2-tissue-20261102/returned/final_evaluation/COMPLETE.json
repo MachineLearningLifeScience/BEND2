@@ -1,0 +1,80 @@
+{
+  "finished_unix": 1793472898.71243,
+  "producer_embedding_sha256": "bae44454fc4206358b52753e43ac0ae28824bcf2a4e726ff5324273ef54e0c6e",
+  "bootstrap_counts_sha256": "ed030943a78e7a5a8273fd6aa4883729b044be292f87c7cf90afb96f7ea81555",
+  "contrast_pairs_sha256": "cedfda3740844e59fe04d342704c0185ae3302f6a994a6d63a71f384a0ea9ba3",
+  "independent_audit": {
+    "checks": "independent SciPy rank retrieval plus sklearn Cholesky ridge replay; exact frozen paired bootstrap hash",
+    "bootstrap_counts_sha256": "ed030943a78e7a5a8273fd6aa4883729b044be292f87c7cf90afb96f7ea81555",
+    "results": [
+      {
+        "model": "evo2_20b",
+        "tissue_id_percent": 21.568627450980394,
+        "ci95_percent": [
+          7.8431372549019605,
+          21.56862745098039
+        ],
+        "ridge_alpha": 1.0,
+        "ridge_prediction_max_abs_error": 1.744941968695457e-10,
+        "independent_validation": [
+          {
+            "alpha": 10000.0,
+            "validation_standardized_mse": 0.8534518871238951
+          },
+          {
+            "alpha": 1000.0,
+            "validation_standardized_mse": 0.8093289534984053
+          },
+          {
+            "alpha": 100.0,
+            "validation_standardized_mse": 0.7754949875677799
+          },
+          {
+            "alpha": 10.0,
+            "validation_standardized_mse": 0.7534581772012375
+          },
+          {
+            "alpha": 1.0,
+            "validation_standardized_mse": 0.7507698414618613
+          },
+          {
+            "alpha": 0.1,
+            "validation_standardized_mse": 0.7529945920291682
+          }
+        ],
+        "n_train": 12146,
+        "n_validation": 1350,
+        "n_test": 5782,
+        "n_tissues": 51,
+        "no_test_fit_overlap": true,
+        "predictions_sha256": "2bc8dc8eac1ee64585f333611f56e8f31fefe65913149835c30cdb1ab17a26d1"
+      }
+    ]
+  },
+  "packages": {
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.0",
+    "pandas": "3.0.5",
+    "numba": "0.67.0"
+  },
+  "output_sha256": {
+    "evo2_20b/predictions.npz": "2bc8dc8eac1ee64585f333611f56e8f31fefe65913149835c30cdb1ab17a26d1",
+    "evo2_20b/fit.npz": "26b822b85ef053e8d9dd1f8616abcd1014185c8e0ba399d41c80492977831656",
+    "evo2_20b/protocol.json": "69561ec094d48669bfc8985cc74cd0d3ef7c7224f589807a744e79b63cf8f97f",
+    "evo2_20b/retrieval_confusion.csv": "54a680cd8302989b71b9d4b5aab1f3aeb6b76ff1ec4c13dea46c0b3b0bb059ba",
+    "evaluation/results.csv": "01abdc4f950d81a431ca4b7f0589325af6a5ce2f263fb3b3266da5795b5bb5ed",
+    "evaluation/evo2_20b_bootstrap.npz": "cef1b5e661df497ce1186efd14b6d04a7e74a57e4cf13859780a29fa8026431b",
+    "evaluation/protocol.json": "ae7ddf09d09693a691161c7d956778fac9e3b3cb598610fa2d28713d10649550",
+    "independent-audit.json": "d4381f8643dccab919506dee9be12dd1f9caf1b0905cf029ac28a432c5173589"
+  },
+  "scripts_sha256": {
+    "evaluate_evo2.py": "2747080c15cf1c8cccefc74513c3cc540fb6161a80b4bdbfd3f76b4c0e5e2bc1",
+    "finalize_evo2.py": "42a494ce35cc869768aebeed78dba8b8a2e3bd3f643cfe74c99f5b254065e2a3",
+    "fit_gtex_ridge.py": "cf7fcff5b5d0f442b0248311b24ca44bfe3eef28892b4c82864fcc1e62d0fdf1",
+    "gtex_metrics.py": "c6fa77d5de4edabbda3760805b1371f04145bab8ddcd83e9ea38f34848f6d0ad",
+    "independent_audit.py": "ceba65dc53690a0babd12deab79135a011c7de986987027f67af8748d8f1e3df",
+    "replay_fixture.py": "f32321a836581a3e2362ffc833b12bbc45ceea0796a35d937a337d14bf347086",
+    "self_test.py": "22c59d9765386743c4cccb4bb60a09c8f8e46f213d02bf4353b5fa23e6b5e303"
+  }
+}

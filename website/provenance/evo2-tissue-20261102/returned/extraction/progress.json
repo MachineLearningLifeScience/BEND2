@@ -1,0 +1,10 @@
+{
+  "completed": 19281,
+  "total": 19282,
+  "seconds": 198785.83636008098,
+  "genes_per_second": 0.07440167906736257,
+  "estimated_remaining_hours": 0.00373348802419204,
+  "updated_unix": 1793472854.977497,
+  "pid": 994437,
+  "implementation": "dense"
+}

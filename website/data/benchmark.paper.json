@@ -746,18 +746,23 @@
     {
       "modelId": "evo2_20b",
       "taskId": "tissue_identification",
-      "value": null,
-      "displayValue": "—",
-      "status": "unevaluated",
-      "interface": null,
-      "sourceValue": null,
-      "sourceId": "table-1",
+      "value": 21.6,
+      "displayValue": "21.6",
+      "status": "evaluated",
+      "interface": "Embedding-fitted linear head",
+      "sourceValue": 21.568627450980394,
+      "sourceId": "evo2-tissue-identification",
       "sourceRecordId": "evo2_20b/tissue_identification",
-      "notes": [],
+      "notes": [
+        "Completed native-FP8 extraction with the original 131,072-bp context and 512-dimensional features; continuation used two H100 GPUs with the documented block-sharding and state adapter.",
+        "Correctly identifies 11 of 51 tissue profiles across 5,782 held-out genes. Training-only standardization and ridge fitting, with alpha 1 selected on validation genes, were independently reproduced.",
+        "All 19,282 feature rows are complete and all 4,489 original rows are unchanged. The shared cohort and its previously documented eight pseudoautosomal duplicate windows are unchanged."
+      ],
       "uncertainty": null,
       "manuscriptStatus": "unevaluated",
-      "missingReason": "The full-context Evo2 tissue evaluation is incomplete. Partial embeddings cannot supply the full held-out-gene result.",
-      "extensionId": "coverage-20261027"
+      "extensionId": "coverage-20261027",
+      "evaluatedOn": "2026-10-31",
+      "evaluationSourceId": "evo2-tissue-identification"
     },
     {
       "modelId": "evo2_20b",
@@ -3643,7 +3648,7 @@
       "id": "evaluation-updates",
       "title": "Audited website additions and missing-result explanations",
       "snapshotPath": "data/evaluation-updates.json",
-      "sha256": "dced1d5d992b449e5c1d2a93989f6df09c155488d99fa119660f0e271c0a807b"
+      "sha256": "02a6a380db3093b8a6d75faafc094e65539cecc4ef604cd55dbefa89609c347b"
     },
     {
       "id": "ntv3-checkpoints",
@@ -3680,6 +3685,24 @@
       "title": "CENO evaluation artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
       "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
+    },
+    {
+      "id": "evo2-tissue-identification",
+      "title": "Evo2 completed tissue-identification evaluation",
+      "snapshotPath": "provenance/evo2-tissue-20261102/entry.json",
+      "sha256": "6b1be888062990288244e8657a1462103e2aba687aca9152ee73496a0105766b"
+    },
+    {
+      "id": "evo2-tissue-identification-methods",
+      "title": "Evo2 extraction and independent evaluation checks",
+      "snapshotPath": "provenance/evo2-tissue-20261102/README.md",
+      "sha256": "7adc9a70eda713700bd91e5eaa23cc54cedb46ad6e5ffd5cb665a93e36b162cc"
+    },
+    {
+      "id": "evo2-tissue-identification-files",
+      "title": "Evo2 evaluation artifact checksums",
+      "snapshotPath": "provenance/evo2-tissue-20261102/SHA256SUMS.json",
+      "sha256": "a43ae2b3e1594858e8bd37f78165790cf5b63344394c6780f4faf9bc06180051"
     }
   ],
   "scoring": {
@@ -4275,7 +4298,7 @@
     "endpointCount": 8,
     "categoryCount": 5,
     "experimentalReferenceCells": 7,
-    "evaluatedModelCells": 114,
+    "evaluatedModelCells": 115,
     "datasetGroups": 5
   },
   "limitations": [

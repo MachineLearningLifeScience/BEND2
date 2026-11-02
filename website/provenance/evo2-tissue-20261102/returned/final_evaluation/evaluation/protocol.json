@@ -1,0 +1,30 @@
+{
+  "models": [
+    "evo2_20b"
+  ],
+  "required_models": [
+    "evo2_20b"
+  ],
+  "complete": true,
+  "n_genes": 5782,
+  "n_tissues": 51,
+  "bootstrap": "paired whole-gene resampling, fixed51 candidates and queries, exact reranking through frequency-weighted ranks",
+  "seed": 20260917,
+  "bootstrap_counts_sha256": "ed030943a78e7a5a8273fd6aa4883729b044be292f87c7cf90afb96f7ea81555",
+  "rank_precision": "float64, including square roots of integer multiplicities",
+  "replicates": 10000,
+  "confidence_interval": "95% percentile",
+  "chance": {
+    "value": 0.0196078431372549,
+    "interval": null,
+    "style": "plain gray bar"
+  },
+  "maximum_pair_selection": "from full observed log1p(TPM), same frozen partners for all models and split-half reference; lexicographic tissue tie break",
+  "reference": "half A predicts half B on common genes and shared full-data contrast partners; uncertainty conditional on saved donor split",
+  "retrieval_ties": "fractional credit among winners tied within absolute1e-12",
+  "random_pair_seed": 20260918,
+  "invalid_handling": "constant profiles make retrieval replicate invalid; report counts and omit invalid values from percentile, no silent denominator changes",
+  "validation": "weighted-rank correlations checked against explicitly duplicated SciPy ranks; full point estimates cross-checked",
+  "script_sha256": "2747080c15cf1c8cccefc74513c3cc540fb6161a80b4bdbfd3f76b4c0e5e2bc1",
+  "updated_unix": 1793472896.0511272
+}

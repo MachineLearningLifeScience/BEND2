@@ -1,0 +1,19 @@
+{
+  "short": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "full": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "tolerance_relative_l2": 0.005,
+  "exact_replay": true,
+  "resume_control_relative_l2": 0.0,
+  "completed_initially": 4491,
+  "passed": true,
+  "process_id": 994437,
+  "checked_unix": 1793274069.1224387
+}

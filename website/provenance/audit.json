@@ -5,7 +5,7 @@
   "sourceWorkingTreeClean": true,
   "tableSha256": "75febce7f238262b435731ba8258f7f647111a6edf83f430f2099ada3eb5c471",
   "csvSha256": "332d38d328592db946c336c0260d62c4aa02c9be005636e29bea5054fa743c28",
-  "benchmarkSha256": "807d7b62e9487f3888a7b1e893bbc43b53b6b37742673bedbebe92cb1dd11f7a",
+  "benchmarkSha256": "f12da428429214db248b8902c51648de9f4e6bea5f17f1ff49fce4750991e18e",
   "checkedCells": 144,
   "publishedNonMissingCells": 118,
   "checks": [
@@ -116,7 +116,7 @@
       "id": "evaluation-updates",
       "title": "Audited website additions and missing-result explanations",
       "snapshotPath": "data/evaluation-updates.json",
-      "sha256": "dced1d5d992b449e5c1d2a93989f6df09c155488d99fa119660f0e271c0a807b"
+      "sha256": "02a6a380db3093b8a6d75faafc094e65539cecc4ef604cd55dbefa89609c347b"
     },
     {
       "id": "ntv3-checkpoints",
@@ -153,9 +153,27 @@
       "title": "CENO evaluation artifact checksums",
       "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
       "sha256": "4458b87b47a46dd8d0f678c2ea99b8151b497abf0b567c996e50c892498cac73"
+    },
+    {
+      "id": "evo2-tissue-identification",
+      "title": "Evo2 completed tissue-identification evaluation",
+      "snapshotPath": "provenance/evo2-tissue-20261102/entry.json",
+      "sha256": "6b1be888062990288244e8657a1462103e2aba687aca9152ee73496a0105766b"
+    },
+    {
+      "id": "evo2-tissue-identification-methods",
+      "title": "Evo2 extraction and independent evaluation checks",
+      "snapshotPath": "provenance/evo2-tissue-20261102/README.md",
+      "sha256": "7adc9a70eda713700bd91e5eaa23cc54cedb46ad6e5ffd5cb665a93e36b162cc"
+    },
+    {
+      "id": "evo2-tissue-identification-files",
+      "title": "Evo2 evaluation artifact checksums",
+      "snapshotPath": "provenance/evo2-tissue-20261102/SHA256SUMS.json",
+      "sha256": "a43ae2b3e1594858e8bd37f78165790cf5b63344394c6780f4faf9bc06180051"
     }
   ],
   "extensionId": "coverage-20261027",
   "sharedCheckpointCells": 2,
-  "newEvaluationCells": 1
+  "newEvaluationCells": 2
 }

@@ -1,0 +1,71 @@
+{
+  "source_packet": "/dcai/projects/iu_0096/marfre/evo2-gtex-handoff/evo2-gtex-handoff-stopped-20260923",
+  "source_completed_genes": 4489,
+  "total_genes": 19282,
+  "source_manifest_sha256": "f6f638fb33c879f7051330d4c8e7c1e9b6f0897eb95a7578a91ccd387327c3cb",
+  "runtime_python": "/dcai/projects/iu_0096/bridio/bend2/evo2_gtex/.venv-evo2/bin/python",
+  "changes": [
+    "Opt-in two-GPU Vortex block sharding, with serial gene order",
+    "Device-aware TE extra-state loading; rebuild recipe state and quantizers together only when misplaced",
+    "Device-aware synchronization during extra-state capture",
+    "Extend initial one-device RNG state with seeded second-device state; subsequent resumes require matching device count",
+    "Record adapter hash and GPU layout in extraction provenance"
+  ],
+  "unchanged": [
+    "Frozen vendor Python sources and numerical implementation",
+    "FP8 precision, weights, window, layer, projection, gene order",
+    "All six reference controls, 0.005 relative-L2 threshold, exact replay, existing-gene comparison",
+    "51 tissues, 5782 common held-out genes, fitting, bootstrap and independent audit"
+  ],
+  "validation_job": 533464,
+  "files_sha256": {
+    "scripts/extraction/run_evo2.py": "57aea8293303d2675912cfccced3919c1cff9613b3e2bf53b522549294306b39",
+    "scripts/extraction/multi_gpu_state.py": "a58075036809151c85adb7c4db64ffb68ef8913c812f6515c6034311ffc843ea",
+    "scripts/extraction/test_multi_gpu_state.py": "c204e9fc3a45377d8fa09811ca145d28af3b793fe7de6ca9a261c68637c2fccd",
+    "validate.sbatch": "aa65e06cb651b1dc61c61bc083b08beee8cb2334708eb81e8c190021a6bbd5b3",
+    "resume.sbatch": "5f7d1a9bea1e038cbf578af94f1d293943e1d16716d5f957f79d33ac31ffbf4d",
+    "evaluate.sbatch": "cbe958c5b7634f8e5408586b124deb3e95a846b866917d4c06c4f59aa7ba0d34"
+  },
+  "validation_result": {
+    "short": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "full": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tolerance_relative_l2": 0.005,
+    "exact_replay": true,
+    "resume_control_relative_l2": 0.0,
+    "completed_initially": 4489,
+    "passed": true,
+    "process_id": 796925,
+    "checked_unix": 1793273736.8248177
+  },
+  "extraction_job": 533467,
+  "evaluation_job": 533471,
+  "checkpoint_restart_validation": {
+    "short": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "full": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tolerance_relative_l2": 0.005,
+    "exact_replay": true,
+    "resume_control_relative_l2": 0.0,
+    "completed_initially": 4491,
+    "passed": true,
+    "process_id": 994437,
+    "checked_unix": 1793274069.1224387
+  },
+  "cpu_self_test": "passed",
+  "frozen_data_validation": "passed"
+}
