@@ -48,9 +48,9 @@ the repository. See [PyPI's setup instructions](https://docs.pypi.org/trusted-pu
 
 ## Release a version
 
-1. Update the version in `pyproject.toml`, `CITATION.cff` and `CHANGELOG.md`.
+1. Update the version in `pyproject.toml`, `CITATION.cff` and `src/bend2/__init__.py`.
 2. Confirm the benchmark tests and website build pass.
-3. Create a `vVERSION` tag and a GitHub release for the same commit.
+3. Create a `vVERSION` tag and a GitHub release with brief release notes for the same commit.
 4. Upload locally, or run `Publish to PyPI` with that tag after trusted
    publishing is configured and approve its `pypi` environment deployment.
 
