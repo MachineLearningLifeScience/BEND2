@@ -100,9 +100,9 @@ function sourceMarkup(data, cell, task) {
     let evidenceURL = "";
     try { if (new URL(contribution.url).protocol === "https:") evidenceURL = contribution.url; } catch {}
     const recordURL = /^submissions\/community-[a-z0-9-]+\.json$/.test(contribution.submissionPath)
-      ? `https://github.com/yhsure/genomic-bending/blob/benchmark/${contribution.submissionPath}` : "";
+      ? `https://github.com/MachineLearningLifeScience/BEND2/blob/main/${contribution.submissionPath}` : "";
     const reviewURL = /^reviews\/community-[a-z0-9-]+\.json$/.test(contribution.reviewPath || "")
-      ? `https://github.com/yhsure/genomic-bending/blob/benchmark/${contribution.reviewPath}` : "";
+      ? `https://github.com/MachineLearningLifeScience/BEND2/blob/main/${contribution.reviewPath}` : "";
     const audit = cell?.verification?.reproduction;
     let rerunURL = "";
     try { if (new URL(audit?.evidence?.url).protocol === "https:") rerunURL = audit.evidence.url; } catch {}

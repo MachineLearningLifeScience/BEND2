@@ -25,6 +25,11 @@
 .assay-edited .assay-bar { stroke:var(--reference); }
 .assay-edited circle { fill:var(--reference); }
 .reference-assay .assay-edited text { fill:var(--reference); }
+.assay-sequence text { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; fill:#c5c7ba; }
+.assay-sequence .assay-base { fill:var(--candidate); }
+.assay-site { fill:#dfaa8912; stroke:#dfaa8980; stroke-width:1; }
+.edit-trail { fill:none; stroke:var(--candidate); stroke-width:1.3; stroke-opacity:.58; }
+.is-match .edit-trail { stroke:var(--match); stroke-width:2; stroke-opacity:1; }
 /* Safe before the first frame; per-frame inline styles reveal these groups. */
 .experiment-trace,.response-field { opacity:0; visibility:hidden; }
 .target-band { fill:#a5bfda13; stroke:#a5bfda30; stroke-width:1; }

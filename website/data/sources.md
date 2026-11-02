@@ -80,7 +80,7 @@ Official capability colors are copied from `capability-style.tex`: sequence prio
 
 The public [BEND 2.0 dataset release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2) provides the evaluation data. The files in this directory preserve the website’s result snapshot and provenance. Original dataset references remain linked on the site for attribution.
 
-No verified public BEND 2.0 paper URL is available. **Do not use arXiv:2610.11761**: it identifies *RAGenome: Scaling Retrieval-Based Genomic Language Models to Long Contexts*, a different paper. The manuscript points to the planned `machinelearninglifescience/BEND2` repository; the current working code is on [yhsure/genomic-bending’s benchmark branch](https://github.com/yhsure/genomic-bending/tree/benchmark). Original dataset links come from the manuscript bibliography.
+No verified public BEND 2.0 paper URL is available. **Do not use arXiv:2610.11761**: it identifies *RAGenome: Scaling Retrieval-Based Genomic Language Models to Long Contexts*, a different paper. The code and website are prepared for release from [MachineLearningLifeScience/BEND2](https://github.com/MachineLearningLifeScience/BEND2). Original dataset links come from the manuscript bibliography.
 
 To reproduce the snapshot, run:
 

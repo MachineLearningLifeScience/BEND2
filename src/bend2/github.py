@@ -19,8 +19,8 @@ from filelock import FileLock
 from bend2.results import Run, digest, write_json
 from bend2.submissions import prepare_submission
 
-UPSTREAM = "yhsure/genomic-bending"
-BASE = "benchmark"
+UPSTREAM = "MachineLearningLifeScience/BEND2"
+BASE = "main"
 _REPOSITORY = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9_.-]+\Z")
 
 

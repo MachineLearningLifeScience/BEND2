@@ -21,7 +21,7 @@
     "assets/social-preview.png": "ac883d18b38b57f7106ed76a9f1a4d106b324323a15d479b5c56adaa2ef77e1d",
     "data/evaluation-updates.json": "02a6a380db3093b8a6d75faafc094e65539cecc4ef604cd55dbefa89609c347b",
     "data/sources.md": "ccb6e90a9ed727ec188d7fbcaa1d16d8e43c6c2ac64a761debd5c2f626b047d9",
-    "index.html": "b6e7f01cc69bf18672cd5bf5204a46d92f5f533aabb4b6f9b773d0115edf843b",
+    "index.html": "3c7134cb3ab88f11b3caae2f37ad572e2a18f26578b0691bc954220903d487c1",
     "provenance/atlas-frontier.csv": "aaca65313920ce54a843ea80e44c7ccbb527a69d3fb919f8fcf6e44ec8a214e3",
     "provenance/audit.json": "c6370987882029e3fee5f4da3fd796e8286d6052f742f6d19ac01d35a9093eb4",
     "provenance/capability-style.tex": "126b52a55ec956e95ab5ff21f051b88bdede0f68bd4512b132cec874b7f5c5a9",
@@ -125,11 +125,11 @@
     "src/app.js": "37ad75e2f68ef67afe3fb129b5b60422ebc2732341503c1ce469c6a66cd4186c",
     "src/atlas.css": "56fd41c6bc887a96c37c77a4f083cd1eeb2b1aa652c5eea4a82af4c46f954627",
     "src/budget.js": "b5cdff6ffadc0b40f00cd52168d7c9b7684c5326233e263c511e4afb035514ce",
-    "src/design-example.css": "718deb906b6f53b5944c8caa0da6e4a62d130a8a9bb9c04202721919df827ce8",
-    "src/design-example.js": "eac8fb4f221da6c0e032a0097ab8a6e0051d8b11466953b58c3223153b9c8d82",
-    "src/design-explorer.js": "e25e475bbdeb7be81d8f392c1ab2df29c6e9dde46687897c8b668051c068b27b",
+    "src/design-example.css": "221fb21427485f47bf80786b9d24a6ba26b96a4cce864910cca68e40caf00345",
+    "src/design-example.js": "5aa9dc6f47e2683baec7ccc630e5e5a557538e5352456e2352d477315316bbc5",
+    "src/design-explorer.js": "60230e5a386b335a541ca21f6601f8450a20f2a8d696bc513b6b314caf17ed3a",
     "src/design-passage.css": "b612642b3b7f8f369b1317d60e97d7c20762b055041d839f1166c037df37d888",
-    "src/design-passage.js": "5b4956341b6d1be61782e2ea9df89785e4be50625db9f05bfb81b83756ad13c2",
+    "src/design-passage.js": "73c492a271a802592e161fee5d094bdfde07938d034399c0b2d3de76fc2db699",
     "src/edit-strokes.js": "acda2a8d364005068e98f0802ed6fb8eab4fe47cc044beb6070b7b0c2e7f399b",
     "src/explore-charts.js": "ddc123e568fc132121605685f1f3f390531e534116daaa8d7017ab7023923546",
     "src/explorer.css": "35c8585ff3a95c3519239843f5306e84f4d819dbd978c754eac3d6f7fad3e6ab",
@@ -146,7 +146,7 @@
     "src/page-navigation.js": "547b90a2e1841e415b5bf05ab807cc07b4676ee12fac3bb0f1f6d496f167e650",
     "src/paired-chart.js": "0cbaa3e68eb065bba6aacfe7a5d1522e45185edc5d9ed3e899dba5fa5c65c26b",
     "src/react-bits-LICENSE.md": "4bdd1fa59a6b7d5954bc3b213dbc34e455c635a94bbcecf9293553797d0fad02",
-    "src/reference-experiment.js": "ae87e09765fdcf4ac59fc641e8aa8fc5ca7a040a10641c0a282b4667459f826a",
+    "src/reference-experiment.js": "466cf0ee4a9d216c64769a7bca7f3467b82228a2a30606d91a4e0f4873515497",
     "src/results-chart.js": "7e4cfabf08d51d22db707a6c6bd1870e95254252ceaa24fb311a730ca88fa924",
     "src/scoring.js": "e37486e8ea48c1220ca4613a315b5d4816b3722adde21490c4859d2fc75d5951",
     "src/styles.css": "7918239beb8355d41cfe6e4e619c59022451e0014c63fa870b828d25d8a409a9",
@@ -192,6 +192,24 @@
         "data/sources.md",
         "provenance/audit.json",
         "provenance/evo2-tissue-20261102/"
+      ]
+    },
+    {
+      "source_commit": "656ee79554ae33ad8b12acf8c0050b24c6802cc4",
+      "checked_on": "2026-11-02",
+      "description": "Bring the accepted website presentation into the MLLS release checkout. Retain reviewed community submissions, generated data, scoring and evidence links; adapt current publication links to MachineLearningLifeScience/BEND2.",
+      "paths": [
+        "index.html",
+        "src/atlas.css",
+        "src/design-example.css",
+        "src/design-example.js",
+        "src/design-explorer.js",
+        "src/design-passage.js",
+        "src/hero-flux.js",
+        "src/hero-surface.js",
+        "src/page-navigation.js",
+        "src/paired-chart.js",
+        "src/reference-experiment.js"
       ]
     }
   ]

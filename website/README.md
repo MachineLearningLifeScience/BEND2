@@ -73,8 +73,12 @@ Deploy from the publication branch after the
 [maintainer review](../docs/reviewing.md). PR builds use preview mode; push
 builds require matching review records.
 
-Deployment is not configured. Connect `website/dist/` to the hosting service
-when deploying. Import provenance is recorded in [snapshot.json](snapshot.json).
+The **Deploy GitHub Pages** workflow builds and deploys `website/dist/` when
+manually requested. Before launch, enable Pages with **GitHub Actions** as its
+source, set the real paper link, and run the workflow from `main`. Repository
+visibility and organization settings determine when Pages can be enabled.
+Preparing this workflow does not publish the site. Import provenance is recorded
+in [snapshot.json](snapshot.json).
 
 The imported runtime includes the current navigation, design walkthrough, score
 breakdowns and social preview. `snapshot.json` records its source revision and

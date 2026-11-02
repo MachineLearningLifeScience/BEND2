@@ -1,9 +1,9 @@
 name: Benchmark and leaderboard
 on:
   push:
-    branches: [benchmark]
+    branches: [main]
   pull_request:
-    branches: [benchmark]
+    branches: [main]
   workflow_dispatch:
 
 permissions:

@@ -48,7 +48,7 @@ BEND prepares the data and fits readouts to your model’s frozen embeddings.
 Install in your model's environment with **Python 3.11 or later**:
 
 ```bash
-python -m pip install "bend2 @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+python -m pip install "bend2 @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"
 ```
 
 The repository currently requires GitHub access; the package is not yet on PyPI.

@@ -7,8 +7,8 @@ or pull request.
 ## Development
 
 ```bash
-git clone --single-branch --branch benchmark https://github.com/yhsure/genomic-bending.git
-cd genomic-bending
+git clone --single-branch --branch main https://github.com/MachineLearningLifeScience/BEND2.git
+cd BEND2
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
@@ -42,9 +42,8 @@ Keep experimental labels out of model adapters. Use predictions to select candid
 before reading their measured outcomes. Record checkpoints, training data and
 source attribution.
 
-The `anonymous-review` branch is frozen for paper review. Development belongs
-on branches based on `benchmark`; do not merge, push, or otherwise change the
-review branch.
+Develop on branches based on `main`. The historical paper-review snapshot
+remains in the original research repository.
 
 Keep generated runs, checkpoints, job scripts, manuscripts and experiment
 archives outside the repository. Link to them when needed for review.

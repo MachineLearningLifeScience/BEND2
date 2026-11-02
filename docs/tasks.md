@@ -64,7 +64,7 @@ files and cache metadata require additional space.
 Tissue identification requires the full 131,072-base input and the `genome` extra:
 
 ```bash
-python -m pip install "bend2[genome] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+python -m pip install "bend2[genome] @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"
 ```
 
 ## What stays fixed

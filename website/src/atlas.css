@@ -86,7 +86,7 @@ body.quiet-layout.atlas-layout {
 #baseline-rows.is-expanded .baseline-cell-reveal { height:48px; opacity:1; }
 #baseline-rows button:focus-visible { outline-offset:-2px; }
 @media(prefers-reduced-motion:reduce) {
-  /* Animate disclosure height. */
+  /* Retain the requested disclosure motion, without the incidental fade. */
   .atlas-layout #baseline-rows .baseline-cell-reveal { opacity:1; transition:height .2s ease-out!important; }
   .disclosure-mark::after { transition:none; }
 }

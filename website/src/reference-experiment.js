@@ -1,4 +1,4 @@
-import { editStrokePath, morphEditStroke } from './edit-strokes.js';
+import { editStrokePath } from './edit-strokes.js';
 
 // One persistent strand: the reference edit and assay together, then model substitutions.
 const clamp = n => Math.max(0,Math.min(1,n));
@@ -65,11 +65,10 @@ export function createReferenceExperiment(host,original,alternatives) {
       const rowGap=small?44:Math.max(44,Math.min(58,H*.15));
       const assayGap=small?42:Math.max(42,Math.min(58,H*.15));
       const sy=Math.min(H*(small?.30:.34),small?150:170,H-referenceSize*.46-assayGap-rowGap-30);
-      const backdrop=mix(1,.035,ramp(p,.53,.60))*(1-ramp(p,.80,.87));
+      const backdrop=1-ramp(p,.54,.59);
       attrs(tape,{opacity:backdrop});
       loci.forEach(locus=>{
         const site=locus.site,proposal=sites.get(site),isReference=site===7;
-        const transfer=proposal?comparison.transfers[proposal.rank]:0;
         const sourceSize=isReference?referenceSize:Math.min(referenceSize*.72,spacing*.96);
         const sourceX=cx+(site-7)*spacing;
         const size=sourceSize,x=sourceX,y=sy;
@@ -81,39 +80,18 @@ export function createReferenceExperiment(host,original,alternatives) {
         const focus=isReference?1-ramp(p,.31,.35):acquired*(1-settled*.76)*(1-ramp(p,.53,.55));
         const initialOpacity=isReference?1:Math.max(.15,.62-Math.abs(site-7)*.07);
         attrs(locus.node,{transform:`translate(${x},${y})`,'font-size':size});
-        const waiting=mix(1,.2,ramp(p,.53,.575))*mix(1,.35,ramp(p,.65,.70));
-        const emphasis=mix(waiting,1,proposal?.rank===0 ? ramp(transfer,0,.14) : proposal?.rank>=3 ? ramp(transfer,.25,.45) : ramp(transfer,.10,.32));
-        const letterOpacity=proposal?mix(initialOpacity,.96-settled*.12,acquired)*emphasis:isReference?1-.87*ramp(p,.31,.35):initialOpacity;
-        attrs(locus.letters,{opacity:mix(letterOpacity,1,ramp(transfer,.8,1))});
-        attrs(locus.before,{y:size*.33-turn*size*1.12,'font-size':size,opacity:transfer>0?0:1});
+        const handover=1-ramp(p,.55,.57);
+        const letterOpacity=proposal?mix(initialOpacity,.96-settled*.12,acquired)*handover:isReference?1-.87*ramp(p,.31,.35):initialOpacity;
+        attrs(locus.letters,{opacity:letterOpacity});
+        attrs(locus.before,{y:size*.33-turn*size*1.12,'font-size':size});
         if(!locus.after)return;
         if(proposal) {
-          // Waiting and completed glyphs retain their path; only an active edit
-          // or changed viewport needs to serialize its sampled strokes again.
-          let shape;
-          if(transfer>0) {
-            const target={x0:comparison.x0-x,x1:comparison.valueX(proposal.measured)-x,y:comparison.rowY(proposal.rank)-y};
-            const key=`${size},${transfer},${target.x0},${target.x1},${target.y}`;
-            if(locus.morphKey!==key) {
-              locus.morphKey=key;
-              locus.morph=morphEditStroke(proposal.base,{x:0,y:0,size},target,transfer);
-            }
-            shape=locus.morph;
-          } else {
-            const offset=(1-turn)*size*1.12,key=`${size},${offset}`;
-            if(locus.glyphKey!==key) {
-              locus.glyphKey=key;
-              locus.glyph={d:editStrokePath(proposal.base,size,offset),width:Number((size*.075).toFixed(4))};
-            }
-            shape=locus.glyph;
+          const offset=(1-turn)*size*1.12,key=`${size},${offset}`;
+          if(locus.glyphKey!==key) {
+            locus.glyphKey=key;
+            locus.glyph={d:editStrokePath(proposal.base,size,offset),width:Number((size*.075).toFixed(4))};
           }
-          const match=proposal.rank===2&&transfer>.985;
-          attrs(locus.after,{
-            d:shape.d,'stroke-width':match?2:shape.width,
-            'stroke-opacity':match?1:mix(1,.58,ramp(transfer,.75,1)),
-          });
-          attrs(locus.letters,{'clip-path':transfer>0?'none':`url(#sequence-slot-${site})`});
-          if(locus.match!==match) { locus.node.classList.toggle('is-measured-match',match); locus.match=match; }
+          attrs(locus.after,{d:locus.glyph.d,'stroke-width':locus.glyph.width});
         } else attrs(locus.after,{y:size*.33+(1-turn)*size*1.12,'font-size':size});
         const acquisition=proposal?1+(1-acquired)*.16:1;
         const slotWidth=size*.86*acquisition,slotTop=-size*.64*acquisition,slotBottom=size*(proposal?.4:.34)*acquisition;
@@ -132,16 +110,17 @@ export function createReferenceExperiment(host,original,alternatives) {
       // Keep both measurements through the model edits; clear the baseline before the rows form.
       const originalReveal=1,editedReveal=referenceEdit;
       const transfer=ramp(p,.53,.60),originalExit=1-ramp(p,.53,.55);
-      const referenceLine=1-ramp(transfer,.08,.3)+ramp(transfer,.78,1);
+      const referenceLabel=1-ramp(transfer,.08,.3)+ramp(transfer,.78,1);
       const referenceY=mix(chartY+rowGap,comparison.targetY,transfer);
       attrs(assay,{opacity:1});
-      attrs(assayTitle,{x:comparison.x0,y:chartY-24,opacity:originalExit});
+      // Carry the heading with the reference, then hand it to the completed axis.
+      attrs(assayTitle,{x:comparison.x0,y:mix(chartY-24,comparison.targetY-(small?18:24),transfer),opacity:1-ramp(p,.845,.87)});
       attrs(assayOrigin,{x1:comparison.x0,x2:comparison.x0,y1:chartY-9,y2:chartY+rowGap*editedReveal+9,opacity:originalReveal*originalExit});
       [[assayRows[0],1,chartY,originalReveal,originalExit],[assayRows[1],.70,referenceY,editedReveal,1]].forEach(([row,value,y,reveal,opacity])=>{
         const end=mix(comparison.x0,comparison.valueX(value),reveal);
         attrs(row.node,{transform:`translate(0,${y})`,opacity:reveal*opacity});
-        attrs(row.label,{x:comparison.labelX,y:4,opacity:row.node===editedRow?referenceLine:1});
-        attrs(row.bar,{x1:comparison.x0,x2:end,y1:0,y2:0,'stroke-width':mix(2,1.3,transfer),opacity:row.node===editedRow?referenceLine:1});
+        attrs(row.label,{x:comparison.labelX,y:4,opacity:row.node===editedRow?referenceLabel:1});
+        attrs(row.bar,{x1:comparison.x0,x2:end,y1:0,y2:0,'stroke-width':mix(2,1.3,transfer)});
         row.circles.forEach(circle=>attrs(circle,{cx:end,cy:0}));
         attrs(row.value,{x:comparison.valueX(value)+14,y:5,opacity:ramp(reveal,.85,1)});
       });
@@ -152,7 +131,7 @@ export function createReferenceExperiment(host,original,alternatives) {
       attrs(referenceKind,{x:comparison.labelX,y:11,opacity:isTarget?0:1});
       attrs(editName,{x:comparison.labelX,y:28,opacity:1-ramp(transfer,0,.25)});
       attrs(targetRing,{opacity:ramp(p,.105,.125)});
-      return {referenceY};
+      return {referenceY,source:{cx,y:sy,spacing,size:Math.min(referenceSize*.72,spacing*.96)}};
     },
   };
 }

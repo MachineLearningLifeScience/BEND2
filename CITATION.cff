@@ -27,7 +27,7 @@ preferred-citation:
     - family-names: "Marin"
       given-names: "Frederikke Isa"
   year: 2026
-repository-code: "https://github.com/yhsure/genomic-bending"
+repository-code: "https://github.com/MachineLearningLifeScience/BEND2"
 license: MIT
 keywords:
   - genomics

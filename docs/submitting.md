@@ -19,7 +19,7 @@ bend2 submit results/my-model --github \
 ```
 
 `--github` creates or reuses your BEND fork, uploads the evidence as a prerelease
-asset, and opens a PR against `benchmark`. It prints the PR URL.
+asset, and opens a PR against `main`. It prints the PR URL.
 
 **During private development**, the default fork cannot provide public evidence.
 Use an existing public repository you can write to instead:
@@ -69,9 +69,9 @@ bend2 submit results/my-model \
 ```
 
 Add the generated `community-<identity>.json` under [`submissions/`](../submissions/)
-in a PR targeting `benchmark`. Keep ZIPs, prediction files, model code and weights
+in a PR targeting `main`. Keep ZIPs, prediction files, model code and weights
 outside this repository. If you need help opening the PR, attach the JSON to the
-[model submission issue form](https://github.com/yhsure/genomic-bending/issues/new?template=model.yml).
+[model submission issue form](https://github.com/MachineLearningLifeScience/BEND2/issues/new?template=model.yml).
 
 ## Update a submission
 

@@ -60,7 +60,7 @@ def _imports():
     except ImportError:
         raise ImportError(
             "Install the reference runtime: pip install "
-            "'bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark'"
+            "'bend2[reference] @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main'"
         ) from None
     return torch, AutoModel, AutoTokenizer, BertConfig, hf_hub_download
 

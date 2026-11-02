@@ -29,7 +29,7 @@ const axisLabels = {
   atlas_profile: "Gain over random · log₂",
 };
 
-/** Pair measurements for the same task and model. */
+/** Matched measurements only: never substitute a different task or model. */
 export function pairedData(data, taskId, mode = "training") {
   const task = data.tasks.find((item) => item.id === taskId);
   const models = new Map(data.models.map((model) => [model.id, model]));

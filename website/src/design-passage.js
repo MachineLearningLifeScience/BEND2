@@ -21,9 +21,9 @@ if (passage) {
   const timeline = [
     [0,0], [12,.025], [56,.105], [68,.125], [90,.25],
     [114,.33], [268,.53], [284,.53],
-    // The first letter opens into its measurement, then rests before
-    // the other four strokes follow with a little overlap.
-    [364,.66], [380,.66], [532,.87],
+    // Read five independent single-edit sequences before measuring them.
+    // Pause again on the first result before testing the remaining four.
+    [344,.63], [364,.63], [410,.70], [426,.70], [550,.87],
   ];
   const [exampleDistance, exampleEnd] = timeline.at(-1);
   const pacing = { example:exampleDistance, comparison:60, handoff:90, results:100 };
@@ -36,10 +36,10 @@ if (passage) {
   const displayValues = new WeakMap();
   let activeStep = -1;
   const steps = [
-    { start:0, name:'set the target', cue:'We start with an edit whose effect on RNA activity has been measured.', progress:.1875 },
+    { start:0, name:'set the target', cue:'We start with a measured edit. Its RNA activity sets the target.', progress:.1875 },
     { start:114, name:'predict matching edits', cue:'We ask the model for other edits with a similar effect.', progress:.53 },
-    { start:284, name:'test the edits', cue:'We test those edits to see how close they come to the target.', progress:.55 },
-    { start:handoffStart + pacing.handoff * .40, name:'benchmark results', cue:'We repeat this for each target and compare the models.', fade:6 },
+    { start:284, name:'test the edits', cue:'We test the edits in rank order to find one that matches the target.', progress:.63 },
+    { start:handoffStart + pacing.handoff * .40, name:'benchmark results', cue:'We compare the fraction of targets reached with each model’s top 1, 5, 10 or 25 edits.', fade:6 },
   ];
   const clamp = n => Math.max(0, Math.min(1, n));
   const smooth = n => { const p = clamp(n); return p * p * (3 - 2 * p); };

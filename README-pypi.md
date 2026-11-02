@@ -86,5 +86,5 @@ predictions = run.table("atlas_profile")
 ```
 
 Runs stay local until you choose to share them. The
-[source repository and full documentation](https://github.com/yhsure/genomic-bending/tree/benchmark)
+[source repository and full documentation](https://github.com/MachineLearningLifeScience/BEND2/tree/main)
 currently require GitHub access.

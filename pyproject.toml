@@ -20,9 +20,9 @@ reference = ["torch>=2.7", "transformers>=4.57,<5", "einops>=0.8"]
 dev = ["build>=1.2", "twine>=6", "pytest>=8", "ruff>=0.9"]
 
 [project.urls]
-Repository = "https://github.com/yhsure/genomic-bending/tree/benchmark"
-Documentation = "https://github.com/yhsure/genomic-bending/blob/benchmark/README.md"
-Issues = "https://github.com/yhsure/genomic-bending/issues"
+Repository = "https://github.com/MachineLearningLifeScience/BEND2/tree/main"
+Documentation = "https://github.com/MachineLearningLifeScience/BEND2/blob/main/README.md"
+Issues = "https://github.com/MachineLearningLifeScience/BEND2/issues"
 Data = "https://huggingface.co/datasets/yhsure/BEND2"
 
 [project.scripts]

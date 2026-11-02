@@ -78,7 +78,7 @@ const publicURL = (url) => {
   try { return new URL(url).protocol === "https:" ? url : ""; } catch { return ""; }
 };
 const submissionURL = (path) => /^submissions\/community-[a-z0-9-]+\.json$/.test(path || "")
-  ? `https://github.com/yhsure/genomic-bending/blob/benchmark/${path}` : "";
+  ? `https://github.com/MachineLearningLifeScience/BEND2/blob/main/${path}` : "";
 const readout = (m) =>
   m.kind === "baseline" && m.interface === "fitted"
     ? "Fitted sequence features"
@@ -240,7 +240,7 @@ function renderTable() {
   const row = (m) => `<tr data-row="${m.id}"><td class="model-cell"><div class="model-identity">${rankMark(m)}<div class="model-description"><button class="model-name" data-model="${m.id}" aria-label="${escape(modelTitle(m))} (${escape(readout(m))})">${escape(modelTitle(m))}</button><span class="model-sub" title="${escape(readout(m))}">${m.origin === "community" ? (m.reviewStatus === "pending" ? "Awaiting review · " : "Community · ") : ""}${escape(readout(m))}</span></div></div></td>${combinedCell(m)}${tasks.map((t) => `<td class="metric-cell">${metricButton(m, t)}</td>`).join("")}</tr>`;
   const invitationAfter = Math.min(8, models.length);
   html += models.slice(0, invitationAfter).map(row).join("");
-  html += `<tr class="model-invitation-row"><td colspan="${colCount}"><span class="invitation-slots" style="--task-count:${tasks.length}" aria-hidden="true"><span></span><span class="invitation-combined-slot"><i></i></span>${tasks.map(() => '<span><i></i></span>').join("")}</span><div class="model-invitation"><span class="model-invitation-gutter" aria-hidden="true"><span></span></span><a class="model-invitation-copy" href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer" aria-label="Add your model — evaluation and submission guide"><span class="model-invitation-title">Add your model</span><span class="model-invitation-guide">Submission guide <span aria-hidden="true">↗</span></span></a></div></td></tr>`;
+  html += `<tr class="model-invitation-row"><td colspan="${colCount}"><span class="invitation-slots" style="--task-count:${tasks.length}" aria-hidden="true"><span></span><span class="invitation-combined-slot"><i></i></span>${tasks.map(() => '<span><i></i></span>').join("")}</span><div class="model-invitation"><span class="model-invitation-gutter" aria-hidden="true"><span></span></span><a class="model-invitation-copy" href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer" aria-label="Add your model — evaluation and submission guide"><span class="model-invitation-title">Add your model</span><span class="model-invitation-guide">Submission guide <span aria-hidden="true">↗</span></span></a></div></td></tr>`;
   html += models.slice(invitationAfter).map(row).join("");
   html += `<tr class="baseline-disclosure-row"><td colspan="${colCount}"><button id="baseline-toggle" class="baseline-disclosure" data-action="baselines" aria-expanded="${state.baselines}" aria-controls="baseline-rows"><span class="baseline-disclosure-label"><span class="disclosure-gutter" aria-hidden="true"><span class="disclosure-mark"></span></span><span>Baselines &amp; specialists</span></span></button></td></tr></tbody><tbody id="baseline-rows" class="${state.baselines ? "is-expanded" : ""}"${state.baselines ? "" : ' inert aria-hidden="true"'}>${base.map(row).join("")}</tbody><tbody>`;
   html += `<tr class="reference-row"><td class="model-cell"><div class="model-identity"><span class="model-rank-spacer" aria-hidden="true"></span><button class="model-name" data-action="references">Experimental reference</button></div></td><td class="index-cell">—</td>${tasks.map(t => {const r = data.references.find(r => r.taskId === t.id);return `<td class="metric-cell">${r ? `<button class="score-cell" data-reference="${t.id}" style="--tint:${tint(t,r.value)};--category:${colorFor(t)}" aria-label="${escape(t.label)} experimental reference ${r.displayValue}">${r.displayValue}</button>` : "—"}</td>`;}).join("")}</tr></tbody></table>`;
@@ -433,16 +433,16 @@ function submissionDialog() {
     "Leaderboard contribution",
     `<p class="dialog-lede">Submit results for any subset of tasks.</p>
     <h3>1. Evaluate your model</h3>
-    <p>Follow the <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/README.md" target="_blank" rel="noopener noreferrer">README</a> to install BEND and create your adapter. Atlas uses short sequences and includes the data in the package.</p>
+    <p>Follow the <a href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a> to install BEND and create your adapter. Atlas uses short sequences and includes the data in the package.</p>
     <pre><code>bend2 run my_model.py --tasks atlas_profile --output results/my-model</code></pre>
     <h3>2. Submit for review</h3>
     <p>After the public release, install GitHub CLI, sign in, and run:</p>
     <pre><code>bend2 submit results/my-model --github \\
   --model-url https://huggingface.co/your-lab/your-model</code></pre>
     <p>The command uploads an evidence ZIP to your BEND fork and opens a pull request with the result record. Maintainers check the model setup and rescore every submitted task. Accepted results are labelled “Contributor evaluated.” Tasks rerun independently by BEND receive “Reproduced by BEND.” Your row appears after the PR is merged and the website rebuilds.</p>
-    <p>During private development, provide <code>--github OWNER/REPO</code> with a public repository you can write to. The <a href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer">submission guide</a> explains the options.</p>
-    <div class="participate-actions"><a class="dark-button" style="color:var(--paper)" href="https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md" target="_blank" rel="noopener noreferrer">Submission guide ↗</a><a href="https://github.com/yhsure/genomic-bending/tree/benchmark/submissions" target="_blank" rel="noopener noreferrer">Reviewed submissions ↗</a></div>
-    <p>To host evidence elsewhere, export it and use <code>bend2 submit --evidence-url</code>, then open a PR with the generated JSON. You can also <a href="https://github.com/yhsure/genomic-bending/issues/new?template=model.yml" target="_blank" rel="noopener noreferrer">send the generated JSON and evidence link in a submission issue</a> for maintainer help.</p>`,
+    <p>During private development, provide <code>--github OWNER/REPO</code> with a public repository you can write to. The <a href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer">submission guide</a> explains the options.</p>
+    <div class="participate-actions"><a class="dark-button" style="color:var(--paper)" href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer">Submission guide ↗</a><a href="https://github.com/MachineLearningLifeScience/BEND2/tree/main/submissions" target="_blank" rel="noopener noreferrer">Reviewed submissions ↗</a></div>
+    <p>To host evidence elsewhere, export it and use <code>bend2 submit --evidence-url</code>, then open a PR with the generated JSON. You can also <a href="https://github.com/MachineLearningLifeScience/BEND2/issues/new?template=model.yml" target="_blank" rel="noopener noreferrer">send the generated JSON and evidence link in a submission issue</a> for maintainer help.</p>`,
   );
 }
 function toast(message) {

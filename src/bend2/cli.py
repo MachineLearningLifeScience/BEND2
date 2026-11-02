@@ -110,7 +110,7 @@ def _show_plan(proposal):
     if proposal["missing_extras"]:
         extra = ",".join(proposal["missing_extras"])
         print(
-            f'Missing runtime: pip install "bend2[{extra}] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"'
+            f'Missing runtime: pip install "bend2[{extra}] @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"'
         )
     for message in proposal["problems"]:
         print(f"Resolve before running: {message}")
@@ -260,7 +260,7 @@ def main(argv=None):
             print(f"Created {path}")
             if extra:
                 print(
-                    f'Runtime: pip install "bend2[{extra}] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"'
+                    f'Runtime: pip install "bend2[{extra}] @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"'
                 )
             print(f"Plan: bend2 plan {shlex.quote(str(path))} --tasks {task}")
             print(f"Run: bend2 run {shlex.quote(str(path))} --tasks {task}")
@@ -323,10 +323,10 @@ def main(argv=None):
             )
             print(f"Prepared {path}")
             print(
-                "Open a pull request adding this file under submissions/ on the benchmark branch."
+                "Open a pull request adding this file under submissions/ on the main branch."
             )
             print(
-                "Guide: https://github.com/yhsure/genomic-bending/blob/benchmark/docs/submitting.md"
+                "Guide: https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md"
             )
             print("Nothing has been uploaded or published by this command.")
             return 0

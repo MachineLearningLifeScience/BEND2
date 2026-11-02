@@ -95,7 +95,7 @@ need task-specific readouts; the package does not yet provide adapters for them.
 Install the optional runtime and copy an adapter:
 
 ```bash
-pip install "bend2[reference] @ git+https://github.com/yhsure/genomic-bending.git@benchmark"
+pip install "bend2[reference] @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"
 bend2 init dnabert2.py --template dnabert2
 bend2 run dnabert2.py --tasks atlas_profile --output results/dnabert2
 ```
