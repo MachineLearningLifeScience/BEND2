@@ -10,7 +10,7 @@ setup before merging. Accepted results appear on the next website build.
 ## Submit a result
 
 Install [GitHub CLI](https://cli.github.com/) and authenticate once with
-`gh auth login`. After BEND's public release, the standard path is:
+`gh auth login`, then run:
 
 ```bash
 bend2 run my_model.py --tasks atlas_profile --output results/my-model
@@ -21,8 +21,7 @@ bend2 submit results/my-model --github \
 `--github` creates or reuses your BEND fork, uploads the evidence as a prerelease
 asset, and opens a PR against `main`. It prints the PR URL.
 
-**During private development**, the default fork cannot provide public evidence.
-Use an existing public repository you can write to instead:
+To upload evidence to an existing public repository you can write to instead:
 
 ```bash
 bend2 submit results/my-model --github your-lab/your-model \

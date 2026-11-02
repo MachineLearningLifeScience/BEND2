@@ -48,11 +48,11 @@ BEND prepares the data and fits readouts to your model’s frozen embeddings.
 Install in your model's environment with **Python 3.11 or later**:
 
 ```bash
-python -m pip install "bend2 @ git+https://github.com/MachineLearningLifeScience/BEND2.git@main"
+python -m pip install bend2
 ```
 
-The repository currently requires GitHub access; the package is not yet on PyPI.
-Install your model's framework and weights separately.
+The repository currently requires GitHub access; the package is available
+independently from PyPI. Install your model's framework and weights separately.
 
 Small datasets are included with the package. Larger files download from the
 [BEND 2.0 data release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)

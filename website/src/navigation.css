@@ -78,7 +78,7 @@
 .atlas-layout .research-header .page-nav a:hover::after { opacity:1; transform:scaleX(1); }
 .research-header :is(a,button):focus-visible { outline:2px solid var(--nav-muted); outline-offset:6px; }
 .publication-links { display:flex; align-items:center; gap:24px; }
-.publication-links a { display:inline-flex; align-items:center; gap:6px; min-height:44px; color:var(--nav-muted); font:13px/1.2 var(--sans); white-space:nowrap; text-decoration:none; }
+.publication-links :is(a,.paper-forthcoming) { display:inline-flex; align-items:center; gap:6px; min-height:44px; color:var(--nav-muted); font:13px/1.2 var(--sans); white-space:nowrap; text-decoration:none; }
 .publication-links a:hover { color:var(--nav-ink); }
 .publication-links a > span { font-size:12px; opacity:.7; }
 .navigation-toggle { display:none; }

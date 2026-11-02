@@ -11,6 +11,15 @@ requires-python = ">=3.11"
 license = "MIT AND CC-BY-4.0 AND CC-BY-NC-4.0"
 license-files = ["LICENSE", "docs/data.md"]
 authors = [{name = "BEND 2.0 contributors"}]
+keywords = ["genomics", "DNA", "benchmark", "foundation models", "sequence design", "gene regulation"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = ["numpy>=2.0", "pandas>=2.2", "pyarrow>=17", "scipy>=1.13", "scikit-learn>=1.5", "filelock>=3.16"]
 
 [project.optional-dependencies]
@@ -20,10 +29,12 @@ reference = ["torch>=2.7", "transformers>=4.57,<5", "einops>=0.8"]
 dev = ["build>=1.2", "twine>=6", "pytest>=8", "ruff>=0.9"]
 
 [project.urls]
-Repository = "https://github.com/MachineLearningLifeScience/BEND2/tree/main"
+Homepage = "https://machinelearninglifescience.github.io/BEND2/"
+Repository = "https://github.com/MachineLearningLifeScience/BEND2"
 Documentation = "https://github.com/MachineLearningLifeScience/BEND2/blob/main/README.md"
 Issues = "https://github.com/MachineLearningLifeScience/BEND2/issues"
 Data = "https://huggingface.co/datasets/yhsure/BEND2"
+Changelog = "https://github.com/MachineLearningLifeScience/BEND2/releases"
 
 [project.scripts]
 bend2 = "bend2.cli:main"

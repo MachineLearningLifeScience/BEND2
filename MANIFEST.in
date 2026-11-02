@@ -1,4 +1,4 @@
-include README.md CITATION.cff CONTRIBUTING.md
+include README.md CITATION.cff CONTRIBUTING.md CHANGELOG.md
 recursive-include docs *.md *.png *.svg
 recursive-include checks *.py
 prune website

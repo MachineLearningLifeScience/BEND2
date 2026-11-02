@@ -24,7 +24,34 @@ if (siteURL) {
   html = html.replaceAll('content="./assets/social-preview.png"', `content="${attribute(imageURL)}"`);
   html = html.replace('    <meta property="og:type"',
     `    <link rel="canonical" href="${attribute(siteURL.href)}" />\n    <meta property="og:url" content="${attribute(siteURL.href)}" />\n    <meta property="og:type"`);
+  const metadata = {
+    "@context": "https://schema.org",
+    "@graph": [{
+      "@type": "WebSite",
+      "@id": `${siteURL.href}#website`,
+      name: "BEND 2.0",
+      url: siteURL.href,
+      description: "Benchmarking the capabilities needed to design DNA: sequence priors, functional prediction, biological context, genetic interactions, and genomic design.",
+      inLanguage: "en",
+      image: imageURL,
+      about: { "@id": `${siteURL.href}#software` },
+    }, {
+      "@type": "SoftwareSourceCode",
+      "@id": `${siteURL.href}#software`,
+      name: "BEND 2.0",
+      description: "An open-source benchmark for evaluating genomic models across eight tasks.",
+      codeRepository: "https://github.com/MachineLearningLifeScience/BEND2",
+      programmingLanguage: "Python",
+      runtimePlatform: "Python 3.11 or later",
+      license: "https://github.com/MachineLearningLifeScience/BEND2/blob/main/LICENSE",
+      url: siteURL.href,
+      keywords: ["genomics", "DNA", "machine learning", "benchmark", "genomic design"],
+    }],
+  };
+  const jsonLD = JSON.stringify(metadata).replaceAll("<", "\\u003c");
+  html = html.replace("  </head>", `    <script type="application/ld+json">${jsonLD}</script>\n  </head>`);
   await fs.writeFile("dist/index.html", html);
+  await fs.writeFile("dist/sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${attribute(siteURL.href)}</loc></url></urlset>\n`);
 }
 await buildHero("dist/src/hero-surface.js");
 await fs.mkdir("dist/data", { recursive: true });

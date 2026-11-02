@@ -436,11 +436,11 @@ function submissionDialog() {
     <p>Follow the <a href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/README.md" target="_blank" rel="noopener noreferrer">README</a> to install BEND and create your adapter. Atlas uses short sequences and includes the data in the package.</p>
     <pre><code>bend2 run my_model.py --tasks atlas_profile --output results/my-model</code></pre>
     <h3>2. Submit for review</h3>
-    <p>After the public release, install GitHub CLI, sign in, and run:</p>
+    <p>Install GitHub CLI, sign in, and run:</p>
     <pre><code>bend2 submit results/my-model --github \\
   --model-url https://huggingface.co/your-lab/your-model</code></pre>
     <p>The command uploads an evidence ZIP to your BEND fork and opens a pull request with the result record. Maintainers check the model setup and rescore every submitted task. Accepted results are labelled “Contributor evaluated.” Tasks rerun independently by BEND receive “Reproduced by BEND.” Your row appears after the PR is merged and the website rebuilds.</p>
-    <p>During private development, provide <code>--github OWNER/REPO</code> with a public repository you can write to. The <a href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer">submission guide</a> explains the options.</p>
+    <p>To host evidence in another public repository, use <code>--github OWNER/REPO</code>. The <a href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer">submission guide</a> explains the options.</p>
     <div class="participate-actions"><a class="dark-button" style="color:var(--paper)" href="https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md" target="_blank" rel="noopener noreferrer">Submission guide ↗</a><a href="https://github.com/MachineLearningLifeScience/BEND2/tree/main/submissions" target="_blank" rel="noopener noreferrer">Reviewed submissions ↗</a></div>
     <p>To host evidence elsewhere, export it and use <code>bend2 submit --evidence-url</code>, then open a PR with the generated JSON. You can also <a href="https://github.com/MachineLearningLifeScience/BEND2/issues/new?template=model.yml" target="_blank" rel="noopener noreferrer">send the generated JSON and evidence link in a submission issue</a> for maintainer help.</p>`,
   );
