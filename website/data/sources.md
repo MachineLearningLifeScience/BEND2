@@ -1,6 +1,6 @@
-# DRAFT leaderboard data snapshot
+# BEND 2.0 leaderboard data snapshot
 
-This directory preserves the manuscript's **Table 1**, with audited website additions recorded separately in `evaluation-updates.json`. The manuscript title is **Benchmarking the Capabilities Needed to Design DNA**; DRAFT expands to **DNA Design Readiness Across Functional Tasks**. “Genomic Bending” is an older project name.
+This directory preserves the manuscript's **Table 1**, with audited website additions recorded separately in `evaluation-updates.json`. The paper is **BEND 2.0: Benchmarking the Capabilities Needed to Design DNA**.
 
 - Manuscript revision: `1abee7c638616c578b2fea497e63b59e68752c01` (clean working tree at extraction).
 - Extracted: 22 October 2026.
@@ -30,7 +30,7 @@ AlphaGenome has no nucleotide-probability head, including when its functional re
 
 DNABERT-2's older prior experiments scored entire BPE tokens. A new, explicitly defined single-base query was evaluated on LUMI using all 512 frozen genomic blocks. It forces singleton outputs where native tokenization uses multi-base tokens in all 512 cases, retaining a median 0.000002964 of the original vocabulary probability mass before renormalization. The resulting 6.203 bits/base is archived as a query diagnostic, **excluded from the table and combined score**. This is an interface limitation, not a conclusion about the model's sequence knowledge. The [query audit](../provenance/coverage-20261027/dnabert2-prior/README.md) includes source code, probabilities, checkpoint hashes and numerical checks.
 
-`evaluation_updates.py` applies the documented additions after a snapshot build and can also be run independently. It never edits the archived manuscript CSV or LaTeX table.
+The documented additions are already applied to `benchmark.paper.json`; the current website build reads this file without rerunning the historical snapshot extractor. The archived manuscript CSV and LaTeX table remain unchanged.
 
 ## Evo2 completion, 2 November 2026
 
@@ -80,12 +80,14 @@ Official capability colors are copied from `capability-style.tex`: sequence prio
 
 The public [BEND 2.0 dataset release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2) provides the evaluation data. The files in this directory preserve the website’s result snapshot and provenance. Original dataset references remain linked on the site for attribution.
 
-No verified public BEND 2.0 paper URL is available. **Do not use arXiv:2610.11761**: it identifies *RAGenome: Scaling Retrieval-Based Genomic Language Models to Long Contexts*, a different paper. The code and website are prepared for release from [MachineLearningLifeScience/BEND2](https://github.com/MachineLearningLifeScience/BEND2). Original dataset links come from the manuscript bibliography.
+The paper link will be added after publication. The public benchmark code and website source are available at [MachineLearningLifeScience/BEND2](https://github.com/MachineLearningLifeScience/BEND2). Original dataset links come from the manuscript bibliography.
 
-To reproduce the snapshot, run:
+To rebuild the leaderboard from the audited snapshot, run from the repository root:
 
 ```sh
-python3 data/build_snapshot.py /absolute/path/to/the/manuscript
+python -m pip install -e .
+npm --prefix website ci
+npm --prefix website run build
 ```
 
-The script reads the manuscript, checks the display table against its source CSV, copies exact source snapshots into `provenance/`, and writes the data and audit. It does not modify the manuscript or run models. Changed table layouts, row ordering or metric definitions require manual review of the parser and metadata before a new snapshot is accepted.
+The build reads `website/data/benchmark.paper.json` and reviewed community submissions, validates the scores, and writes `website/data/benchmark.json` and the static site in `website/dist/`. The original extraction records remain in `website/provenance/`; rebuilding the website does not modify them or run model evaluations.

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "1.0.0",
   "id": "draft-table-1",
-  "title": "Benchmarking the Capabilities Needed to Design DNA",
-  "shortName": "DRAFT",
-  "expandedName": "DNA Design Readiness Across Functional Tasks",
+  "title": "BEND 2.0: Benchmarking the Capabilities Needed to Design DNA",
+  "shortName": "BEND 2.0",
+  "expandedName": "Benchmark for DNA language models",
   "version": "manuscript-1abee7c6",
   "status": "manuscript-snapshot-with-audited-additions",
   "description": "Eight reported endpoints across five capability categories. Read the raw endpoints alongside a transparent, exploratory reference index.",
   "source": {
-    "label": "Current manuscript Table 1",
+    "label": "Table 1 snapshot, 22 October 2026, with audited additions",
     "commit": "1abee7c638616c578b2fea497e63b59e68752c01",
     "workingTreeClean": true,
     "tablePath": "tables/bend2-reference-main.tex",
@@ -19,9 +19,9 @@
     "precision": "Manuscript display precision; precise source estimates and available intervals are retained for archived and newly evaluated entries.",
     "verification": "Archived Table 1 and source CSV are preserved. Shared checkpoint priors and newly evaluated entries have explicit source mappings in data/evaluation-updates.json; missing-result explanations were checked against evaluation code and archives.",
     "paperUrl": null,
-    "paperUrlStatus": "No verified public DRAFT paper URL was provided in the manuscript. arXiv:2610.11761 belongs to RAGenome and is deliberately excluded.",
-    "codeUrl": "https://anonymous.4open.science/r/draft-5709",
-    "codeUrlStatus": "Resource link recorded in the manuscript; availability not independently tested.",
+    "paperUrlStatus": "Paper URL will be added after publication.",
+    "codeUrl": "https://github.com/MachineLearningLifeScience/BEND2",
+    "codeUrlStatus": "Public benchmark code and evaluation instructions.",
     "researchRepository": "https://github.com/yhsure/genomic-bending"
   },
   "categories": [
