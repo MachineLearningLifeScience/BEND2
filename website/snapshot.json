@@ -152,7 +152,8 @@
     "src/styles.css": "7918239beb8355d41cfe6e4e619c59022451e0014c63fa870b828d25d8a409a9",
     "src/table-headings.css": "1ab64c3e928d3753948e1dce9e08d1b5ad4978603ee11d6292768c96eece920a",
     "src/table-headings.js": "15056f15d1cfea526f8ef9c1b556817342918fe7d56a3db62e84466210a95156",
-    "src/table-tint.js": "2268c999528d56b67257ddc0e5a51be36a86b498fd91830b11e1d73668df5b04"
+    "src/table-tint.js": "2268c999528d56b67257ddc0e5a51be36a86b498fd91830b11e1d73668df5b04",
+    "src/assay-transition.js": "6df81c1c0e70d8ebf742797d1d56227497fea8d5713220f3f0eb8ba8397a5105"
   },
   "updates": [
     {

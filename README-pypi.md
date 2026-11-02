@@ -15,11 +15,9 @@ Your model's framework and weights are installed separately.
 python -m pip install bend2
 ```
 
+[Leaderboard](https://machinelearninglifescience.github.io/BEND2/) ·
+[Documentation](https://github.com/MachineLearningLifeScience/BEND2/blob/main/README.md) ·
 [Benchmark data](https://huggingface.co/datasets/yhsure/BEND2)
-
-The package is available now; the GitHub repository and online leaderboard are
-awaiting their public launch. Full documentation is included in the source
-distribution under **Download files** on this page.
 
 ## Evaluate your model
 
@@ -96,5 +94,6 @@ predictions = run.table("atlas_profile")
 ```
 
 Runs stay local until you choose to share them. Use `bend2 --help` for commands
-and `bend2 tasks` for task requirements. The source distribution includes
-`docs/submitting.md` for preparing a future leaderboard contribution.
+and `bend2 tasks` for task requirements. The
+[submission guide](https://github.com/MachineLearningLifeScience/BEND2/blob/main/docs/submitting.md)
+explains how to contribute a model to the leaderboard.

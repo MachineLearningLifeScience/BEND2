@@ -51,8 +51,11 @@ Install in your model's environment with **Python 3.11 or later**:
 python -m pip install bend2
 ```
 
-The repository currently requires GitHub access; the package is available
-independently from PyPI. Install your model's framework and weights separately.
+Install your model's framework and weights separately.
+
+[Leaderboard](https://machinelearninglifescience.github.io/BEND2/) ·
+[PyPI package](https://pypi.org/project/bend2/) ·
+[Documentation](docs/models.md)
 
 Small datasets are included with the package. Larger files download from the
 [BEND 2.0 data release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)
