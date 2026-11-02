@@ -59,7 +59,7 @@ export function createDesignExample(host) {
   }));
   let W=1100,H=420,small=false;
   function measure() {
-    W=Math.max(1,stage.clientWidth); H=Math.max(200,stage.clientHeight-20); small=W<600;
+    W=Math.max(1,stage.clientWidth); H=Math.max(240,stage.clientHeight-20); small=W<600;
     attrs(scene,{viewBox:`0 0 ${W} ${H}`});
   }
   return {
@@ -76,7 +76,7 @@ export function createDesignExample(host) {
       const measurements=alternatives.map((_,i)=>ramp(p,i===0?.63:.70+(i-1)*(.115/3),i===0?.70:.755+(i-1)*(.115/3)));
       const landed=measurements.map(t=>ramp(t,.94,1));
       const {source,referenceY}=reference.draw(p,W,H,small,{
-        rowY,labelX:labelRight,x0,valueX,targetY,
+        rowY,labelX:labelRight,x0,valueX,targetY,axisY,
       });
       const {open}=assay.draw(p,W,H,source,{x0,x1,valueX,rowY,measurements});
       show(field,1);

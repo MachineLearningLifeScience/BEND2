@@ -61,11 +61,13 @@ export function createReferenceExperiment(host,original,alternatives) {
       const spacing=small?Math.min(46,(W-56)/5):Math.min(104,(W-80)/6);
       // Scale down continuously on short screens instead of halving the DNA
       // at one height threshold when the caption needs more room.
-      const referenceSize=small?Math.min(64,H*.26):Math.min(132,spacing*1.5,H*.36);
       const cx=small?W/2-spacing*.5:W/2;
       const rowGap=small?44:Math.max(44,Math.min(58,H*.15));
       const assayGap=small?42:Math.max(42,Math.min(58,H*.15));
-      const sy=Math.min(H*(small?.30:.34),small?150:170,H-referenceSize*.46-assayGap-rowGap-30);
+      // Reserve room for the persistent bottom axis, including on short screens.
+      const availableSize=(comparison.axisY-assayGap-rowGap-28-14)/1.1;
+      const referenceSize=Math.min(availableSize,small?Math.min(64,H*.26):Math.min(132,spacing*1.5,H*.36));
+      const sy=Math.min(H*(small?.30:.34),small?150:170,comparison.axisY-28-referenceSize*.46-assayGap-rowGap);
       const backdrop=1-ramp(p,.54,.59);
       attrs(tape,{opacity:backdrop});
       loci.forEach(locus=>{
