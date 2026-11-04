@@ -19,8 +19,7 @@ npm --prefix website run build
 The output is `website/dist/`. Both commands first generate leaderboard data.
 Node.js 22 or newer is required. If Python is elsewhere, set
 `BEND2_PYTHON=/absolute/path/to/venv/bin/python` before the npm command. Restart
-the development server after changing contribution JSON files. Set the paper
-link in `index.html` when the publication URL is available.
+the development server after changing contribution JSON files.
 
 ## Leaderboard data
 
@@ -75,7 +74,7 @@ builds require matching review records.
 
 The **Deploy GitHub Pages** workflow builds and deploys `website/dist/` on pushes
 to `main` and when manually requested. Enable Pages with **GitHub Actions** as
-its source. The paper link stays disabled until its publication URL is available.
+its source.
 Repository visibility and organization settings determine when Pages can be
 enabled. See [release setup](../docs/releasing.md). Import provenance is recorded
 in [snapshot.json](snapshot.json).

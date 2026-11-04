@@ -18,8 +18,8 @@
     "extractedOn": "2026-10-22",
     "precision": "Manuscript display precision; precise source estimates and available intervals are retained for archived and newly evaluated entries.",
     "verification": "Archived Table 1 and source CSV are preserved. Shared checkpoint priors and newly evaluated entries have explicit source mappings in data/evaluation-updates.json; missing-result explanations were checked against evaluation code and archives.",
-    "paperUrl": null,
-    "paperUrlStatus": "Paper URL will be added after publication.",
+    "paperUrl": "https://arxiv.org/abs/2611.03806",
+    "paperUrlStatus": "Available on arXiv.",
     "codeUrl": "https://github.com/MachineLearningLifeScience/BEND2",
     "codeUrlStatus": "Public benchmark code and evaluation instructions.",
     "researchRepository": "https://github.com/yhsure/genomic-bending"

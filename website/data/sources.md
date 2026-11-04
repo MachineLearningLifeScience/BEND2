@@ -80,7 +80,7 @@ Official capability colors are copied from `capability-style.tex`: sequence prio
 
 The public [BEND 2.0 dataset release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2) provides the evaluation data. The files in this directory preserve the website’s result snapshot and provenance. Original dataset references remain linked on the site for attribution.
 
-The paper link will be added after publication. The public benchmark code and website source are available at [MachineLearningLifeScience/BEND2](https://github.com/MachineLearningLifeScience/BEND2). Original dataset links come from the manuscript bibliography.
+The [BEND 2.0 paper](https://arxiv.org/abs/2611.03806) describes the benchmark. The public benchmark code and website source are available at [MachineLearningLifeScience/BEND2](https://github.com/MachineLearningLifeScience/BEND2). Original dataset links come from the manuscript bibliography.
 
 To rebuild the leaderboard from the audited snapshot, run from the repository root:
 

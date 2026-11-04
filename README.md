@@ -1,6 +1,6 @@
 ![BEND 2.0 — Benchmarking the capabilities needed to design DNA](docs/assets/readme-banner.png)
 
-We built BEND 2.0 to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response.
+We built BEND 2.0 to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response. Read our [paper](https://arxiv.org/abs/2611.03806) and check our [live leaderboard](https://machinelearninglifescience.github.io/BEND2/).
 
 <picture>
   <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/assets/capabilities-narrow-dark.svg">

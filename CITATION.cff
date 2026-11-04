@@ -11,6 +11,8 @@ authors:
 preferred-citation:
   type: generic
   title: "BEND 2.0: Benchmarking the Capabilities Needed to Design DNA"
+  url: "https://arxiv.org/abs/2611.03806"
+  doi: "10.48550/arXiv.2611.03806"
   authors:
     - family-names: "Bjerregaard"
       given-names: "Andreas"
