@@ -61,6 +61,8 @@ Small datasets are included with the package. Larger files download from the
 [BEND 2.0 data release on Hugging Face](https://huggingface.co/datasets/yhsure/BEND2)
 when needed, with fixed versions and checksum checks. See
 [data and offline use](docs/data.md) to download them in advance.
+Additional paper data and scripts are in
+[BEND2-extras](https://huggingface.co/datasets/yhsure/BEND2-extras).
 
 ### Connect an encoder
 
