@@ -1,0 +1,4 @@
+include README.md CITATION.cff CONTRIBUTING.md
+recursive-include docs *.md *.png *.jpg *.svg
+recursive-include checks *.py
+global-exclude __pycache__ *.py[cod]

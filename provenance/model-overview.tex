@@ -1,0 +1,46 @@
+% Overview of the main evaluated models.
+% Requires booktabs + array + xcolor (already in main.tex) AND \usepackage{longtable}.
+% longtable is not a float: it breaks across pages and stays where it is \input.
+We focus on models evaluated across the main capability categories, spanning
+autoregressive and masked sequence pretraining and functional supervision.
+Paired NTv3 checkpoints enable comparisons before and after functional
+post-training at two model sizes.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{1.12}
+\setlength{\LTcapwidth}{\linewidth}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{.215\linewidth}
+                  >{\raggedright\arraybackslash}p{.225\linewidth}
+                  >{\centering\arraybackslash}p{.065\linewidth}
+                  >{\raggedright\arraybackslash}p{.245\linewidth}
+                  >{\centering\arraybackslash}p{.070\linewidth}@{}}
+\caption{\textbf{Overview of the main evaluated models.}
+\textbf{P}: sequence priors,
+\textbf{F}: functional prediction, \textbf{C}: biological context,
+\textbf{I}: genetic interactions, \textbf{D}: genomic design.
+Gray letters indicate no reported result.}\label{tab:models}\\
+\toprule
+\textbf{Model} & \textbf{Type} & \textbf{Size} & \textbf{Interface used here} & \textbf{Capa\-bilities}\\
+\midrule
+\endfirsthead
+\caption[]{\textit{Overview of the main evaluated models (continued).}}\\
+\toprule
+\textbf{Model} & \textbf{Type} & \textbf{Size} & \textbf{Interface used here} & \textbf{Capa\-bilities}\\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\multicolumn{5}{@{}l}{\itshape Genomic language models (self-supervised on DNA)}\\
+\addlinespace[1.5pt]
+Evo2 20B \citep{brixi2026evo2} & Causal, single-nucleotide tokens & 20B & Native likelihood; frozen readout & PFCID\\
+GENERATORv2 3B (eukaryote base) \citep{li2026generator2} & Causal, sixmer tokens, nucleotide-factorized & 3B & Factorized sequence scores; calibrated base-reconstruction probabilities; frozen readout & PFCID\\
+DNABERT-2 \citep{zhou2024dnabert2} & Masked, BPE tokens & 117M & Frozen readout & PFCID\\
+NTv3 100M/650M pre \citep{boshar2025ntv3} & Masked, single-nucleotide U-Net/Transformer & 100M, 650M & Native nucleotide logits; frozen readout & PFCID\\
+\addlinespace[3pt]
+\multicolumn{5}{@{}l}{\itshape Functionally trained sequence-to-function models}\\
+\addlinespace[1.5pt]
+NTv3 100M/650M post \citep{boshar2025ntv3} & Masked LM with functional post-training & 100M, 650M & Native nucleotide, splice-boundary and track outputs; hidden/track-feature readouts; decoder adaptation (100M, I) & PFCID\\
+AlphaGenome \citep{avsec2026alphagenome} & Supervised, up to 1\,Mb context & --- & Native functional outputs; fitted readouts of frozen hidden and track features & \textcolor{black!22}{P}FCID\\
+\end{longtable}
+\endgroup

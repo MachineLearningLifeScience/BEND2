@@ -1,0 +1,48 @@
+{
+  "checks": "independent SciPy rank retrieval plus sklearn Cholesky ridge replay; exact frozen paired bootstrap hash",
+  "bootstrap_counts_sha256": "ed030943a78e7a5a8273fd6aa4883729b044be292f87c7cf90afb96f7ea81555",
+  "results": [
+    {
+      "model": "evo2_20b",
+      "tissue_id_percent": 21.568627450980394,
+      "ci95_percent": [
+        7.8431372549019605,
+        21.56862745098039
+      ],
+      "ridge_alpha": 1.0,
+      "ridge_prediction_max_abs_error": 1.744941968695457e-10,
+      "independent_validation": [
+        {
+          "alpha": 10000.0,
+          "validation_standardized_mse": 0.8534518871238951
+        },
+        {
+          "alpha": 1000.0,
+          "validation_standardized_mse": 0.8093289534984053
+        },
+        {
+          "alpha": 100.0,
+          "validation_standardized_mse": 0.7754949875677799
+        },
+        {
+          "alpha": 10.0,
+          "validation_standardized_mse": 0.7534581772012375
+        },
+        {
+          "alpha": 1.0,
+          "validation_standardized_mse": 0.7507698414618613
+        },
+        {
+          "alpha": 0.1,
+          "validation_standardized_mse": 0.7529945920291682
+        }
+      ],
+      "n_train": 12146,
+      "n_validation": 1350,
+      "n_test": 5782,
+      "n_tissues": 51,
+      "no_test_fit_overlap": true,
+      "predictions_sha256": "2bc8dc8eac1ee64585f333611f56e8f31fefe65913149835c30cdb1ab17a26d1"
+    }
+  ]
+}

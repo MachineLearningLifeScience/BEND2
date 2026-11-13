@@ -1,0 +1,48 @@
+{
+  "model": "evo2_20b",
+  "alpha": 1.0,
+  "alpha_grid": [
+    0.1,
+    1,
+    10,
+    100,
+    1000,
+    10000
+  ],
+  "selection": "validation standardized MSE, one shared alpha across51 tissue heads; ties choose stronger penalty",
+  "n_fit": 12146,
+  "n_validation": 1350,
+  "feature_dim": 512,
+  "input": "131072bp reference-forward TSS-centered sequence",
+  "target": "51 separate coefficients/intercepts predicting log1p(TPM); target inverse-scaled before evaluation",
+  "preprocessing": "StandardScaler fit on training genes only; final fit retains training-only membership",
+  "validation": [
+    {
+      "alpha": 10000.0,
+      "validation_standardized_mse": 0.8534518871238951
+    },
+    {
+      "alpha": 1000.0,
+      "validation_standardized_mse": 0.8093289534984045
+    },
+    {
+      "alpha": 100.0,
+      "validation_standardized_mse": 0.7754949875677648
+    },
+    {
+      "alpha": 10.0,
+      "validation_standardized_mse": 0.7534581772012404
+    },
+    {
+      "alpha": 1.0,
+      "validation_standardized_mse": 0.7507698414617945
+    },
+    {
+      "alpha": 0.1,
+      "validation_standardized_mse": 0.7529945920290344
+    }
+  ],
+  "seed": 20260917,
+  "prepared_protocol_sha256": "b1d523ae578528275aff50cc2785994f55c1ebcb1d4abdca105d716d4047f32b",
+  "script_sha256": "cf7fcff5b5d0f442b0248311b24ca44bfe3eef28892b4c82864fcc1e62d0fdf1"
+}

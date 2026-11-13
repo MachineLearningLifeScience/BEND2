@@ -1,0 +1,165 @@
+{
+  "date": "2026-11-02",
+  "source": "evo2-results/final_evaluation",
+  "n_genes": 5782,
+  "n_tissues": 51,
+  "point_percent": 21.568627450980394,
+  "ci95_percent": [
+    7.8431372549019605,
+    21.568627450980394
+  ],
+  "bootstrap_mean_percent": 14.633137254901959,
+  "bootstrap_median_percent": 13.725490196078432,
+  "bootstrap_min_max_percent": [
+    3.9215686274509802,
+    29.411764705882355
+  ],
+  "draws_below_point": 9617,
+  "draws_equal_point": 291,
+  "draws_above_point": 92,
+  "retrieval_correct_count_distribution": [
+    {
+      "correct_tissues": 2.0,
+      "draws": 1
+    },
+    {
+      "correct_tissues": 3.0,
+      "draws": 55
+    },
+    {
+      "correct_tissues": 4.0,
+      "draws": 310
+    },
+    {
+      "correct_tissues": 5.0,
+      "draws": 891
+    },
+    {
+      "correct_tissues": 6.0,
+      "draws": 1653
+    },
+    {
+      "correct_tissues": 7.0,
+      "draws": 2240
+    },
+    {
+      "correct_tissues": 8.0,
+      "draws": 2143
+    },
+    {
+      "correct_tissues": 9.0,
+      "draws": 1532
+    },
+    {
+      "correct_tissues": 10.0,
+      "draws": 792
+    },
+    {
+      "correct_tissues": 11.0,
+      "draws": 291
+    },
+    {
+      "correct_tissues": 12.0,
+      "draws": 83
+    },
+    {
+      "correct_tissues": 13.0,
+      "draws": 7
+    },
+    {
+      "correct_tissues": 14.0,
+      "draws": 1
+    },
+    {
+      "correct_tissues": 15.0,
+      "draws": 1
+    }
+  ],
+  "correct_tissues": [
+    {
+      "tissue": "Adrenal_Gland",
+      "credit": 1.0,
+      "self_correlation": 0.5885739022488123,
+      "best_other": "Ovary",
+      "margin": 0.0016372801685139438
+    },
+    {
+      "tissue": "Brain_Cerebellar_Hemisphere",
+      "credit": 1.0,
+      "self_correlation": 0.6164529702123657,
+      "best_other": "Brain_Cerebellum",
+      "margin": 0.00033824641801383226
+    },
+    {
+      "tissue": "Brain_Cerebellum",
+      "credit": 1.0,
+      "self_correlation": 0.617740302923828,
+      "best_other": "Brain_Cerebellar_Hemisphere",
+      "margin": 0.002335648970810511
+    },
+    {
+      "tissue": "Kidney_Medulla",
+      "credit": 1.0,
+      "self_correlation": 0.5904439113771084,
+      "best_other": "Stomach",
+      "margin": 0.004015549160177656
+    },
+    {
+      "tissue": "Muscle_Skeletal",
+      "credit": 1.0,
+      "self_correlation": 0.5870599172284856,
+      "best_other": "Brain_Cerebellar_Hemisphere",
+      "margin": 0.0076953495246328
+    },
+    {
+      "tissue": "Ovary",
+      "credit": 1.0,
+      "self_correlation": 0.5904550306871199,
+      "best_other": "Brain_Cerebellar_Hemisphere",
+      "margin": 0.0013020478913255973
+    },
+    {
+      "tissue": "Pancreas",
+      "credit": 1.0,
+      "self_correlation": 0.5832104678338177,
+      "best_other": "Stomach",
+      "margin": 0.00042790826296268403
+    },
+    {
+      "tissue": "Skin_Not_Sun_Exposed_Suprapubic",
+      "credit": 1.0,
+      "self_correlation": 0.5849270444039141,
+      "best_other": "Esophagus_Mucosa",
+      "margin": 0.0013155426279598537
+    },
+    {
+      "tissue": "Stomach",
+      "credit": 1.0,
+      "self_correlation": 0.5918401822730719,
+      "best_other": "Pancreas",
+      "margin": 0.0037646770066148694
+    },
+    {
+      "tissue": "Testis",
+      "credit": 1.0,
+      "self_correlation": 0.6031490833775195,
+      "best_other": "Pituitary",
+      "margin": 0.03169876239332292
+    },
+    {
+      "tissue": "Whole_Blood",
+      "credit": 1.0,
+      "self_correlation": 0.5671364686385132,
+      "best_other": "Spleen",
+      "margin": 0.026252315615499233
+    }
+  ],
+  "independent_expanded_retrieval_replay": {
+    "replicates": 128,
+    "seed": 20261102,
+    "selection": "numpy default_rng choice(10000,128,replace=False)",
+    "rank_method": "SciPy rankdata on explicitly duplicated gene rows",
+    "max_abs_error": 0.0
+  },
+  "scope": "Read-only scientific review; audit report files only. No website or manuscript changes."
+}

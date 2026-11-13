@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "Cite the anonymous manuscript accompanying this review artifact."
+type: software
+title: "DRAFT: DNA Design Readiness Across Functional Tasks"
+authors:
+  - name: "Anonymous authors"
+license: MIT

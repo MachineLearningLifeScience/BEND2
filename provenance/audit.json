@@ -1,0 +1,165 @@
+{
+  "status": "historical_numerical_audit_preserved",
+  "schemaVersion": "1.0.0",
+  "tableSha256": "da90a41831d59a90637034fd93756339fb24c2de65beef2a1e00c94c9561623d",
+  "csvSha256": "201a7eb0984082a498de816de4987589fe94910490d6503f104ac853fc788a1b",
+  "benchmarkSha256": "3b3ef7980a4f9df3ca9cb8605b26663de0fd86b9006e72ef9cab60d41c60499b",
+  "checkedCells": 144,
+  "publishedNonMissingCells": 118,
+  "checks": [
+    "The archived 144 manuscript table positions remain unchanged; website additions and missing-status corrections are explicitly recorded in data/evaluation-updates.json.",
+    "All nonmissing model/task pairs are unique.",
+    "All preserved uncertainty intervals contain their exact source point and are only attached to their reported task.",
+    "Current background reference is 0.421 HepG2–K562 transfer.",
+    "No reference index confidence intervals are fabricated.",
+    "Repeat data included only when matching current multi-cell source point estimates.",
+    "Task baseline rationale is explicit for all eight endpoints.",
+    "Source snapshots are sanitized review copies with refreshed SHA-256 hashes; numerical records are preserved.",
+    "The response-matching budget reference preserves all four source rates and element-bootstrap bounds for 331 targets in 110 elements.",
+    "NTv3 native-functional rows reuse their exact parent checkpoint prior estimates and intervals; no new inference is claimed."
+  ],
+  "sources": [
+    {
+      "id": "table-1",
+      "title": "Table 1 — current displayed manuscript table",
+      "snapshotPath": "provenance/table-1.tex",
+      "sha256": "da90a41831d59a90637034fd93756339fb24c2de65beef2a1e00c94c9561623d"
+    },
+    {
+      "id": "table-1-records",
+      "title": "Source-linked estimates behind Table 1",
+      "snapshotPath": "provenance/table-1-source-records.csv",
+      "sha256": "201a7eb0984082a498de816de4987589fe94910490d6503f104ac853fc788a1b"
+    },
+    {
+      "id": "capability-style",
+      "title": "Official capability labels and colors",
+      "snapshotPath": "provenance/capability-style.tex",
+      "sha256": "126b52a55ec956e95ab5ff21f051b88bdede0f68bd4512b132cec874b7f5c5a9"
+    },
+    {
+      "id": "methods",
+      "title": "Current main-text definitions",
+      "snapshotPath": "provenance/main-text-definitions.tex",
+      "sha256": "64ee8734085d4d893cba893a98ba2dcbf8818a524055b1edde4dc0094435e5eb"
+    },
+    {
+      "id": "cell-selective-methods",
+      "title": "Cell-selective selection protocol",
+      "snapshotPath": "provenance/cell-selective-methods.tex",
+      "sha256": "a4e0c471d98e9d61d1c193ee11e0fb189671d89f16d6c8e304395c56e8e65bdb"
+    },
+    {
+      "id": "multicell-methods",
+      "title": "Multi-cell selection protocol",
+      "snapshotPath": "provenance/multicell-methods.tex",
+      "sha256": "11c1122db6331eb68816ad4924789ff7f3b2fe24a6e707ec94d8765d20f56dda"
+    },
+    {
+      "id": "model-overview",
+      "title": "Main model overview",
+      "snapshotPath": "provenance/model-overview.tex",
+      "sha256": "af788c0a59174aeb1b607b53340f4c52848e71df060720d60c1b521f726a7ac2"
+    },
+    {
+      "id": "splits",
+      "title": "Dataset split overview",
+      "snapshotPath": "provenance/data-splits.tex",
+      "sha256": "2824e7ffdb9a19ae759a2cedddfc02e11d24fb4012f449da3321162407a4e82d"
+    },
+    {
+      "id": "references",
+      "title": "Manuscript bibliography",
+      "snapshotPath": "provenance/references.bib",
+      "sha256": "1ded47efe1dd561db7b834db9d8fa35a1786f9481d7f8ec598fd12633f62e1c4"
+    },
+    {
+      "id": "repair-summary",
+      "title": "Companion response-matching endpoint records",
+      "snapshotPath": "provenance/repair-summary.csv",
+      "sha256": "433befcbc4b8c0d5d7b3779c2a2aa1c15257bd5a4cd28aaeb35ae0ccbd1ca5a7"
+    },
+    {
+      "id": "repair-budgets",
+      "title": "Response-matching budget curve records",
+      "snapshotPath": "provenance/repair-budgets.csv",
+      "sha256": "de09860245b5207ab694d6ba6ebdcd26b9d2b956ab3b1c112c2ca208face4a03"
+    },
+    {
+      "id": "atlas-frontier",
+      "title": "Native-output multi-cell repeat records",
+      "snapshotPath": "provenance/atlas-frontier.csv",
+      "sha256": "aaca65313920ce54a843ea80e44c7ccbb527a69d3fb919f8fcf6e44ec8a214e3"
+    },
+    {
+      "id": "repair-budget-reference",
+      "title": "Experimental response-matching budget reference",
+      "snapshotPath": "provenance/repair-budget-reference.csv",
+      "sha256": "6f2cb289cfebfd538e946193fb49730a88316687740a952f35d6b6d93f979d60"
+    },
+    {
+      "id": "evaluation-updates",
+      "title": "Audited website additions and missing-result explanations",
+      "snapshotPath": "data/evaluation-updates.json",
+      "sha256": "02a6a380db3093b8a6d75faafc094e65539cecc4ef604cd55dbefa89609c347b"
+    },
+    {
+      "id": "ntv3-checkpoints",
+      "title": "Pinned NTv3 checkpoints used by the native-output evaluations",
+      "snapshotPath": "provenance/coverage-20261027/ntv3-native-head-inventory.json",
+      "sha256": "08c1e9b997ebc10669c297fa0343e59786ebb481f5f679b7f5253e4eb7d9bb15"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic",
+      "title": "DNABERT-2 single-base query audit (excluded from scores)",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/README.md",
+      "sha256": "438f17a5111c5c3662ff53351e6e180dc66e0e0438fb4f59c912e7d4e229dd67"
+    },
+    {
+      "id": "dnabert2-prior-diagnostic-files",
+      "title": "DNABERT-2 diagnostic artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/dnabert2-prior/SHA256SUMS.json",
+      "sha256": "b22c07240f24e1427860f9c162d49e08518a7ec70ea597ebccb92368cd279f79"
+    },
+    {
+      "id": "ceno-full-opensplice",
+      "title": "CENO full OpenSplice evaluation",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/entry.json",
+      "sha256": "489a42519dd6e9267ce1eff84cba8c25c9bb5feb863b15e44996cf2d5bdc7d11"
+    },
+    {
+      "id": "ceno-full-opensplice-methods",
+      "title": "CENO evaluation protocol and numerical checks",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/README.md",
+      "sha256": "6ee83d034af5fdfbea8a95c08f280a28d3228fc925db3f67ddfead8e7cb18864"
+    },
+    {
+      "id": "ceno-full-opensplice-files",
+      "title": "CENO evaluation artifact checksums",
+      "snapshotPath": "provenance/coverage-20261027/ceno-opensplice/SHA256SUMS.json",
+      "sha256": "c76fd78ed54961d182706f4613fd9d19b65ac0648172842a0500b6b9c6a903e9"
+    },
+    {
+      "id": "evo2-tissue-identification",
+      "title": "Evo2 completed tissue-identification evaluation",
+      "snapshotPath": "provenance/evo2-tissue-20261102/entry.json",
+      "sha256": "6b1be888062990288244e8657a1462103e2aba687aca9152ee73496a0105766b"
+    },
+    {
+      "id": "evo2-tissue-identification-methods",
+      "title": "Evo2 extraction and independent evaluation checks",
+      "snapshotPath": "provenance/evo2-tissue-20261102/README.md",
+      "sha256": "4175f5f1e1d0f6a79843d6d0ab3b2adf197266ca5bf572e3364dd4150ca769ec"
+    },
+    {
+      "id": "evo2-tissue-identification-files",
+      "title": "Evo2 evaluation artifact checksums",
+      "snapshotPath": "provenance/evo2-tissue-20261102/SHA256SUMS.json",
+      "sha256": "96518447a3676d0592ff608a8e0635fab5be7a0ef8a7baf09a6d622db47976a6"
+    }
+  ],
+  "extensionId": "coverage-20261027",
+  "sharedCheckpointCells": 2,
+  "newEvaluationCells": 2,
+  "anonymization": "Anonymous review copy: attribution and execution identifiers removed; local text hashes refreshed. Numerical results, cohorts, model revisions and original model/data checksums preserved. No numerical rerun is claimed."
+}

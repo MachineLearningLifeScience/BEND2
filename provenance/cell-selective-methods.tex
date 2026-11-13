@@ -1,0 +1,97 @@
+\subsection{Cell-selective expression: cohort and measurement}
+\label{app:cell-selective}
+The Siraj HepG2/K562 saturation assay \citep{siraj2026functional} supplies
+167,958 substitutions, 280 parental backgrounds and 127 loci. One locus with
+four indel-containing backgrounds lacks prepared physical-count coverage, excluding 2,334
+substitutions. No activity, agreement or model-score filter is added.
+Each parent and requested target cell defines an opportunity. Both cells serve
+as target, and all measured substitutions, including the natural-allele
+substitution, compete with no edit. Unlike response matching, this task permits
+direct reversions.
+
+For sequence $s$, cell $c$ and repeat $r$, define
+\begin{equation}
+ z_{s,c,r}=\log_2\frac{\mathrm{RNA}_{s,c,r}+0.5}{\mathrm{DNA}_{s,r}+0.5},
+ \qquad
+ \Delta_c(s)=\frac{1}{5}\sum_{r=1}^{5}(z_{s,c,r}-z_{m0,c,r}),
+\end{equation}
+where $m0$ is the physical unmutated parent. Effects average log ratios against
+that parent; counts are not pooled, and no saturation-library baseline is used.
+DNA counts are shared between cells.
+Subsets A (repeats 1--2) and B (3--5) recompute their own parent contrasts and
+test robustness within one library, not independent studies.
+
+\paragraph[Predicting effects.]{\phantomsection\label{app:cell-selective-fitting}Predicting effects.}
+Figure~\ref{fig:control}C compares AlphaGenome and Enformer accessibility,
+NTv3 100M/650M post readouts, 3--6-mer ridge and the task-trained one-hot ResNet.
+AlphaGenome and Enformer effects are aggregated over 501-bp and 1,024-bp output windows, respectively. To calibrate native
+accessibility, each cell and fold receives a nonnegative through-zero slope:
+\begin{equation}
+ b=\max\!\left(0,\frac{\sum_i w_i a_i\Delta_i}{\sum_i w_i a_i^2}\right).
+\end{equation}
+Here $a_i$ is the raw native effect; a zero denominator gives slope zero.
+Five deterministic folds keep complete loci together.
+Fitting excludes evaluation-fold loci and weights training loci equally, then
+backgrounds within loci and candidates within backgrounds equally. These native outputs are
+assay-calibrated, not zero-shot.
+
+Fitted predictions combine the predicted mean effect across cells with the predicted cell
+contrast: HepG2 is the mean plus half the HepG2-minus-K562 contrast, and K562
+is the mean minus half that contrast. Readouts fitted to the original
+assay estimator are evaluated against physical-parent effects without recalibration.
+Supervision, context and readout training differ, so comparisons concern these
+pipelines rather than architecture alone.
+
+\paragraph{Choosing and evaluating edits.}
+For fixed $\lambda\in\{0,0.25,0.5,1,2,4\}$, nominate the substitution maximizing
+$\widehat\Delta_{\rm target}-\lambda|\widehat\Delta_{\rm other}|$.
+Abstain at maxima of at most $10^{-10}$; otherwise share weight equally among
+ties within absolute tolerance $10^{-10}$ and zero relative tolerance.
+The primary setting is $\lambda=1$, chosen without measured outcomes.
+Evaluate target effect $T$, absolute other-cell effect $O$ and $U=T-O$.
+Take absolute values before averaging ties, backgrounds or cells. Average
+opportunities within loci, then the 127 loci equally. No edit contributes zero;
+uniform choice uses the exact expectation over eligible substitutions.
+
+\paragraph{Prediction-matched strength control.}
+Weaker edits can reduce desired and unwanted effects together. The control
+therefore uses the same attempted opportunities and matches predicted target
+response within each one. It mixes six target-only policies: uniform choice
+in relative predicted-strength bands $(0,.25]$, $(.25,.5]$, $(.5,.75]$, $(.75,1]$,
+minimum positive strength and maximum strength. Empty bands use candidates
+nearest the midpoint. Interpolation between adjacent component means matches
+the selective policy's expected predicted target effect. Other-cell scores do
+not rank candidates within components; measured responses do not construct the
+mixture. Matching predictions does not establish equal measured effects.
+
+\paragraph{Uncertainty and results.}
+The 24-contrast family tests six models on utility versus no edit,
+utility versus matched control, target-effect difference and other-cell reduction.
+We use 50,000 shared locus-bootstrap draws and Bonferroni tails
+$0.025/24$. Fits, slopes and nominations remain fixed; intervals omit training
+and calibration-fitting variation. Mean target equivalence requires the adjusted
+interval inside $\pm0.05$ log$_2$; no pipeline establishes it.
+AlphaGenome, both post-trained NTv3 readouts and Enformer achieve positive utility;
+AlphaGenome and both NTv3 readouts also improve on their strength controls.
+Enformer's control gain is inconclusive: $0.055\;[-0.011,0.120]$.
+These within-model comparisons do not establish a between-model ranking.
+NTv3 650M pre attempts only 10.24\% of opportunities, explaining its near-zero utility.
+
+\paragraph{Experimental reference.}
+Select using subset A's measurements and evaluate in B, then reverse, retaining the
+same candidate sets, penalties, no-edit option and strength control. Both directions must
+have positive utility and gains over target-only and matched-strength controls;
+averaged utility and target-only gain must also have positive lower pointwise
+95\% locus-bootstrap bounds. These requirements hold: mean utility is
+$0.962\;[0.829,1.092]$, target-only gain $0.371\;[0.297,0.448]$, and matched-control
+gain $0.292\;[0.239,0.347]$. On the same subsets, reference-minus-AlphaGenome
+utility is $0.603$, positive at 108 loci, negative at 18 and tied at one.
+The reference uses measured candidate responses and shares oligos, parents and
+library construction across subsets. It shows that selective edits can be found
+across repeat subsets.
+It is not a noise ceiling or independent replication.
+
+\paragraph{Protocol.}
+This evaluation is retrospective. The protocol, cohort and interfaces were fixed
+before native-slope fitting and evaluation; nominations were fixed after calibration
+and before scoring.

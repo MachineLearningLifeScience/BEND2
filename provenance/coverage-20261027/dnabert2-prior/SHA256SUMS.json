@@ -1,0 +1,14 @@
+{
+  "PROTOCOL.json": "099a33caa8e0a1c30d9f1bc118b3627bcbbb7795fa470923c9600d976fc34496",
+  "README.md": "438f17a5111c5c3662ff53351e6e180dc66e0e0438fb4f59c912e7d4e229dd67",
+  "RESULT.json": "aa3a725a6e545c4aa90890456576ce985132600497be91fcdbe8553b792f38ac",
+  "check_padding.py": "75defe86f47293849715ce2e942a0300739f3d90fc2cb5c69a0d242a7cd47f64",
+  "diagnostic-per-window.csv": "07c6ad12291c856f90c756e8dd8d6e0561b74e76c5a11c6aa07f337e309057b2",
+  "evaluate.py": "9e7f14d62adf962fa6dde6c2dbdb889624ef6e609a2abe41dcc156b99798a540",
+  "original-prior-protocol.json": "bd8152655f24a60932bd7082b75e6abc3fc855922c1ac15569a2a9e2f1ee2bf2",
+  "padding-audit.json": "5a39974b29bc0b1e777c59982eed7317c4940d06b889d642b11e6a3f556a8478",
+  "run.sbatch": "340888ebc6a34e66c2371f0624ba6d0b6cc583caeca7584e117d587e16e0b12b",
+  "runtime.sh": "fda3018a0d529d9ee26f973683814039ce8b14f30e4d67f3ad178ec843f6c870",
+  "tokenization-audit.json": "ba30f4ad1e2bd1f30087e4dd77d5228cdecd1fbe60bc97e28b3545f101a9b7d2",
+  "tokenization_audit.py": "90275b9094f70b33085135466bcf62c53652ae1049a4a4173c4cf3a5dff86592"
+}

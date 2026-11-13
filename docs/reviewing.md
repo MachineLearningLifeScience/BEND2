@@ -1,0 +1,94 @@
+# Review a leaderboard submission
+
+Maintainers review the model setup and rescore every submitted task before
+accepting a result. Accepted results are labelled **Contributor evaluated**.
+Tasks independently rerun by a maintainer are labelled **Reproduced by DRAFT**.
+
+## Rescore the evidence
+
+Use a separate installation of this review edition. With the evidence ZIP
+and contribution JSON available locally, run:
+
+```bash
+draft admin rescore-submission submissions/community-IDENTITY.json \
+  --bundle /path/to/downloaded/submission.zip \
+  --output reviews/community-IDENTITY.json \
+  --cache-dir /path/to/benchmark-cache
+```
+
+The command reads the ZIP without executing its code. It checks hashes, protocols,
+cohorts and selection decisions, then recomputes scores and intervals using the
+installed benchmark's labels.
+
+A receipt is written after all tasks pass. Recomputed metrics must agree
+within an absolute tolerance of `1e-10` in the task's units; selection and
+ranking rules are unchanged.
+
+Rescoring runs on a CPU. Supply larger source datasets as described in the
+[data guide](data.md). GTEx uses bundled labels and gene IDs; its bootstrap
+can take several minutes.
+
+A change to the contribution or archive requires a new receipt. Rescore to a
+new output path, review the correction, then replace the old receipt while
+preserving any reproduction history.
+
+Rescoring cannot establish which weights ran, how the readout was fitted, or
+whether labels leaked into training. Checking model execution requires a rerun.
+
+## Review and accept
+
+Review the checkpoint, adapter, representation, pooling, input handling, fitting
+procedure and training-data disclosure. Confirm that the model uses each task's
+full input. Ask contributors to explain discrepancies before deciding; withhold
+unresolved results. Reject or remove entries with fabricated results, prohibited
+use of evaluation labels or knowingly misleading declarations. Record the
+supporting evidence and decision alongside the review receipt. Sequence overlap from
+reference-genome pretraining alone is not grounds for rejection.
+
+Generate the receipt using your installed benchmark. Save it under `reviews/`
+with the same filename as the contribution. Receipts are unsigned JSON files;
+acceptance depends on checking the evidence. Run contributed adapters in
+isolated jobs, outside privileged CI and cluster login nodes.
+
+Building leaderboard data requires a matching receipt for every accepted
+community record. To combine them with the reference results, run:
+
+```bash
+draft admin build-leaderboard --reference data/benchmark.paper.json --output results/leaderboard.json
+```
+
+## Independently reproduce selected tasks
+
+Rerun reference examples, leading or surprising results, entries with setup
+questions, and a random sample of other contributions. Other entries can be
+accepted after rescoring and setup review. Withhold or withdraw entries with
+unresolved material discrepancies, keeping a record of any corrections.
+
+After inspecting the adapter and dependencies, run it in an isolated job on
+suitable hardware. Use a new result directory and a **fresh
+inference cache**, with the same weights and declared model configuration.
+You can share a verified source-data mirror. Recompute embeddings or
+probabilities from the model when recording an independent reproduction.
+
+Export the run with `draft export`, host its ZIP, then record the tasks you reran:
+
+```bash
+draft admin record-reproduction submissions/community-IDENTITY.json \
+  --review reviews/community-IDENTITY.json \
+  --run results/independent-rerun --tasks atlas_profile \
+  --evidence-url https://example.org/independent-rerun.zip \
+  --reviewer ANONYMOUS_REVIEWER_ID \
+  --notes "Independent job; pinned weights; fresh inference cache; hardware and setup details" \
+  --attest-independent
+```
+
+The command checks model identity, rejects reuse of the submitted run, rescores
+the rerun, and compares metrics and intervals. The absolute tolerance is `1e-4`
+in each metric's units, including percentage points for percentage metrics.
+Atlas also checks both replicate gains. Investigate larger differences before
+accepting a reproduction. The leaderboard keeps the contributor's score and
+links the rerun estimate and evidence in the task's details.
+
+Review the job provenance before attesting to an independent run: files with
+edited metadata can pass the software checks. Review training-data disclosures
+separately from reproduction.
