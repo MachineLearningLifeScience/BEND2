@@ -66,7 +66,7 @@ function categoryDiagram(id) {
       ${responseLine(128,row ? 151 : 184,y-6)}`).join("")}`,
     design: `<path class="category-guide" stroke-dasharray="2 3" d="M170 6V62"/>
       ${[14,30,46].map((y, row) => `<path class="${row === 1 ? "category-ink" : "category-guide"}" d="M18 ${y}H88"/>${[26,38,50,62,74,86].map((x, i) => `<path class="${i === row + 1 ? "category-ink" : "category-guide"}" d="M${x} ${y - 4}V${y + 4}"/>`).join("")}${responseLine(115,[143,170,151][row],y,row !== 1)}`).join("")}
-      <path class="category-ink" d="M12 24H8V36H12"/>`,
+      <path class="category-ink" d="M12 24H8V36H12M94 24H98V36H94"/>`,
   };
   return `<svg class="overview-category-drawing" viewBox="0 0 200 68" aria-hidden="true" focusable="false">${diagrams[id]}</svg>`;
 }
