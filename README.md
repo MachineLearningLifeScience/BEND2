@@ -12,7 +12,7 @@ We built DRAFT to test whether genomic models can guide the design of DNA. Acros
 <!-- BEGIN REFERENCE RESULTS -->
 ## Benchmark results
 
-[![DRAFT leaderboard with model rankings and the Add your model submission entry](docs/assets/leaderboard-preview.jpg)](docs/assets/leaderboard-preview.jpg)
+[![DRAFT score plot and leaderboard with the Add your model submission entry](docs/assets/leaderboard-preview.jpg)](docs/assets/leaderboard-preview.jpg)
 
 <details>
 <summary>Results as a text table</summary>
