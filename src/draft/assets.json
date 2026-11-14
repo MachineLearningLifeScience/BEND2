@@ -127,6 +127,14 @@
       "sha256": "1f67aaa17a77b327738fe750ab37430a85dddf73c7d9189385ad1839259acec0",
       "source": "genome",
       "distribution": "external"
+    },
+    "siraj-interaction-repeats.parquet": {
+      "bytes": 3489797,
+      "sha256": "b76c42b6828fc892b35ed039c9933e343ce0d1011ae1d9db0690c5b7b9439621",
+      "source": "siraj",
+      "distribution": "bundled",
+      "protocol": "68026 paired edits in114 elements; five float64 four-genotype interaction measurements averaged across HepG2/K562; evaluation only, no readout fitting.",
+      "source_sha256": "a6818817359e17992910b448681853705bb0c45c881680e80c44745abdc87b9c"
     }
   },
   "gtex_common_test_exclusions": [

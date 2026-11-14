@@ -1,0 +1,19 @@
+model,value,interface
+markov0,,
+evo2_20b,0.05002827879530649,Fitted out-of-fold effect differences
+ceno_1b_1m,0.0100908337947297,fitted mean-effect frozen readout; paired backgrounds
+generator_v2_3b,0.04578286189430206,Fitted out-of-fold effect differences
+dnabert2,0.0197275780667494,frozen 768-dimensional mean embeddings + ridge
+ntv3_100m_pre,0.0101713052936839,frozen mean embeddings + 512-dimensional SRHT + ridge
+ntv3_100m_post,0.1390996911117981,Fitted out-of-fold effect differences
+ntv3_100m_native,0.1524855604512107,501-bp DNase log-coverage difference
+ntv3_650m_pre,0.008672778395027,Fitted out-of-fold effect differences
+ntv3_650m_post,0.18701246956946582,Fitted out-of-fold effect differences
+ntv3_650m_native,0.1698682962800696,501-bp DNase log-coverage difference
+alphagenome,0.2595833829724495,Native accessibility output
+alphagenome_fitted,0.26862234598973245,matched assay insert hidden-representation ridge readout
+enformer,0.1811050695712191,Native accessibility output
+spliceai,,
+kmer_3_6,0.03182186128452004,Fitted out-of-fold effect differences
+onehot_resnet,-0.0006640598742617343,Fitted out-of-fold effect differences
+experimental_reference,0.42100136296415547,HepG2–K562 transfer

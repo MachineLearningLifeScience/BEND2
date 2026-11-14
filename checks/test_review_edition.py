@@ -115,7 +115,7 @@ def test_bundled_inputs_keep_manifest_checksums(tmp_path, monkeypatch):
         for name, spec in datasets.MANIFEST["files"].items()
         if spec.get("distribution") == "bundled"
     ]
-    assert len(bundled) == 9
+    assert len(bundled) == 10
     for name in bundled:
         assert datasets.asset(name, cache_dir=tmp_path).is_file()
     assert not list(tmp_path.iterdir())

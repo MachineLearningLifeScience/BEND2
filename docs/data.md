@@ -61,6 +61,14 @@ subtracts the parental no-edit construct. Retain Siraj attribution and
 noncommercial terms for this combined derived table, and acknowledge the ENCODE Consortium, producers, and
 accessions according to its [data-use policy](https://www.encodeproject.org/help/citing-encode/).
 
+Background interactions use an additional bundled table of five experimental
+interaction measurements for 68,026 paired edits in 114 elements. Each repeat's
+four-genotype interaction is averaged across HepG2 and K562. These measurements
+are used only for evaluation; readouts retain the original pooled-assay training
+labels. The source counts use the same ENCODE accessions and Siraj attribution
+above. [Derivation and checks](../provenance/siraj-repeat-interactions/README.md)
+record the exact input hash and scoring protocol.
+
 **Atlas of AI-designed enhancers:** Castillo-Hair et al., *Programming human
 cell type-specific gene expression via an atlas of AI-designed enhancers*,
 [Zenodo 17410822](https://doi.org/10.5281/zenodo.17410822), CC BY 4.0.

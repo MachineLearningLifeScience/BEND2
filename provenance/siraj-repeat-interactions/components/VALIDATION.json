@@ -1,0 +1,41 @@
+{
+  "sources": {
+    "strong-selection/analysis_input.parquet": "5a411626efc4e126f5038b7175a466a2abd29a129a44302ad46e236bb60ae18e",
+    "strong-selection/memberships.parquet": "741f960c469743e17532c729abab6c655120cbe0fb6593914f7df23f484e2610",
+    "archive/iteration7/siraj-sign-epistasis/evaluation-input.parquet": "a6818817359e17992910b448681853705bb0c45c881680e80c44745abdc87b9c",
+    "archive/iteration2/reliability/plain_mlp/nt650_pre/oof_predictions.parquet": "f14c67a8692b03de00a29ffc1c25dad744fd8af168c4e005daedcbf88d7082e7",
+    "archive/iteration2/reliability/plain_mlp/nt650_post/oof_predictions.parquet": "2f162b63d99ba756b578bc32f4df385fe27560d99122c608cc9672084ffb75f0",
+    "archive/reliability/siraj-direct_m0-cohort.csv": "1ccc29cbbe8e1f26f830f0eca1b36c2d839aa679a3834749a27527d564604fa9",
+    "archive/reliability/siraj-direct_m0-mean-panel.parquet": "289176aa24ab699d230254e26bd75e5113b23e753a4668d414d5603f16a15cd5"
+  },
+  "loci": 89,
+  "all_edits": 53101,
+  "strong_edits": 6136,
+  "evaluation_replicates": [
+    4,
+    5
+  ],
+  "fitted_predictions": "Existing heads only; no fitting or calibration in this analysis",
+  "interaction_reconstruction_max_error": {
+    "AlphaGenome native": 1.4210854715202004e-14,
+    "Enformer native": 2.7755575615628914e-17,
+    "NTv3 650M pre linear": 5.551115123125783e-17,
+    "NTv3 650M post linear": 2.220446049250313e-16,
+    "NTv3 100M post linear": 0.0,
+    "GENERATORv2 linear": 0.0
+  },
+  "interaction_summary_replay_max_error": 1.1102230246251565e-16,
+  "bootstrap": {
+    "draws": 20000,
+    "seed": 20261110,
+    "unit": "whole locus",
+    "sampling": "114-locus multinomial multiplicities renormalized over fixed89 eligible loci"
+  },
+  "cross_cell_reference": "Mean of within-locus HepG2 versus K562 Spearman, calculated separately in evaluation replicates4 and5",
+  "repeat_reference": "Within-locus Spearman between cell-averaged outcomes in evaluation repeats4 and5",
+  "missing_handling": "Require finite aligned inputs, constant vectors contribute zero correlation as in frozen strong-subset protocol",
+  "single_definition": "Query effect on reference background R",
+  "double_definition": "Background SNP plus query relative to reference parent; parent offset constant within locus so ranks equal query effect on A",
+  "interaction_definition": "Query effect on A minus query effect on R; full-locus centering does not alter within-subset correlations",
+  "membership": "Frozen strong_0.5_depth0 mask from discovery replicates1\u20133; no reselection"
+}

@@ -1,0 +1,20 @@
+{
+  "source_sha256": "a6818817359e17992910b448681853705bb0c45c881680e80c44745abdc87b9c",
+  "output_sha256": "b76c42b6828fc892b35ed039c9933e343ce0d1011ae1d9db0690c5b7b9439621",
+  "bytes": 3489797,
+  "n_pairs": 68026,
+  "n_elements": 114,
+  "columns": [
+    "unit_id",
+    "mutation_position",
+    "mutation_ref",
+    "mutation_alt",
+    "interaction_repeat_1",
+    "interaction_repeat_2",
+    "interaction_repeat_3",
+    "interaction_repeat_4",
+    "interaction_repeat_5"
+  ],
+  "dtype": "float64",
+  "formula": "mean across HepG2 and K562 of log2((A_RNA+.5)/(A_DNA+.5)) - log2((A0_RNA+.5)/(A0_DNA+.5)) - log2((R_RNA+.5)/(R_DNA+.5)) + log2((R0_RNA+.5)/(R0_DNA+.5)), separately for each of five experimental repeats"
+}

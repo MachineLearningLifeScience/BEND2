@@ -282,6 +282,7 @@ def evaluate(
                 started = time.monotonic()
                 # All four Siraj endpoints use one cached input set and two shared fits.
                 family = (
+                    "background" if task == "background" else
                     "cell_selective"
                     if task in {"context", "background", "repair_percentile", "cell_selective"}
                     else task

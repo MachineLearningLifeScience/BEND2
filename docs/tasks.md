@@ -78,8 +78,11 @@ native prediction heads use separate evaluation procedures.
   genes.
 - **Cell contrast:** five folds keep each complete element and its related
   backgrounds together. The target is the paired HepG2-minus-K562 effect.
-- **Background interactions:** compare the same mutation across parental
-  backgrounds; preserve the element holdout and average elements equally.
+- **Background interactions:** compare unchanged predictions with interactions
+  estimated from disjoint two- and three-repeat groups. Average the twenty
+  within-element correlations over all ten partitions, then average 114 elements
+  equally. Training labels and held-out elements are unchanged. The experimental
+  reference measures agreement between independent repeat groups (0.389).
 - **Repair:** select from the fixed one-edit menu, excluding direct reversion.
   The measured residual is ranked against the same request's alternatives.
   A lower percentile is better; it is not an effect size or success rate.

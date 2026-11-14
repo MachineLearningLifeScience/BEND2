@@ -53,6 +53,7 @@ _INPUTS = {
 }
 _ASSETS = {
     "prior": ("prior-panel.parquet",),
+    "background": ("siraj-interaction-repeats.parquet",),
     "atlas_profile": (
         "atlas-population.parquet",
         "atlas-programs.csv",

@@ -44,7 +44,7 @@ The 13 foundation-model/readout rows now contain 99 of 104 task values. Their fi
 
 The site-defined **Reference index** is exploratory and is not a metric reported in the paper. Each task score is `100 × (value − baseline) / (NTv3 650M post − baseline)`. This handles both metric directions. Average available endpoints within each category, then available categories equally. Do not clamp: scores below 0 or above 100 remain meaningful relative to the stated anchors. Models with missing tasks receive partial scores. Tooltips and CSV exports include task and category coverage. Missing values never count as zero.
 
-The index (`reference-index-v2`) uses eight endpoints across five categories, including Sequence priors. Prior loss uses the empirical base-composition baseline of 1.974 bits/base and the fixed NTv3 650M post reference of 1.375 bits/base; lower loss gives a higher score. Prior scores use different probability interfaces, and many functional models do not report them. The native-functional NTv3 rows share the prior evaluation of their identical post-trained checkpoints; this is the same nucleotide-probability head, not an estimate inferred from downstream performance. When prior loss is unavailable, the combined score averages the other available categories.
+The index (`reference-index-v3`) uses eight endpoints across five categories, including Sequence priors. Prior loss uses the empirical base-composition baseline of 1.974 bits/base and the fixed NTv3 650M post reference of 1.375 bits/base; lower loss gives a higher score. Prior scores use different probability interfaces, and many functional models do not report them. The native-functional NTv3 rows share the prior evaluation of their identical post-trained checkpoints; this is the same nucleotide-probability head, not an estimate inferred from downstream performance. When prior loss is unavailable, the combined score averages the other available categories.
 
 | Endpoint | Zero-point baseline | Scientific meaning |
 | --- | ---: | --- |
@@ -62,7 +62,7 @@ The NTv3 650M post row is a fixed 100-point reference, not an upper bound. The e
 - OpenSplice's repeat reference shares the wild-type PSI estimate across repeat-specific effects.
 - Cell contrast uses disjoint RNA/DNA subsets on 127 of 128 loci; model endpoints use pooled posterior effects.
 - Tissue identification averages both donor-half directions on the same 5,782 genes and 51 tissues.
-- Background interaction uses **HepG2–K562 transfer, 0.421**, matching the current table and Figure 4A. Earlier replicate-subset references are superseded.
+- Background interaction uses **independent repeat agreement, 0.389**. Both model scores and this reference follow the current ten-partition protocol; the historical HepG2–K562 transfer value 0.421 is no longer the reference.
 - Single-edit and cell-selective references select on one repeat subset and evaluate on the other; measurement aggregation differs from the model endpoints.
 - Multi-cell references select on one RNA repeat and evaluate on the other, reciprocally, over overlapping programs.
 
@@ -88,3 +88,19 @@ draft admin build-leaderboard
 ```
 
 The command reads `data/benchmark.paper.json` and reviewed community submissions, validates the scores, and writes `data/benchmark.json`. The original extraction records remain in `provenance/`; this does not modify them or run model evaluations.
+
+## Interaction update, 14 November 2026
+
+The background-interaction column now follows the revised manuscript evaluation.
+It retains all 68,026 paired edits and 114 elements, original predictions and
+pooled-assay training labels. Evaluation uses five per-repeat four-genotype
+interactions, averaged across HepG2 and K562, and all ten disjoint 2-versus-3
+partitions. Model scores average twenty within-element correlations; the
+experimental reference averages the ten correlations between independent pools.
+Intervals resample whole elements 20,000 times (seed 20261111).
+
+[Exact values, source audit and reproduction](../provenance/siraj-repeat-interactions/README.md)
+replace the historical background rows in the archived October table. The other
+seven task values are unchanged. The package's background task version is 2;
+previous scores cannot resume or pass submission checks as this endpoint.
+The exploratory index uses the updated NTv3 reference and is version 3.

@@ -205,5 +205,15 @@
       "taskId": "tissue_identification",
       "sourceId": "evo2-tissue-identification"
     }
-  ]
+  ],
+  "interactionUpdate": {
+    "id": "siraj-independent-repeat-interactions",
+    "taskId": "background",
+    "scientificVersion": 2,
+    "table": "provenance/siraj-repeat-interactions/table-ready.csv",
+    "sha256": "b72ad9be59618e1decbcf1147a52ce1c0998d62d2793e5706d049f7fa9c4b1e5",
+    "models": 15,
+    "experimentalReference": 0.38939954806598315,
+    "otherTaskValuesUnchanged": true
+  }
 }

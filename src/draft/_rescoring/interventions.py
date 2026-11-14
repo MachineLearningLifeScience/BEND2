@@ -167,8 +167,8 @@ def _background(data, tables):
     for state in ("A", "R"):
         predictions[f"prediction_{state}"] = actual[f"prediction_{state}"].to_numpy()
     predictions["fold"] = predictions.unit_id.map(_group_folds(data["records"]))
-    return background.score(predictions), {
-        "predictions": (key, ["truth_A", "truth_R", "y_true"]),
+    return background.score(predictions, data["interaction_repeats"]), {
+        "predictions": (key, ["truth_A", "truth_R", "y_true", *background.REPEATS]),
         "groups": (["unit_id"], []),
     }
 

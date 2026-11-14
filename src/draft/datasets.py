@@ -108,6 +108,8 @@ def task_identity(task):
     else:
         assets = ["siraj.zip", "siraj-numeric-reference.npz"]
         cohorts = ["context"] if task == "context" else ["siraj"]
+        if task == "background":
+            assets.append("siraj-interaction-repeats.parquet")
         if task == "cell_selective":
             assets.append("siraj_selective.parquet")
             cohorts.append("context")
@@ -525,7 +527,8 @@ def prepare(task: str, cache_dir=None) -> dict:
         )
         receipts.update({name: dict(MANIFEST["files"][name]) for name in source_names})
         assets = (
-            {"selective_outcomes": "siraj_selective.parquet"} if task == "cell_selective" else {}
+            {"selective_outcomes": "siraj_selective.parquet"} if task == "cell_selective"
+            else {"interaction_repeats": "siraj-interaction-repeats.parquet"} if task == "background" else {}
         )
     elif task in _TASK_ASSETS:
         assets = _TASK_ASSETS[task]

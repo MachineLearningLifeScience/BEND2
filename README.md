@@ -9,33 +9,38 @@ We built DRAFT to test whether genomic models can guide the design of DNA. Acros
   <img src="docs/assets/capabilities-wide-light.svg" alt="Five capabilities: recover a hidden base; predict an edit’s effect; account for cells and tissues; account for DNA background; select DNA for a target response.">
 </picture>
 
-<!-- BEGIN REFERENCE RESULTS -->
+<!-- BEGIN GENERATED RESULTS: node docs/figures/build_results.mjs -->
 ## Benchmark results
 
-[![DRAFT score plot and leaderboard with the Add your model submission entry](docs/assets/leaderboard-preview.jpg)](docs/assets/leaderboard-preview.jpg)
+<a href="docs/assets/results-light.svg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/results-dark.svg">
+    <img src="docs/assets/results-light.svg" alt="DRAFT results for 8 tasks and 13 model/readout configurations, ordered by combined score. Full values are available in the text table below.">
+  </picture>
+</a>
 
 <details>
 <summary>Results as a text table</summary>
 
 | Model / readout | Combined<br>score ↑ | Hidden-base<br>loss<br>bits&nbsp;↓ | Splicing<br>effects<br>Spearman&nbsp;↑ | Cell<br>contrast<br>Spearman&nbsp;↑ | Tissue<br>identification<br>top-1&nbsp;%&nbsp;↑ | Background<br>interaction<br>Spearman&nbsp;↑ | Single-edit<br>rank<br>percentile&nbsp;↓ | Cell<br>selectivity<br>log₂&nbsp;utility&nbsp;↑ | Multi-cell<br>gain<br>log₂&nbsp;gain&nbsp;↑ |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| AlphaGenome<br><sub>Fitted&nbsp;readouts</sub> | 136.0 | — | 0.650 | 0.402 | 64.7 | 0.269 | 25.7 | 0.515 | 0.833 |
-| AlphaGenome<br><sub>Native&nbsp;outputs</sub> | 129.1 | — | 0.621 | 0.398 | 68.6 | 0.260 | 24.3 | 0.384 | 0.707 |
-| NTv3&nbsp;650M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 100.0 | 1.375 | 0.564 | 0.256 | 56.9 | 0.187 | 30.0 | 0.287 | 0.568 |
-| Enformer<br><sub>Native&nbsp;outputs</sub> | 94.8 | — | — | 0.282 | 31.4 | 0.181 | 31.5 | 0.290 | 0.700 |
-| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 90.1 | 1.375 | 0.461 | 0.239 | 45.1 | 0.170 | 29.3 | 0.250 | 0.482 |
-| NTv3&nbsp;100M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 80.4 | 1.492 | 0.502 | 0.244 | 51.0 | 0.139 | 30.3 | 0.211 | 0.144 |
-| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 65.6 | 1.492 | 0.168 | 0.203 | 27.5 | 0.152 | 32.0 | 0.200 | 0.344 |
-| Evo2&nbsp;20B<br><sub>Fitted&nbsp;readouts</sub> | 40.4 | 1.388 | 0.367 | 0.041 | 21.6 | 0.050 | 43.5 | -0.350 | 0.275 |
-| NTv3&nbsp;100M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 32.1 | 1.537 | 0.349 | 0.076 | 7.8 | 0.010 | 47.3 | -0.207 | 0.339 |
-| GENERATORv2<br><sub>Fitted&nbsp;readouts</sub> | 31.5 | 1.711 | 0.388 | 0.066 | 17.6 | 0.046 | 44.7 | -0.256 | 0.234 |
-| NTv3&nbsp;650M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 29.4 | 1.447 | 0.187 | 0.010 | 7.8 | 0.009 | 50.4 | -0.061 | 0.368 |
-| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 14.7 | 1.549 | 0.295 | 0.036 | 9.8 | 0.010 | 48.9 | -0.318 | -0.581 |
-| DNABERT-2<br><sub>Fitted&nbsp;readouts</sub> | 11.3 | — | 0.198 | 0.076 | 5.9 | 0.020 | 48.6 | -0.302 | 0.233 |
-| Experimental&nbsp;reference | — | — | 0.809 | 0.594 | 99.0 | 0.421 | 11.8 | 0.962 | 1.602 |
+| AlphaGenome<br><sub>Fitted&nbsp;readouts</sub> | 135.8 | — | 0.650 | 0.402 | 64.7 | 0.215 | 25.7 | 0.515 | 0.833 |
+| AlphaGenome<br><sub>Native&nbsp;outputs</sub> | 126.2 | — | 0.621 | 0.398 | 68.6 | 0.191 | 24.3 | 0.384 | 0.707 |
+| NTv3&nbsp;650M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 100.0 | 1.375 | 0.564 | 0.256 | 56.9 | 0.150 | 30.0 | 0.287 | 0.568 |
+| Enformer<br><sub>Native&nbsp;outputs</sub> | 92.3 | — | — | 0.282 | 31.4 | 0.134 | 31.5 | 0.290 | 0.700 |
+| NTv3&nbsp;650M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 90.3 | 1.375 | 0.461 | 0.239 | 45.1 | 0.138 | 29.3 | 0.250 | 0.482 |
+| NTv3&nbsp;100M&nbsp;post<br><sub>Fitted&nbsp;readouts</sub> | 81.4 | 1.492 | 0.502 | 0.244 | 51.0 | 0.119 | 30.3 | 0.211 | 0.144 |
+| NTv3&nbsp;100M&nbsp;post<br><sub>Native&nbsp;outputs</sub> | 66.0 | 1.492 | 0.168 | 0.203 | 27.5 | 0.125 | 32.0 | 0.200 | 0.344 |
+| Evo2&nbsp;20B<br><sub>Fitted&nbsp;readouts</sub> | 40.5 | 1.388 | 0.367 | 0.041 | 21.6 | 0.041 | 43.5 | -0.350 | 0.275 |
+| NTv3&nbsp;100M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 32.5 | 1.537 | 0.349 | 0.076 | 7.8 | 0.011 | 47.3 | -0.207 | 0.339 |
+| GENERATORv2<br><sub>Fitted&nbsp;readouts</sub> | 31.5 | 1.711 | 0.388 | 0.066 | 17.6 | 0.037 | 44.7 | -0.256 | 0.234 |
+| NTv3&nbsp;650M&nbsp;pre<br><sub>Fitted&nbsp;readouts</sub> | 29.2 | 1.447 | 0.187 | 0.010 | 7.8 | 0.006 | 50.4 | -0.061 | 0.368 |
+| CENO&nbsp;1B<br><sub>Fitted&nbsp;readouts</sub> | 15.2 | 1.549 | 0.295 | 0.036 | 9.8 | 0.012 | 48.9 | -0.318 | -0.581 |
+| DNABERT-2<br><sub>Fitted&nbsp;readouts</sub> | 11.3 | — | 0.198 | 0.076 | 5.9 | 0.016 | 48.6 | -0.302 | 0.233 |
+| Experimental&nbsp;reference | — | — | 0.809 | 0.594 | 99.0 | 0.389 | 11.8 | 0.962 | 1.602 |
 
 </details>
-<!-- END REFERENCE RESULTS -->
+<!-- END GENERATED RESULTS -->
 
 ## Evaluate your model
 
@@ -48,15 +53,13 @@ python -m pip install -e .
 
 Install your model's framework and weights separately.
 
-[Leaderboard preview](docs/assets/leaderboard-preview.jpg) · [Model guide](docs/models.md) · [Data and licenses](docs/data.md)
+[Model guide](docs/models.md) · [Tasks and compute](docs/tasks.md) · [Data and licenses](docs/data.md)
 
-This is the anonymous review edition of **DNA Design Readiness Across Functional Tasks (DRAFT)**.
-Install it from this source checkout. It includes the smaller task datasets;
-for larger inputs, follow the [data guide](docs/data.md). Public project links
-and automatic publication are omitted for review. The screenshot above illustrates
-the leaderboard; this edition contains the evaluation and submission code.
-[Reference results](data/benchmark.paper.json) and their
-[source records](data/sources.md) are included.
+Install this review edition from the source checkout. Smaller datasets are
+included; larger inputs download from their original publishers with checksum
+checks. See the [data guide](docs/data.md) for offline use.
+[Reference results](data/benchmark.paper.json), [scoring details](data/sources.md),
+and code for evaluating and submitting a model are included.
 
 ### Connect an encoder
 

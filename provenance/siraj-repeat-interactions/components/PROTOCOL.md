@@ -1,0 +1,11 @@
+# Matched Siraj components on all and independently selected strong edits
+
+This is a descriptive extension of the already evaluated November 10 Siraj strong-interaction analysis, not a new prospective experiment. Reuse its frozen membership and predictions unchanged.
+
+Both cohorts use the same 89 regulatory loci: all 53,101 paired edits and the 6,136 strong interactions selected using RNA/DNA replicates 1–3. Selection requires absolute mean interaction deviation >=0.5 log2 with consistent sign across the three discovery replicates. Loci have at least 20 selected edits. No evaluation measurement or model output determines membership.
+
+Evaluate only replicates 4 and 5. Single is the query mutation relative to the R-background parent; double is the query plus fixed background SNP relative to that same parent. Double-effect ranks equal query-effect ranks on A because the parent-SNP effect is constant within a locus. Interaction is the difference between query effects on A and R. Compute expression as log2((RNA+.5)/(DNA+.5)); average the two cells before model scoring. Use original AlphaGenome/Enformer per-background native scores, matched fixed-alpha10 NTv3 650M pre/post heads, and the unchanged NTv3 100M post/GENERATOR per-background heads.
+
+For each model, endpoint and cohort, average its within-locus Spearman against evaluation repeats4 and 5, then average loci equally. Repeat agreement is the within-locus correlation of those two cell-averaged evaluation measurements. Cross-cell transfer is computed separately within each evaluation repeat (HepG2 versus K562), then averaged across repeats and loci. These empirical references answer different questions and neither is a ceiling. Do not combine their numbers.
+
+Reuse the same 20,000 whole-locus bootstrap multiplicities (seed 20261110, sampling 114 original loci and renormalizing over fixed 89 eligible loci). Require finite aligned inputs; constant vectors contribute zero correlation as in the prior strong-subset analysis. Assert exact replay of both cohorts' previous interaction point estimates and intervals. No fitting, calibration, inference or manuscript changes. Keep bulk arrays remote; return compact summaries and audit receipts.

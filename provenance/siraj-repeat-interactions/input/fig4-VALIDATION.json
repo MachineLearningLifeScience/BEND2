@@ -1,0 +1,59 @@
+{
+  "status": "PASS",
+  "loci": 114,
+  "paired_edits": 68026,
+  "cells": [
+    "HepG2",
+    "K562"
+  ],
+  "replicates_per_cell": 5,
+  "genotypes_per_edit": 4,
+  "method": "Raw per-replicate log2((RNA+.5)/(DNA+.5)); interaction A-A0-R+R0, averaged across cells; mean within each two- or three-repeat pool.",
+  "comparison": "All ten two-versus-three-repeat splits, no shared replicate indices within split. Models are scored against each side; average the 20 correlations within each locus. Repeat reference is average of ten between-pool correlations within locus.",
+  "target_caveat": "Both predictions and reference target cell-mean interaction. Reference includes measurement error on both sides; models only on target side. Thus the reference is a reproducibility benchmark, not a model ceiling.",
+  "pooling_dependence": "The ten splits overlap with each other; they are not treated as independent samples. Uncertainty resamples whole loci only.",
+  "selection": "No effect-strength selection. Original114 full paired loci and68026 queries. Distance calculated from background SNP position99; query cannot coincide with background SNP.",
+  "model_protocol": "Original frozen predictions used in Fig4A/C and historical summary, no re-fitting; original supervised heads remain trained on canonical labels with complete-element holdouts.",
+  "changes": "Evaluation target estimator and replicate pooling differ from published post_log2Skew labels. Canonical scores are replayed alongside; historical endpoints untouched.",
+  "correlation_handling": "Within-locus Spearman. Fewer than2 cases or constant vector: undefined, excluded from macro mean as canonical evaluator. All missing counts reported.",
+  "bootstrap": {
+    "draws": 20000,
+    "seed": 20261111,
+    "unit": "whole locus",
+    "paired": true
+  },
+  "canonical_replay_maxerror": 4.1338336291378563e-11,
+  "canonical_replay_errors": {
+    "alphagenome:0\u201310": 2.220446049250313e-16,
+    "alphagenome:11\u201325": 0.0,
+    "alphagenome:26\u201350": 0.0,
+    "alphagenome:>50": 1.3877787807814457e-17,
+    "alphagenome:all": 1.1102230246251565e-16,
+    "cross_cell:0\u201310": 1.1102230246251565e-16,
+    "cross_cell:11\u201325": 5.551115123125783e-17,
+    "cross_cell:26\u201350": 5.551115123125783e-17,
+    "cross_cell:>50": 5.551115123125783e-17,
+    "cross_cell:all": 5.551115123125783e-17,
+    "enformer:all": 5.551115123125783e-17,
+    "evo2_20b:all": 7.632783294297951e-17,
+    "kmer_3_6:all": 3.469446951953614e-17,
+    "ntv3_650m_post:0\u201310": 2.220446049250313e-16,
+    "ntv3_650m_post:11\u201325": 0.0,
+    "ntv3_650m_post:26\u201350": 5.551115123125783e-17,
+    "ntv3_650m_post:>50": 4.163336342344337e-17,
+    "ntv3_650m_post:all": 2.7755575615628914e-17,
+    "ntv3_650m_random:all": 6.938893903907228e-17,
+    "onehot_resnet:all": 4.1338336291378563e-11
+  },
+  "source_files": {
+    "repeat-input/evaluation-input.parquet": "a6818817359e17992910b448681853705bb0c45c881680e80c44745abdc87b9c",
+    "benchmark/data/processed/siraj_satmut/canonical.parquet": "2c77d02359abdc602526b17b953d3a26fd2b88fe3ecb7f04e1fea3874c1432e8",
+    "benchmark/data/cache/alphagenome_siraj_accessibility.parquet": "8222d5db1e048ba392921baa4beeace5c5451968b8fb5f1a67d8a937b3e5feaa",
+    "benchmark/results/siraj_enformer_native.predictions.parquet": "524b36e7b68538e841d30f422f8ada14203d53ecea33f9be5d136b87d54cd6ca",
+    "benchmark/results/siraj_ntv3_650m_post_pretrained_element_cv.predictions.parquet": "facacaa984cfb85de1d76fc44dae6d68ff2ceaea925c7bc2e6ae2e47623a7cf8",
+    "benchmark/results/siraj_evo2_20b_srht2048_element_cv.predictions.parquet": "01772b2d44fb489098259abedc7da0efc0bd240af3cc7d7d18ff7d692500d652",
+    "benchmark/results/siraj_kmer_element_cv.predictions.parquet": "85dcbf8017e6f8d466f7a326a5dc8e24356f3736837e91290d160fc0596ada29",
+    "benchmark/results/siraj_onehot_resnet_element_cv.predictions.parquet": "8e332cb9ab283bd5a126970d8c9a067e9e2fbb90374a10ac48160a4d2e656cd4",
+    "benchmark/results/siraj_ntv3_650m_post_random_element_cv.predictions.parquet": "d3b18b8fe585a40a9c8d754ed71577206d559081254a9f3f9fc718f3038f220f"
+  }
+}

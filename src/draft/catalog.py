@@ -37,7 +37,7 @@ TASK_VERSIONS = {
     "opensplice": 1,
     "tissue_identification": 1,
     "context": 1,
-    "background": 1,
+    "background": 2,
     "repair_percentile": 1,
     "cell_selective": 1,
     "atlas_profile": 1,

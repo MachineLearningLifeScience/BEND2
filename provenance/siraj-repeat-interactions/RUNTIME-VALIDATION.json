@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "n_native_paper_replays": 2,
+  "checks": [
+    {
+      "model": "alphagenome",
+      "source": "original native predictions",
+      "max_metric_error": 5.551115123125783e-17
+    },
+    {
+      "model": "enformer",
+      "source": "original native predictions",
+      "max_metric_error": 2.7755575615628914e-17
+    }
+  ],
+  "reference": {
+    "name": "macro_spearman",
+    "value": 0.38939954806598315,
+    "unit": "Spearman \u03c1",
+    "direction": "higher",
+    "ci95": [
+      0.3642901198085067,
+      0.41419061413518304
+    ]
+  },
+  "description": "Runtime scorer exactly reproduces original native AlphaGenome/Enformer point estimates and bootstrap limits; independent repeat-reference value and interval also match."
+}

@@ -4,11 +4,11 @@
   "title": "DRAFT: Benchmarking the Capabilities Needed to Design DNA",
   "shortName": "DRAFT",
   "expandedName": "Benchmark for DNA language models",
-  "version": "anonymous-review-2026-11-13",
+  "version": "anonymous-review-2026-11-14",
   "status": "anonymous-review-snapshot-with-audited-additions",
   "description": "Eight reported endpoints across five capability categories. Read the raw endpoints alongside a transparent, exploratory reference index.",
   "source": {
-    "label": "Table 1 snapshot, 22 October 2026, with audited additions",
+    "label": "Archived Table1 with audited coverage and November2026 interaction update",
     "commit": "anonymous-review",
     "tablePath": "provenance/table-1.tex",
     "tableSha256": "da90a41831d59a90637034fd93756339fb24c2de65beef2a1e00c94c9561623d",
@@ -16,7 +16,7 @@
     "snapshotPath": "provenance/table-1.tex",
     "extractedOn": "2026-10-22",
     "precision": "Manuscript display precision; precise source estimates and available intervals are retained for archived and newly evaluated entries.",
-    "verification": "Archived Table 1 and source CSV preserve their numerical results. Identifying metadata is withheld in this review edition. Shared checkpoint priors and newly evaluated entries have explicit source mappings in data/evaluation-updates.json; missing-result explanations were checked against evaluation code and archives.",
+    "verification": "Archived Table 1 and source CSV preserve their numerical results. Identifying metadata is withheld in this review edition. Shared checkpoint priors and newly evaluated entries have explicit source mappings in data/evaluation-updates.json; missing-result explanations were checked against evaluation code and archives. Background-interaction results use the revised independent-repeat protocol documented in provenance/siraj-repeat-interactions.",
     "paperUrl": "./review/#manuscript",
     "paperUrlStatus": "Public manuscript link withheld for anonymous review.",
     "codeUrl": "./review/",
@@ -191,7 +191,7 @@
       "label": "Background interaction",
       "shortLabel": "Interaction",
       "categoryId": "interactions",
-      "description": "Predict how the same mutation’s effect differs across two parental genetic backgrounds, isolating background dependence.",
+      "description": "Predict interactions estimated separately from groups of experimental repeats, holding out complete regulatory elements.",
       "metric": "Macro-element Spearman correlation",
       "unit": "ρ",
       "direction": "higher",
@@ -206,19 +206,19 @@
         "rationale": "Zero is the expected correlation for an independent random ordering; it is not an evaluated constant predictor."
       },
       "cautions": [
-        "The current experimental reference is HepG2–K562 transfer (0.421), not the superseded replicate-subset background value.",
-        "Transfer across cells is an experimental comparison, not a noise ceiling."
+        "Heads retain their original pooled-assay training labels; repeat-group measurements are used only for evaluation.",
+        "The experimental reference compares independent repeat groups and is not a ceiling."
       ],
       "sourceIds": [
-        "table-1",
-        "table-1-records",
-        "methods"
+        "siraj-independent-repeat-interactions",
+        "table-1-records"
       ],
       "reference": {
-        "value": 0.421,
+        "value": 0.389,
         "label": "Experimental reference",
-        "caveat": "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval."
-      }
+        "caveat": "Agreement between independent two- and three-repeat groups across114 elements and68026paired edits;20k element bootstrap."
+      },
+      "protocolVersion": 2
     },
     {
       "id": "repair_percentile",
@@ -765,24 +765,24 @@
     {
       "modelId": "evo2_20b",
       "taskId": "background",
-      "value": 0.05,
-      "displayValue": "0.050",
+      "value": 0.041,
+      "displayValue": "0.041",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.05002827879530649,
-      "sourceId": "table-1",
-      "sourceRecordId": "evo2_20b/background",
+      "sourceValue": 0.040847556787957165,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "evo2_20b",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.034167087225010453,
-        "high": 0.06576466007365578,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.027284189915551465,
+        "high": 0.05454696888583232,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -939,24 +939,24 @@
     {
       "modelId": "ceno_1b_1m",
       "taskId": "background",
-      "value": 0.01,
-      "displayValue": "0.010",
+      "value": 0.012,
+      "displayValue": "0.012",
       "status": "evaluated",
       "interface": "fitted mean-effect frozen readout; paired backgrounds",
-      "sourceValue": 0.0100908337947297,
-      "sourceId": "table-1",
-      "sourceRecordId": "ceno_1b_1m/background",
+      "sourceValue": 0.011763037931994753,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ceno_1b_1m",
       "notes": [
-        "Retrospective model-roster extension of frozen task; source-only fitting. Pointwise intervals; no expanded confirmatory family."
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": -0.0073462810463968,
-        "high": 0.0272147551454775,
-        "type": "reported pointwise bootstrap interval",
+        "low": -0.002725014252432832,
+        "high": 0.02651925549992864,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1107,24 +1107,24 @@
     {
       "modelId": "generator_v2_3b",
       "taskId": "background",
-      "value": 0.046,
-      "displayValue": "0.046",
+      "value": 0.037,
+      "displayValue": "0.037",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.04578286189430206,
-      "sourceId": "table-1",
-      "sourceRecordId": "generator_v2_3b/background",
+      "sourceValue": 0.037479038844918704,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "generator_v2_3b",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.03043472220980968,
-        "high": 0.06165299685548288,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.024636597439079866,
+        "high": 0.050827319695535764,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1271,24 +1271,24 @@
     {
       "modelId": "dnabert2",
       "taskId": "background",
-      "value": 0.02,
-      "displayValue": "0.020",
+      "value": 0.016,
+      "displayValue": "0.016",
       "status": "evaluated",
       "interface": "frozen 768-dimensional mean embeddings + ridge",
-      "sourceValue": 0.0197275780667494,
-      "sourceId": "table-1",
-      "sourceRecordId": "dnabert2/background",
+      "sourceValue": 0.01637524598732293,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "dnabert2",
       "notes": [
-        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.0073320822009257,
-        "high": 0.0321235628360173,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.005698435729864389,
+        "high": 0.02694208905515235,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1439,24 +1439,24 @@
     {
       "modelId": "ntv3_100m_pre",
       "taskId": "background",
-      "value": 0.01,
-      "displayValue": "0.010",
+      "value": 0.011,
+      "displayValue": "0.011",
       "status": "evaluated",
       "interface": "frozen mean embeddings + 512-dimensional SRHT + ridge",
-      "sourceValue": 0.0101713052936839,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_100m_pre/background",
+      "sourceValue": 0.01121685275419128,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_100m_pre",
       "notes": [
-        "Audited retrospective coverage extension; unchanged cohorts, held-locus folds and task definitions. Added intervals are pointwise, conditional on fixed fits and nominees; added design models are outside the original 24-contrast family. Readout widths documented in Appendix cell-selective methods."
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": -0.0003871016379826,
-        "high": 0.0205973859159844,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.0023192866016972444,
+        "high": 0.019896563866085917,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1607,24 +1607,24 @@
     {
       "modelId": "ntv3_100m_post",
       "taskId": "background",
-      "value": 0.139,
-      "displayValue": "0.139",
+      "value": 0.119,
+      "displayValue": "0.119",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.1390996911117981,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_100m_post/background",
+      "sourceValue": 0.1187606783630622,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_100m_post",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.11000098933347734,
-        "high": 0.16842399530305707,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.09536418565396812,
+        "high": 0.1420782455285451,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1779,24 +1779,24 @@
     {
       "modelId": "ntv3_100m_native",
       "taskId": "background",
-      "value": 0.152,
-      "displayValue": "0.152",
+      "value": 0.125,
+      "displayValue": "0.125",
       "status": "evaluated",
       "interface": "501-bp DNase log-coverage difference",
-      "sourceValue": 0.1524855604512107,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_100m_native/background",
+      "sourceValue": 0.12493253583154679,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_100m_native",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.1230533546930774,
-        "high": 0.181944188703588,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.10240700973737221,
+        "high": 0.1471984679443312,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -1948,24 +1948,24 @@
     {
       "modelId": "ntv3_650m_pre",
       "taskId": "background",
-      "value": 0.009,
-      "displayValue": "0.009",
+      "value": 0.006,
+      "displayValue": "0.006",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.008672778395027,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_650m_pre/background",
+      "sourceValue": 0.005881450081340959,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_650m_pre",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": -0.0038545004400160694,
-        "high": 0.021358373991477397,
-        "type": "reported pointwise bootstrap interval",
+        "low": -0.005282910654346677,
+        "high": 0.016670724353307936,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2116,24 +2116,24 @@
     {
       "modelId": "ntv3_650m_post",
       "taskId": "background",
-      "value": 0.187,
-      "displayValue": "0.187",
+      "value": 0.15,
+      "displayValue": "0.150",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.18701246956946582,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_650m_post/background",
+      "sourceValue": 0.15038771042521176,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_650m_post",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.15459263193225128,
-        "high": 0.21975255139994365,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.1246600630622176,
+        "high": 0.17574193596038692,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2288,24 +2288,24 @@
     {
       "modelId": "ntv3_650m_native",
       "taskId": "background",
-      "value": 0.17,
-      "displayValue": "0.170",
+      "value": 0.138,
+      "displayValue": "0.138",
       "status": "evaluated",
       "interface": "501-bp DNase log-coverage difference",
-      "sourceValue": 0.1698682962800696,
-      "sourceId": "table-1",
-      "sourceRecordId": "ntv3_650m_native/background",
+      "sourceValue": 0.13760586330135868,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "ntv3_650m_native",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.138192262168277,
-        "high": 0.200875785992956,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.1147133911796926,
+        "high": 0.16055575655592297,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2451,24 +2451,24 @@
     {
       "modelId": "alphagenome_fitted",
       "taskId": "background",
-      "value": 0.269,
-      "displayValue": "0.269",
+      "value": 0.215,
+      "displayValue": "0.215",
       "status": "evaluated",
       "interface": "matched assay insert hidden-representation ridge readout",
-      "sourceValue": 0.26862234598973245,
-      "sourceId": "table-1",
-      "sourceRecordId": "alphagenome_fitted/background",
+      "sourceValue": 0.21545876007678805,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "alphagenome_fitted",
       "notes": [
-        "Matched held-out identities, truth and biological units audited against NTv3; 10000 whole-unit bootstrap replicates; strict transfer has 88 target genes, 86 correlation-eligible genes for all models"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.23246584867660344,
-        "high": 0.30428710025153033,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.18631821886119676,
+        "high": 0.24349184380830732,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2614,24 +2614,24 @@
     {
       "modelId": "alphagenome",
       "taskId": "background",
-      "value": 0.26,
-      "displayValue": "0.260",
+      "value": 0.191,
+      "displayValue": "0.191",
       "status": "evaluated",
       "interface": "Native accessibility output",
-      "sourceValue": 0.2595833829724495,
-      "sourceId": "table-1",
-      "sourceRecordId": "alphagenome/background",
+      "sourceValue": 0.19142808056716207,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "alphagenome",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.21923266239249647,
-        "high": 0.2993448513833979,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.1615141986354256,
+        "high": 0.22016133290554482,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2773,24 +2773,24 @@
     {
       "modelId": "enformer",
       "taskId": "background",
-      "value": 0.181,
-      "displayValue": "0.181",
+      "value": 0.134,
+      "displayValue": "0.134",
       "status": "evaluated",
       "interface": "Native accessibility output",
-      "sourceValue": 0.1811050695712191,
-      "sourceId": "table-1",
-      "sourceRecordId": "enformer/background",
+      "sourceValue": 0.13422583951586411,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "enformer",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.14146192745254052,
-        "high": 0.2202278305871842,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.1051788283354199,
+        "high": 0.1624673768081772,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -2937,24 +2937,24 @@
     {
       "modelId": "kmer_3_6",
       "taskId": "background",
-      "value": 0.032,
-      "displayValue": "0.032",
+      "value": 0.03,
+      "displayValue": "0.030",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": 0.03182186128452004,
-      "sourceId": "table-1",
-      "sourceRecordId": "kmer_3_6/background",
+      "sourceValue": 0.030108022936103287,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "kmer_3_6",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.014554926805208018,
-        "high": 0.04897608297045951,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.01759191182688294,
+        "high": 0.04253131840144468,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -3100,24 +3100,24 @@
     {
       "modelId": "onehot_resnet",
       "taskId": "background",
-      "value": -0.001,
-      "displayValue": "-0.001",
+      "value": 0.002,
+      "displayValue": "0.002",
       "status": "evaluated",
       "interface": "Fitted out-of-fold effect differences",
-      "sourceValue": -0.0006640598742617343,
-      "sourceId": "table-1",
-      "sourceRecordId": "onehot_resnet/background",
+      "sourceValue": 0.00223453811057142,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "onehot_resnet",
       "notes": [
-        "Preserved current manuscript's selected interface; upstream source and interval definitions in source_record"
+        "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": -0.011759041618238118,
-        "high": 0.010724985030734295,
-        "type": "reported pointwise bootstrap interval",
+        "low": -0.007270950492985079,
+        "high": 0.011875555959286901,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       }
     },
     {
@@ -3397,27 +3397,27 @@
     {
       "modelId": "experimental_reference",
       "taskId": "background",
-      "value": 0.421,
-      "displayValue": "0.421",
+      "value": 0.389,
+      "displayValue": "0.389",
       "status": "evaluated",
-      "interface": "HepG2–K562 transfer",
-      "sourceValue": 0.42100136296415547,
-      "sourceId": "table-1",
-      "sourceRecordId": "experimental_reference/background",
+      "interface": "Independent experimental repeat agreement",
+      "sourceValue": 0.38939954806598315,
+      "sourceId": "siraj-independent-repeat-interactions",
+      "sourceRecordId": "experimental_reference",
       "notes": [
-        "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval."
+        "Agreement between independent two- and three-repeat pools over all ten partitions,114elements and68026paired edits."
       ],
       "uncertainty": {
         "level": 0.95,
-        "low": 0.3808536037135168,
-        "high": 0.4619047739097034,
-        "type": "reported pointwise bootstrap interval",
+        "low": 0.3642901198085067,
+        "high": 0.41419061413518304,
+        "type": "pointwise whole-element bootstrap interval",
         "samplingUnit": "element",
-        "sourceId": "table-1-records",
-        "note": "Preserved from the matched source-table record; not an interval for the derived reference index and not evidence for a between-model rank."
+        "sourceId": "siraj-independent-repeat-interactions",
+        "note": "20000 bootstrap draws, seed20261111; partitions are averaged within each element."
       },
       "label": "Experimental reference",
-      "caveat": "Measured interactions in HepG2 versus K562; within-element Spearman averaged over 114 elements and 68,026 paired mutations. Same reference as Figure 4A; 95% element-bootstrap interval.",
+      "caveat": "Independent repeat-group agreement; both sides contain measurement noise.",
       "isCeiling": false
     },
     {
@@ -3701,10 +3701,17 @@
       "title": "Evo2 evaluation artifact checksums",
       "snapshotPath": "provenance/evo2-tissue-20261102/SHA256SUMS.json",
       "sha256": "96518447a3676d0592ff608a8e0635fab5be7a0ef8a7baf09a6d622db47976a6"
+    },
+    {
+      "id": "siraj-independent-repeat-interactions",
+      "title": "Siraj independent-repeat interaction evaluation, November2026",
+      "snapshotPath": "provenance/siraj-repeat-interactions/table-ready.csv",
+      "sha256": "b72ad9be59618e1decbcf1147a52ce1c0998d62d2793e5706d049f7fa9c4b1e5",
+      "description": "Unchanged model predictions evaluated against all ten2-versus-3 partitions of five experimental repeats;20 correlations per element,114 elements,68026paired edits."
     }
   ],
   "scoring": {
-    "id": "reference-index-v2",
+    "id": "reference-index-v3",
     "label": "Reference index",
     "status": "exploratory-not-a-paper-metric",
     "referenceModelId": "ntv3_650m_post",
@@ -3736,7 +3743,7 @@
       "design"
     ],
     "normalization": "100 * (value - baseline) / (referenceValue - baseline)",
-    "normalizationNote": "The same algebra works for lower-is-better tasks because their denominator is negative. It yields 0 at the task baseline and 100 at the fixed NTv3 650M post reference. Prior loss uses the base-composition baseline of 1.974 bits/base and reference loss of 1.375 bits/base.",
+    "normalizationNote": "The same algebra works for lower-is-better tasks because their denominator is negative. It yields 0 at the task baseline and 100 at the fixed NTv3 650M post reference. Prior loss uses the base-composition baseline of 1.974 bits/base and reference loss of 1.375 bits/base. Background interaction uses the revised task-v2 NTv3 650M post reference (0.150 at table precision).",
     "aggregation": "Compute the mean of available normalized task scores within each category, then average available categories equally.",
     "missingPolicy": "Missing tasks are omitted, never zero. Categories with no available tasks are omitted. Task and category coverage are retained in score tooltips and CSV exports. No available results means no score.",
     "clamp": false,

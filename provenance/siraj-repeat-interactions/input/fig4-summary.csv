@@ -1,0 +1,9 @@
+protocol,model,distance_bin,endpoint,metric,value,low,high,loci,defined_loci,edits,cells,replicates,splits,historical_low,historical_high
+matched_disjoint,alphagenome,all,interaction,macro_spearman,0.19142808056716207,0.1615141986354256,0.22016133290554485,114,114,68026,2,5,10,,
+matched_disjoint,enformer,all,interaction,macro_spearman,0.13422583951586411,0.1051788283354199,0.1624673768081772,114,114,68026,2,5,10,,
+matched_disjoint,evo2_20b,all,interaction,macro_spearman,0.040847556787957165,0.027284189915551465,0.05454696888583232,114,114,68026,2,5,10,,
+matched_disjoint,experimental_reference,all,interaction,macro_spearman,0.38939954806598315,0.3642901198085067,0.41419061413518304,114,114,68026,2,5,10,,
+matched_disjoint,kmer_3_6,all,interaction,macro_spearman,0.030108022936103287,0.01759191182688294,0.04253131840144468,114,114,68026,2,5,10,,
+matched_disjoint,ntv3_650m_post,all,interaction,macro_spearman,0.15038771042521176,0.12466006306221758,0.17574193596038692,114,114,68026,2,5,10,,
+matched_disjoint,ntv3_650m_random,all,interaction,macro_spearman,-0.00284210699021492,-0.010408729259400302,0.004860181647371493,114,114,68026,2,5,10,,
+matched_disjoint,onehot_resnet,all,interaction,macro_spearman,0.00223453811057142,-0.007270950492985079,0.011875555959286901,114,114,68026,2,5,10,,

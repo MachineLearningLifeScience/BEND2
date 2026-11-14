@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-10T13:16:13.154078+00:00",
+  "membership_sha256": "741f960c469743e17532c729abab6c655120cbe0fb6593914f7df23f484e2610",
+  "protocol_sha256": "6266faa939ae56d94227785d65e5282559f2e1c52575ba8f5e0cefd91de0b151",
+  "sources": {
+    "archive/iteration7/siraj-sign-epistasis/evaluation-input.parquet": "a6818817359e17992910b448681853705bb0c45c881680e80c44745abdc87b9c",
+    "archive/iteration3/reliability/centered_inputs.parquet": "504edc0f2fafd39132b6b4a5c4af7fad70f6149282b295bfd988d8894238bc96",
+    "archive/iteration3/reliability/calibration_slopes.csv": "a346130ad4ab5732c095d202eaff660c4337c1068964fb1fd8f4330358bb726f",
+    "archive/iteration3/reliability/calibration_lineage.json": "24182d242fbf396b4566ffa70dcd197d4b0b91a3c25dd0199d6be659e1469e33",
+    "archive/reliability/siraj-direct_m0-background-panel.parquet": "da0fdb17e2fd8118ab8765d781dfb81b137708ec2cac664f07c7db5d12e9b4cc"
+  }
+}
