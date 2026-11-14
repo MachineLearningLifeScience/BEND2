@@ -1,6 +1,6 @@
 ![DRAFT — Benchmarking the capabilities needed to design DNA](docs/assets/readme-banner.png)
 
-We built DRAFT to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response.
+We built DRAFT (DNA Design Readiness Across Functional Tasks) to test whether genomic models can guide the design of DNA. Across eight tasks, we examine how they predict sequence function, account for cell type and genetic background, and choose sequences that produce a desired response.
 
 Read our paper and check our live leaderboard (redacted during review).
 
