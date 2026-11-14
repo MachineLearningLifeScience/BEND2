@@ -5,9 +5,7 @@ We built DRAFT to test whether genomic models can guide the design of DNA. Acros
 Read our [paper](https://redacted.invalid/paper) and check our [live leaderboard](https://redacted.invalid/leaderboard) (links redacted for review).
 
 <picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="docs/assets/capabilities-narrow-dark.svg">
   <source media="(max-width: 600px)" srcset="docs/assets/capabilities-narrow-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/capabilities-wide-dark.svg">
   <img src="docs/assets/capabilities-wide-light.svg" alt="Five capabilities: recover a hidden base; predict an edit’s effect; account for cells and tissues; account for DNA background; select DNA for a target response.">
 </picture>
 
@@ -15,10 +13,7 @@ Read our [paper](https://redacted.invalid/paper) and check our [live leaderboard
 ## Benchmark results
 
 <a href="docs/assets/results-light.svg">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/results-dark.svg">
-    <img src="docs/assets/results-light.svg" alt="DRAFT results for 8 tasks and 13 model/readout configurations, ordered by combined score. Full values are available in the text table below.">
-  </picture>
+  <img src="docs/assets/results-light.svg" alt="DRAFT results for 8 tasks and 13 model/readout configurations, ordered by combined score. Full values are available in the text table below.">
 </a>
 
 <details>

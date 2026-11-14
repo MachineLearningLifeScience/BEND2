@@ -100,10 +100,7 @@ const section = `<!-- BEGIN GENERATED RESULTS: node docs/figures/build_results.m
 ## Benchmark results
 
 <a href="docs/assets/results-light.svg">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/results-dark.svg">
-    <img src="docs/assets/results-light.svg" alt="DRAFT results for ${data.tasks.length} tasks and ${models.length} model/readout configurations, ordered by combined score. Full values are available in the text table below.">
-  </picture>
+  <img src="docs/assets/results-light.svg" alt="DRAFT results for ${data.tasks.length} tasks and ${models.length} model/readout configurations, ordered by combined score. Full values are available in the text table below.">
 </a>
 
 <details>
